@@ -1,10 +1,14 @@
 import { extend, useTick } from "@pixi/react";
 import { Graphics } from "pixi.js";
 import { useCallback, useRef, useEffect } from "react";
+import { checkCollision } from "../../helpers/common.js";
 
 extend({ Graphics });
 
-export const Joueur = () => {
+export const Joueur = ({ plateformes = [] }) => {
+    console.log("type:", typeof plateformes);
+    console.log("isArray:", Array.isArray(plateformes));
+    console.log("valeur:", plateformes);
     const playerRef = useRef(null);
     const physics = useRef({
         velocityY: 0,
@@ -57,6 +61,27 @@ export const Joueur = () => {
         player.x += p.velocityX * delta;
         if (player.x < 0) player.x = 0;
         if (player.x > 900) player.x = 900;
+
+        plateformes.forEach((plat) => {
+            const joueurRect = { x: player.x, y: player.y, width: 40, height: 40 };
+
+            if (checkCollision(joueurRect, plat)) {
+                // Vient d'en haut
+                if (p.velocityY > 0 && player.y + 40 - p.velocityY * delta <= plat.y) {
+                    player.y = plat.y ;
+                    p.velocityY = 0;
+                    p.onGround = true;
+                }
+                // Vient d'en bas
+                if (p.velocityY < 0 && player.y - p.velocityY * delta >= plat.y + plat.height) {
+                    player.y = plat.y ;
+                    p.velocityY = 0;
+                }
+                // Côté gauche/droit
+                if (p.velocityX > 0) player.x = plat.x - 40;
+                if (p.velocityX < 0) player.x = plat.x + plat.width;
+            }
+        });
 
         p.velocityY += p.gravity * delta;
         player.y += p.velocityY * delta;

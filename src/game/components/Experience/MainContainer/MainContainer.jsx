@@ -12,6 +12,12 @@ export const MainContainer = ({ canvasSize, children }) => {
             setBackgroundTexture(texture);
         });
     }, []);
+    const plateformes = [
+        { x: 100, y: 400, width: 120, height: 20 },
+        { x: 300, y: 300, width: 120, height: 20 },
+        { x: 500, y: 200, width: 120, height: 20 },
+        { x: 700, y: 100, width: 120, height: 20 }
+    ];
 
     if (!backgroundTexture) return null
 
@@ -22,9 +28,10 @@ export const MainContainer = ({ canvasSize, children }) => {
                 height={canvasSize.height}
                 texture={backgroundTexture}
             />
-            <Plateforme x={100} y={100} />
-            <Plateforme x={100} y={150} />
-            <Joueur />
+            {plateformes.map((plat, index) => (
+                <Plateforme key={index} x={plat.x} y={plat.y} />
+            ))}
+            <Joueur plateformes={plateformes} />
             {children}
         </pixiContainer>
     );
