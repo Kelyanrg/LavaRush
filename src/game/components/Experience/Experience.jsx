@@ -9,7 +9,7 @@ export const Experience = () => {
     const updateCanvasSize = () => {
         setCanvasSize(calculateCanvasSize, []);
     }
-    const taile = { "width": 900, "height": 1080 }
+    const taile = { "width": canvasSize.width / 2, "height": canvasSize.height }
     useEffect(() => {
         window.addEventListener('resize', updateCanvasSize);
         return () => window.removeEventListener('resize', updateCanvasSize)

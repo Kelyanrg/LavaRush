@@ -13,6 +13,7 @@ export const MainContainer = ({ canvasSize, children }) => {
         });
     }, []);
     const [plateformes, setPlateformes] = useState([
+        { x: (canvasSize.width - 120) / 4, y: 500, width: 120, height: 20 },
         { x: (canvasSize.width - 120) / 4, y: 400, width: 120, height: 20 },
         { x: 2 * (canvasSize.width - 120) / 4, y: 300, width: 120, height: 20 },
         { x: 2 * (canvasSize.width - 120) / 4, y: 100, width: 120, height: 20 },
@@ -40,16 +41,16 @@ export const MainContainer = ({ canvasSize, children }) => {
         }));
 
     };
-    const genererPlateforme = (yMax) => {
-        const newY = yMax - (80 + Math.random() * 80);
-        const newX = 50 + Math.random() * (canvasSize.width - 170)
-        return {
-            x: newX,
-            y: newY,
-            width: 120,
-            height: 20
-        };
-    }
+    // const genererPlateforme = (yMax) => {
+    //     const newY = yMax - (80 + Math.random() * 80);
+    //     const newX = 50 + Math.random() * (canvasSize.width - 170)
+    //     return {
+    //         x: newX,
+    //         y: newY,
+    //         width: 120,
+    //         height: 20
+    //     };
+
     const mondeRef = useRef(null);   // référence au Container PixiJS
     const cameraY = useRef(0);
     const dernierY = useRef(0);

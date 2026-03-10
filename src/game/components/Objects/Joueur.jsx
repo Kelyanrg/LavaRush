@@ -21,6 +21,7 @@ export const Joueur = ({ plateformes = [], onPositionChange }) => {
         onGround: false
     });
     const jumpBuffer = useRef(0);
+    const nocolitionbuffer = useRef(0);
     const keys = useRef({ q: false, d: false });
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -85,13 +86,17 @@ export const Joueur = ({ plateformes = [], onPositionChange }) => {
                     // Collision verticale (dessus ou dessous)
                     if (overlapTop < overlapBottom) {
                         // Vient d'en haut
-                        player.y = plat.y - joueurRect.height;
-                        p.velocityY = 0; // rebond/saut automatique
-                        p.onGround = true;
+                        if (nocolitionbuffer.current > 0) { }
+                        else {
+                            player.y = plat.y - joueurRect.height;
+                            p.velocityY = 0; // rebond/saut automatique
+                            p.onGround = true;
+                        }
                     } else {
                         // Vient d'en bas
-                        player.y = plat.y + plat.height;
-                        p.velocityY = 0;
+                        jumpBuffer.current = 10;
+                        // player.y = plat.y + plat.height;
+                        // p.velocityY = 0;
                     }
                 } else {
                     // Collision horizontale (gauche ou droite)
