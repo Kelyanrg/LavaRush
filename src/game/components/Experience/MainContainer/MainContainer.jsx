@@ -1,117 +1,117 @@
-import { extend } from "@pixi/react";
-import { Container, Assets, Sprite, Graphics } from 'pixi.js';
-import { useState, useEffect, useRef } from "react";
-import backgroundAsset from '../../../assets/StarsBackground.jpg';
+import { extend } from "@pixi/react"
+import { Container, Assets, Sprite, Graphics } from 'pixi.js'
+import { useState, useEffect, useRef } from "react"
 import { Plateforme } from '../../Objects/Platforme.jsx'
 import { Joueur } from '../../Objects/Joueur.jsx'
-extend({ Container, Sprite, Graphics });
+import { ParallaxBackground } from '../../../components/Objects/TilingSprite.jsx'
+import * as PIXI from 'pixi.js'
+
+extend({ Container, Sprite, Graphics })
+
 export const MainContainer = ({ canvasSize, children }) => {
-    const [backgroundTexture, setBackgroundTexture] = useState(null);
+
+    const [textures, setTextures] = useState(null)
+    const [gameOver, setGameOver] = useState(false)
+    const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * 0.45)
+    const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
+
     useEffect(() => {
-        Assets.load(backgroundAsset).then((texture) => {
-            setBackgroundTexture(texture);
-        });
-    }, []);
+        Promise.all([
+            PIXI.Assets.load('/background2.png'),
+            PIXI.Assets.load('/tours1.png')
+        ]).then(([bg, mid]) => {
+            setTextures({ bg, mid })
+        })
+    }, [])
+
+
     const [plateformes, setPlateformes] = useState([
-        { x: (canvasSize.width - 120) / 4, y: 500, width: 120, height: 20 },
-        { x: (canvasSize.width - 120) / 4, y: 400, width: 120, height: 20 },
-        { x: 2 * (canvasSize.width - 120) / 4, y: 300, width: 120, height: 20 },
-        { x: 2 * (canvasSize.width - 120) / 4, y: 100, width: 120, height: 20 },
-        { x: 3 * (canvasSize.width - 120) / 4, y: 200, width: 120, height: 20 },
-        { x: 4 * (canvasSize.width - 120) / 4, y: 100, width: 120, height: 20 }
-    ]);
+        { x: (PLAY_AREA_WIDTH - 120) / 4, y: 500, width: 120, height: 20 },
+        { x: (PLAY_AREA_WIDTH - 120) / 4, y: 400, width: 120, height: 20 },
+        { x: 2 * (PLAY_AREA_WIDTH - 120) / 4, y: 300, width: 120, height: 20 },
+        { x: 2 * (PLAY_AREA_WIDTH - 120) / 4, y: 100, width: 120, height: 20 },
+        { x: 3 * (PLAY_AREA_WIDTH - 120) / 4, y: 200, width: 120, height: 20 },
+        { x: 4 * (PLAY_AREA_WIDTH - 120) / 4, y: 100, width: 120, height: 20 }
+    ])
+
     const genererPalier = (yMax) => {
-        const newY = Math.floor(yMax) - 120;
-        const nbPlateformes = 2 + Math.floor(Math.random() * 2);
-        const largeur = 120;
+        const newY = Math.floor(yMax) - 120
+        const nbPlateformes = 2 + Math.floor(Math.random() * 2)
+        const largeur = 120
 
         const emplacements = [0, 1, 2, 3, 4].map(i =>
-            Math.floor(i * (canvasSize.width - largeur) / 4)
-        );
+            Math.floor(i * (PLAY_AREA_WIDTH - largeur) / 4)
+        )
 
         const choisis = emplacements
             .sort(() => Math.random() - 0.5)
-            .slice(0, nbPlateformes);
+            .slice(0, nbPlateformes)
 
         return choisis.map(x => ({
             x,
             y: newY,
             width: largeur,
             height: 20
-        }));
+        }))
 
-    };
-    // const genererPlateforme = (yMax) => {
-    //     const newY = yMax - (80 + Math.random() * 80);
-    //     const newX = 50 + Math.random() * (canvasSize.width - 170)
-    //     return {
-    //         x: newX,
-    //         y: newY,
-    //         width: 120,
-    //         height: 20
-    //     };
+    }
 
-    const mondeRef = useRef(null);   // référence au Container PixiJS
-    const cameraY = useRef(0);
-    const dernierY = useRef(0);
+    const mondeRef = useRef(null)
+    const cameraY = useRef(0)
+    const dernierY = useRef(0)
+
+
     const handlePositionChange = ({ y }) => {
-        if (!mondeRef.current) return;
+        if (!mondeRef.current) return
 
-        // Position réelle du joueur sur l'écran
-        // (sa position dans le monde + le décalage de la caméra)
-        const joueurEcranY = y + cameraY.current;
+        const joueurEcranY = y + cameraY.current
 
-        // Le joueur dépasse le milieu de l'écran vers le haut ?
-        const milieu = canvasSize.height / 2;
+        const milieu = canvasSize.height / 2
 
         if (joueurEcranY < milieu && dernierY.current > y) {
-            // Calcul de combien il faut scroller
-            const diff = milieu - joueurEcranY;
+            const diff = milieu - joueurEcranY
 
-            // On accumule le scroll total
-            cameraY.current += diff;
+            cameraY.current += diff
 
-            // On déplace physiquement le Container vers le bas
-            mondeRef.current.y = cameraY.current;
+            mondeRef.current.y = cameraY.current
             setPlateformes(prev => {
-                const nouvelles = [...prev];
+                const nouvelles = [...prev]
 
                 while (Math.min(...nouvelles.map(p => p.y)) > y - canvasSize.height) {
-                    // ✅ génère un palier entier (2-3 plateformes) au lieu d'une seule
-                    const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)));
-                    nouvelles.push(...palier); // ... pour aplatir le tableau
+                    const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)))
+                    nouvelles.push(...palier)
                 }
 
-                return nouvelles.filter(p => p.y < y + canvasSize.height);
-            });
+                return nouvelles.filter(p => p.y < y + canvasSize.height)
+            })
         }
         if (joueurEcranY > milieu && dernierY.current < y) {
-            const diff = joueurEcranY - milieu;
-            cameraY.current -= diff;
-            mondeRef.current.y = cameraY.current;
+            const diff = joueurEcranY - milieu
+            cameraY.current -= diff
+            mondeRef.current.y = cameraY.current
         }
-        dernierY.current = y;
+        dernierY.current = y
         if (joueurEcranY > canvasSize.height + 50) {
             setGameOver(true);
         }
-    };
+    }
 
-    if (!backgroundTexture) return null
-    console.log("plateformes:", plateformes, Array.isArray(plateformes));
+    if (!textures) return null
+
     return (
         <pixiContainer>
-            <pixiSprite
-                width={canvasSize.width}
-                height={canvasSize.height}
-                texture={backgroundTexture}
-            />
-            <pixiContainer ref={mondeRef}>
+            <ParallaxBackground textures={textures} canvasSize={canvasSize} />
+            <pixiContainer ref={mondeRef} x={offsetX}>
                 {plateformes.map((plat, index) => (
                     <Plateforme key={index} x={plat.x} y={plat.y} />
                 ))}
-                <Joueur plateformes={plateformes} onPositionChange={handlePositionChange} />
+                <Joueur
+                    plateformes={plateformes}
+                    onPositionChange={handlePositionChange}
+                    playAreaWidth={PLAY_AREA_WIDTH}
+                />
             </pixiContainer>
             {children}
         </pixiContainer>
-    );
-};
+    )
+}
