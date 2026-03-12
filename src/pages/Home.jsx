@@ -43,25 +43,31 @@ export default function Home() {
           <p className="game-subtitle">
             Survivez à la lave. Montez le plus haut possible.
           </p>
-          <button className="play-btn" onClick={() => navigate("/game")}>
-            <span className="play-btn-text">Jouer maintenant</span>
-            <span className="play-btn-shine" />
-          </button>
+          <div className="play-btn-wrapper">
+            <button className="play-btn" onClick={() => navigate("/game")}>
+              <span className="play-btn-text">Jouer maintenant</span>
+              <span className="play-btn-shine" />
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="lava-container">
-        <svg class="lava-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <div className="lava-container">
+        <svg
+          className="lava-svg"
+          viewBox="0 0 1440 120"
+          preserveAspectRatio="none"
+        >
           <path
-            class="lava-wave lava-wave--back"
+            className="lava-wave lava-wave--back"
             d="M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z"
           />
           <path
-            class="lava-wave lava-wave--mid"
+            className="lava-wave lava-wave--mid"
             d="M0,70 C360,20 720,100 1080,50 C1260,30 1380,70 1440,60 L1440,120 L0,120 Z"
           />
           <path
-            class="lava-wave lava-wave--front"
+            className="lava-wave lava-wave--front"
             d="M0,80 C200,40 500,100 720,70 C940,40 1200,90 1440,70 L1440,120 L0,120 Z"
           />
         </svg>
