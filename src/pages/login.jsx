@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import "./login.css";
+import worldBg from "/assets/backgrounds/world_background.png";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -23,27 +25,78 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h1>Connexion</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Mot de passe"
-      />
-      <button onClick={handleSubmit} disabled={loading}>
-        {loading ? "Connexion..." : "Se connecter"}
-      </button>
-      <p>
-        Pas encore de compte ? <Link to="/signup">S'inscrire</Link>
-      </p>
+    <div className="login-page">
+      <div className="topbar">
+        <button className="topbar-logo" onClick={() => navigate("/")}>
+          <img
+            src="./assets/ui/lavarush_petio_icon.svg"
+            alt="Logo"
+            className="logo-img"
+          />
+        </button>
+        <div className="topbar-links">
+          <button className="topbar-btn" onClick={() => navigate("/")}>
+            Accueil
+          </button>
+          <button
+            className="topbar-btn"
+            onClick={() => navigate("/leaderboard")}
+          >
+            Leaderboard
+          </button>
+          <button
+            className="topbar-btn topbar-login"
+            onClick={() => navigate("/signup")}
+          >
+            S&apos;inscrire
+          </button>
+        </div>
+      </div>
+
+      <div className="main-content">
+        <div className="background">
+          <img
+            src="/assets/backgrounds/world_background.png"
+            alt="Mondes"
+            className="background-img"
+          />
+        </div>
+        <div className="login-content">
+          <div className="login-frame">
+            <span>Connectez-vous à votre aventure</span>
+
+            {error && <p style={{ color: "#ff4444" }}>{error}</p>}
+
+            <span className="login-label">E-mail</span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Votre adresse e-mail"
+            />
+
+            <span className="login-label">Mot de passe</span>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Votre mot de passe"
+            />
+
+            <button onClick={handleSubmit} disabled={loading}>
+              {loading ? "Connexion..." : "Se connecter"}
+            </button>
+
+            <p>
+              Pas de compte ? <Link to="/signup">Créer un compte</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="footer">
+        <p>&copy; 2025 Lava Rush - Tous droits réservés</p>
+      </div>
     </div>
   );
 }
