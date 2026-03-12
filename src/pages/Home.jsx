@@ -50,12 +50,19 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="lava-divider">
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+      <div class="lava-container">
+        <svg class="lava-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
           <path
-            className="lava-wave"
-            d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z"
-            fill="rgba(255, 81, 0, 0.64)"
+            class="lava-wave lava-wave--back"
+            d="M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z"
+          />
+          <path
+            class="lava-wave lava-wave--mid"
+            d="M0,70 C360,20 720,100 1080,50 C1260,30 1380,70 1440,60 L1440,120 L0,120 Z"
+          />
+          <path
+            class="lava-wave lava-wave--front"
+            d="M0,80 C200,40 500,100 720,70 C940,40 1200,90 1440,70 L1440,120 L0,120 Z"
           />
         </svg>
       </div>
