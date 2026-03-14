@@ -1,4 +1,3 @@
-/* ─── FONTES (Elles peuvent rester globales) ───────────────── */
 @font-face {
   font-family: "supersquad";
   src: url("../assets/fonts/super_squad/Super_Squad.ttf") format("truetype");
@@ -15,8 +14,8 @@
   font-display: swap;
 }
 
-/* ─── LAYOUT LOGIN PAGE ───────────────────────────── */
-.login-page {
+/* ─── LAYOUT SIGNUP PAGE ───────────────────────────── */
+.signup-page {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -31,14 +30,14 @@
   background-position: center;
 }
 
-.login-page *,
-.login-page *::before,
-.login-page *::after {
+.signup-page *,
+.signup-page *::before,
+.signup-page *::after {
   box-sizing: border-box;
 }
 
 /* ─── TOPBAR ───────────────────────────── */
-.login-page .topbar {
+.signup-page .topbar {
   flex-shrink: 0; /* Ne bouge pas d'un poil */
   display: flex;
   justify-content: space-between;
@@ -50,18 +49,18 @@
   z-index: 10;
 }
 
-.login-page .logo-img {
+.signup-page .logo-img {
   height: 36px;
   width: auto;
   display: block;
 }
 
-.login-page .topbar-links {
+.signup-page .topbar-links {
   display: flex;
   gap: 12px;
 }
 
-.login-page .topbar-btn {
+.signup-page .topbar-btn {
   background: none;
   border: none;
   color: #ccc;
@@ -74,14 +73,14 @@
   transition: color 0.2s;
 }
 
-.login-page .topbar-login {
+.signup-page .topbar-login {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
 }
 
 /* ─── MAIN CONTENT ───────────────────────────── */
-.login-page .main-content {
+.signup-page .main-content {
   flex-grow: 1;
   display: flex;
   width: 100%;
@@ -90,12 +89,12 @@
   gap: 30px;
 }
 
-.login-page .background {
+.signup-page .background {
   flex: 1.5;
   height: 100%;
 }
 
-.login-page .background-img {
+.signup-page .background-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -103,7 +102,7 @@
 }
 
 /* DROITE : FORMULAIRE */
-.login-page .login-content {
+.signup-page .signup-content {
   flex: 1;
   display: flex;
   align-items: center;
@@ -114,7 +113,7 @@
   border-radius: 20px;
 }
 
-.login-page .login-frame {
+.signup-page .signup-frame {
   width: 100%;
   max-width: 400px;
   display: flex;
@@ -126,21 +125,21 @@
   border-radius: 20px;
 }
 
-.login-page .login-frame span {
+.signup-page .signup-frame span {
   font-family: "acme", sans-serif;
   color: #fff;
   font-size: 1.5rem;
   text-align: center;
 }
 
-.login-page .login-frame .login-label {
+.signup-page .signup-frame .signup-label {
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.5);
   font-family: "acme", sans-serif;
   margin-bottom: -10px;
 }
 
-.login-page .login-frame input {
+.signup-page .signup-frame input {
   padding: 14px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -150,7 +149,7 @@
   outline: none;
 }
 
-.login-page .login-frame button {
+.signup-page .signup-frame button {
   padding: 14px;
   border-radius: 10px;
   border: none;
@@ -162,19 +161,19 @@
   margin-top: 10px;
 }
 
-.login-page .login-frame p {
+.signup-page .signup-frame p {
   text-align: center;
   font-family: "acme", sans-serif;
   font-size: 0.85rem;
   color: #888;
 }
 
-.login-page .login-frame p a {
+.signup-page .signup-frame p a {
   color: #ff9a40;
 }
 
-/* ─── FOOTER  ───────────────────────────────── */
-.login-page .footer {
+/* ─── FOOTER ───────────────────────────────── */
+.signup-page .footer {
   flex-shrink: 0; /* Ne bouge pas d'un poil */
   padding: 12px 20px;
   background: rgba(0, 0, 0, 0.9);
