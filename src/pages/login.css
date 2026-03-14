@@ -15,7 +15,7 @@
   font-display: swap;
 }
 
-/* ─── ISOLATION TOTALE DU LAYOUT ───────────────────────────── */
+/* ─── LAYOUT LOGIN PAGE ───────────────────────────── */
 .login-page {
   box-sizing: border-box;
   display: flex;
@@ -31,14 +31,13 @@
   background-position: center;
 }
 
-/* On applique le border-box à tous les enfants de login-page uniquement */
 .login-page *,
 .login-page *::before,
 .login-page *::after {
   box-sizing: border-box;
 }
 
-/* ─── TOPBAR (Scellée en haut) ────────────────────────────── */
+/* ─── TOPBAR ───────────────────────────── */
 .login-page .topbar {
   flex-shrink: 0; /* Ne bouge pas d'un poil */
   display: flex;
@@ -81,17 +80,16 @@
   color: #fff;
 }
 
-/* ─── MILIEU (Prend tout l'espace disponible) ─────────────── */
+/* ─── MAIN CONTENT ───────────────────────────── */
 .login-page .main-content {
-  flex-grow: 1; /* Remplit le vide entre topbar et footer */
+  flex-grow: 1;
   display: flex;
   width: 100%;
-  min-height: 0; /* Empêche de pousser le footer hors de l'écran */
+  min-height: 0;
   overflow: hidden;
   gap: 30px;
 }
 
-/* GAUCHE : IMAGE COLLÉE */
 .login-page .background {
   flex: 1.5;
   height: 100%;
@@ -175,7 +173,7 @@
   color: #ff9a40;
 }
 
-/* ─── FOOTER (Scellé en bas) ───────────────────────────────── */
+/* ─── FOOTER  ───────────────────────────────── */
 .login-page .footer {
   flex-shrink: 0; /* Ne bouge pas d'un poil */
   padding: 12px 20px;
@@ -186,14 +184,4 @@
   font-family: "acme", sans-serif;
   font-size: 0.8rem;
   z-index: 10;
-}
-
-/* ─── RESPONSIVE ────────────────────────────────────────────── */
-@media (max-width: 900px) {
-  .login-page .main-content {
-    flex-direction: column;
-  }
-  .login-page .background {
-    flex: 0.5;
-  }
 }
