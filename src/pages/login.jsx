@@ -88,7 +88,11 @@ export default function Login() {
             </button>
 
             <p>
-              Pas de compte ? <Link to="/signup">Créer un compte</Link>
+              Pas de compte ? <Link to="/signup"> Créer un compte</Link>
+            </p>
+            <span className="login-label">ou</span>
+            <p>
+              <Link to="/game">Jouer en tant qu'invité</Link>
             </p>
           </div>
         </div>
