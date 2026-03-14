@@ -1,0 +1,199 @@
+/* ─── FONTES (Elles peuvent rester globales) ───────────────── */
+@font-face {
+  font-family: "supersquad";
+  src: url("../assets/fonts/super_squad/Super_Squad.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "acme";
+  src: url("../assets/fonts/acme/Acme-Regular.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ─── ISOLATION TOTALE DU LAYOUT ───────────────────────────── */
+.login-page {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: #0d0d0d;
+  background-image: url("../assets/backgrounds/lava_background40.png");
+  background-size: cover;
+  background-position: center;
+}
+
+/* On applique le border-box à tous les enfants de login-page uniquement */
+.login-page *,
+.login-page *::before,
+.login-page *::after {
+  box-sizing: border-box;
+}
+
+/* ─── TOPBAR (Scellée en haut) ────────────────────────────── */
+.login-page .topbar {
+  flex-shrink: 0; /* Ne bouge pas d'un poil */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 80, 0, 0.2);
+  z-index: 10;
+}
+
+.login-page .logo-img {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
+.login-page .topbar-links {
+  display: flex;
+  gap: 12px;
+}
+
+.login-page .topbar-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-family: "acme", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+
+.login-page .topbar-login {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+/* ─── MILIEU (Prend tout l'espace disponible) ─────────────── */
+.login-page .main-content {
+  flex-grow: 1; /* Remplit le vide entre topbar et footer */
+  display: flex;
+  width: 100%;
+  min-height: 0; /* Empêche de pousser le footer hors de l'écran */
+  overflow: hidden;
+  gap: 30px;
+}
+
+/* GAUCHE : IMAGE COLLÉE */
+.login-page .background {
+  flex: 1.5;
+  height: 100%;
+}
+
+.login-page .background-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* DROITE : FORMULAIRE */
+.login-page .login-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+}
+
+.login-page .login-frame {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 80, 0, 0.25);
+  border-radius: 20px;
+}
+
+.login-page .login-frame span {
+  font-family: "acme", sans-serif;
+  color: #fff;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.login-page .login-frame .login-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: "acme", sans-serif;
+  margin-bottom: -10px;
+}
+
+.login-page .login-frame input {
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-family: "acme", sans-serif;
+  outline: none;
+}
+
+.login-page .login-frame button {
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #ff6a00, #ee0909);
+  color: #fff;
+  font-family: "supersquad", sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.login-page .login-frame p {
+  text-align: center;
+  font-family: "acme", sans-serif;
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.login-page .login-frame p a {
+  color: #ff9a40;
+}
+
+/* ─── FOOTER (Scellé en bas) ───────────────────────────────── */
+.login-page .footer {
+  flex-shrink: 0; /* Ne bouge pas d'un poil */
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.9);
+  border-top: 1px solid rgba(255, 80, 0, 0.1);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: "acme", sans-serif;
+  font-size: 0.8rem;
+  z-index: 10;
+}
+
+/* ─── RESPONSIVE ────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .login-page .main-content {
+    flex-direction: column;
+  }
+  .login-page .background {
+    flex: 0.5;
+  }
+}
