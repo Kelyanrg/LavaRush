@@ -97,6 +97,21 @@ body {
   border-color: rgb(255, 255, 255);
 }
 
+.topbar-user-info {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "acme", sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+
+.user-highlight {
+  color: #ff9a40;
+  font-weight: 700;
+}
+
 /* ─── LOGO IMG ───────────────────────────────────────────────── */
 .logo-img {
   height: 36px;
