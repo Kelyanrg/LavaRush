@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import "./login.css";
-import worldBg from "/assets/backgrounds/world_background.png";
+import { Helmet } from "react-helmet-async";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -26,6 +26,10 @@ export default function Login() {
 
   return (
     <div className="login-page">
+      <Helmet>
+        <title>LavaRush - Connexion</title>
+        <link rel="icon" href="./assets/ui/lavarush_petio_icon.svg" />
+      </Helmet>
       <div className="topbar">
         <button className="topbar-logo" onClick={() => navigate("/")}>
           <img

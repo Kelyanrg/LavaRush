@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import "./Home.css";
 
 export default function Home() {
@@ -6,6 +7,10 @@ export default function Home() {
 
   return (
     <>
+      <Helmet>
+        <title>LavaRush - Accueil</title>
+        <link rel="icon" href="./assets/ui/lavarush_petio_icon.svg" />
+      </Helmet>
       <div className="topbar">
         <button className="topbar-logo" onClick={() => navigate("/")}>
           <img
