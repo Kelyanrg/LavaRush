@@ -11,7 +11,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 1. Connexion classique (E-mail / Password)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -28,7 +27,6 @@ export default function Login() {
     setLoading(false);
   };
 
-  // 2. Connexion Invité (Anonyme)
   const handleGuestLogin = async () => {
     setLoading(true);
     setError(null);
@@ -124,7 +122,7 @@ export default function Login() {
 
             <p>
               <button
-                onClick={handleGuestLogin} // Cette fois, elle existe !
+                onClick={handleGuestLogin}
                 disabled={loading}
                 style={{
                   background: "none",
