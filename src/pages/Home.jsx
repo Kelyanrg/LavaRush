@@ -1,9 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import "./Home.css";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../lib/supabase";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { session, user } = useAuth();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
+
+  const displayName = user?.user_metadata?.username || "Anonyme";
 
   return (
     <>
@@ -19,6 +28,14 @@ export default function Home() {
             className="logo-img"
           />
         </button>
+
+        {session && (
+          <div className="topbar-user-info">
+            Connecté en tant que :{" "}
+            <span className="user-highlight">{displayName}</span>
+          </div>
+        )}
+
         <div className="topbar-links">
           <button
             className="topbar-btn"
@@ -26,12 +43,19 @@ export default function Home() {
           >
             Leaderboard
           </button>
-          <button
-            className="topbar-btn topbar-login"
-            onClick={() => navigate("/login")}
-          >
-            Se connecter
-          </button>
+
+          {session ? (
+            <button className="topbar-btn topbar-login" onClick={handleLogout}>
+              Se déconnecter
+            </button>
+          ) : (
+            <button
+              className="topbar-btn topbar-login"
+              onClick={() => navigate("/login")}
+            >
+              Se connecter
+            </button>
+          )}
         </div>
       </div>
 
