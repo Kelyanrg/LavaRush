@@ -4,6 +4,7 @@ import Login from "./pages/login";
 import Signup from "./pages/signup";
 import Game from "./pages/game";
 import Home from "./pages/Home";
+import Leaderboard from "./pages/Leaderboard";
 
 function ProtectedRoute({ children }) {
   const { session } = useAuth();
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route
             path="/game"
             element={
