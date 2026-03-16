@@ -1,0 +1,9 @@
+services:
+  lavarush:
+    build: .
+    container_name: lavarush-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    env_file:
+      - .env

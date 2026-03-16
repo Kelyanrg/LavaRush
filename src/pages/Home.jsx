@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import "./Home.css";
+import "./home.css";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 
