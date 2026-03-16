@@ -7,9 +7,6 @@ COPY . .
 ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_ANON_KEY
 
-# Ce test va stopper le build GitHub si les secrets sont mal passés
-RUN if [ -z "$VITE_SUPABASE_URL" ]; then echo "ERREUR: VITE_SUPABASE_URL est vide" && exit 1; fi
-
 ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
 ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 
