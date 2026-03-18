@@ -64,9 +64,7 @@ export default function Game() {
       {gameState === "START" && (
         <div className="overlay start-screen">
           {bestScore > 0 ? (
-              <div className="best-score-display">
-                Record actuel: {bestScore}
-              </div>
+            <div className="best-score-display">Record actuel: {bestScore}</div>
           ) : (
             <div className="best-score-display">Aucun record</div>
           )}
