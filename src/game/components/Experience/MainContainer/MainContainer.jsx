@@ -30,12 +30,12 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     useEffect(() => {
         Promise.all([
-            PIXI.Assets.load('/background1.png'),
-            PIXI.Assets.load('/background2.png'),
-            PIXI.Assets.load('/tower_left.png'),
-            PIXI.Assets.load('/tower_right.png'),
+            PIXI.Assets.load('/assets/backgrounds/biome1.png'),
+            PIXI.Assets.load('/assets/backgrounds/biome2.png'),
+            PIXI.Assets.load('/assets/backgrounds/tower_left.png'),
+            PIXI.Assets.load('/assets/backgrounds/tower_right.png'),
         ]).then(([b1, b2, tl, tr]) => {
-            setTexturesBiomes([b1, b2, b1, b2]);
+            setTexturesBiomes([b1, b2, b1, b2, b1, b2]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
         });
