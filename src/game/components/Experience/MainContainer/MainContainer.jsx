@@ -12,81 +12,91 @@ extend({ Container, Sprite, Graphics, Text })
 export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     const score = useRef(0);
-    const [scoreAffiche, setScoreAffiche] = useState(0);
-    const [isGameOver, setIsGameOver] = useState(false);
+    const [scoreAffiche, setScoreAffiche] = useState(0)
+    const [isGameOver, setIsGameOver] = useState(false)
 
-    if (!canvasSize || !canvasSize.width || !canvasSize.height) return null;
+    if (!canvasSize || !canvasSize.width || !canvasSize.height) return null
 
-    const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * 0.45);
-    const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
+    const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * 0.428)
+    const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2
 
-    const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
-    const PLAT_HEIGHT = PLAT_WIDTH / 6;
-    const PLAT_MARGIN = PLAT_WIDTH / 10;
+    const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2
+    const PLAT_HEIGHT = PLAT_WIDTH / 6
+    const PLAT_MARGIN = PLAT_WIDTH / 10
 
-    const [texturesBiomes, setTexturesBiomes] = useState([]);
-    const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
-    const [texturesTowersRight, setTexturesTowersRight] = useState([]);
+    const JOUEUR_WIDTH = canvasSize.width * 0.0307
+    const JOUEUR_HEIGHT = canvasSize.height * 0.06 //mettre 0.1132 pour la hauteur du perso finale, mais impossible de monter pour l'instant
+
+    const CENTRE_X = PLAY_AREA_WIDTH / 2;
+    const BAS_Y = canvasSize.height - 250;
+
+    const joueurStartX = CENTRE_X - (JOUEUR_WIDTH / 2);
+    const joueurStartY = BAS_Y - JOUEUR_HEIGHT - 10;
+
+    const [plateformes, setPlateformes] = useState([
+        { x: CENTRE_X - (PLAT_WIDTH / 2), y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: CENTRE_X - (PLAT_WIDTH / 2) - PLAT_WIDTH, y: BAS_Y - 150, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: CENTRE_X - (PLAT_WIDTH / 2) + PLAT_WIDTH, y: BAS_Y - 300, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: CENTRE_X - (PLAT_WIDTH / 2) - (PLAT_WIDTH / 2),  y: BAS_Y - 450, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: CENTRE_X - (PLAT_WIDTH / 2) + (PLAT_WIDTH / 2),  y: BAS_Y - 600, width: PLAT_WIDTH, height: PLAT_HEIGHT }
+    ]);
+
+    const [texturesBiomes, setTexturesBiomes] = useState([])
+    const [texturesTowersLeft, setTexturesTowersLeft] = useState([])
+    const [texturesTowersRight, setTexturesTowersRight] = useState([])
 
     useEffect(() => {
         Promise.all([
             PIXI.Assets.load('/assets/backgrounds/biome1.png'),
             PIXI.Assets.load('/assets/backgrounds/biome2.png'),
-            PIXI.Assets.load('/assets/backgrounds/tower_left.png'),
+            PIXI.Assets.load('/assets/backgrounds/biome3.png'),
             PIXI.Assets.load('/assets/backgrounds/tower_right.png'),
-        ]).then(([b1, b2, tl, tr]) => {
-            setTexturesBiomes([b1, b2, b1, b2, b1, b2]);
-            setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
-            setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
-        });
-    }, []); 
+            PIXI.Assets.load('/assets/backgrounds/tower_left.png'),
+        ]).then(([b1, b2, b3, tl, tr]) => {
+            setTexturesBiomes([b1, b2, b3, b1, b2, b3])
+            setTexturesTowersLeft([tl, tl, tl, tl, tl, tl])
+            setTexturesTowersRight([tr, tr, tr, tr, tr, tr])
+        })
+    }, [])
 
     useEffect(() => {
         if (isGameOver && onGameOver) {
-            const finalScore = scoreAffiche;
+            const finalScore = scoreAffiche
             onGameOver(finalScore);
         }
-    }, [isGameOver, onGameOver, scoreAffiche]);
-
-    const [plateformes, setPlateformes] = useState([
-        { x: (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 500, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 400, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: 2 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 300, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: 2 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 100, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: 3 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 200, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: 4 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 100, width: PLAT_WIDTH, height: PLAT_HEIGHT }
-    ]);
+    }, [isGameOver, onGameOver, scoreAffiche])
 
     const genererPalier = (yMax) => {
-        const newY = Math.floor(yMax) - 120;
-        const nbPlateformes = 2 + Math.floor(Math.random() * 2);
+        const newY = Math.floor(yMax) - 120
+        const nbPlateformes = 2 + Math.floor(Math.random() * 2)
 
         const emplacements = [0, 1, 2, 3, 4].map(i =>
             Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
-        );
+        )
 
         const choisis = emplacements
             .sort(() => Math.random() - 0.5)
-            .slice(0, nbPlateformes);
+            .slice(0, nbPlateformes)
 
         return choisis.map(x => ({
             x,
             y: newY,
             width: PLAT_WIDTH,
             height: PLAT_HEIGHT
-        }));
+        }))
     };
 
-    const mondeRef = useRef(null);
-    const cameraY = useRef(0);
-    const dernierY = useRef(0);
-    const laveY = useRef(10000);
+    const mondeRef = useRef(null)
+    const cameraY = useRef(0)
+    const dernierY = useRef(0)
+    const laveY = useRef(1000)
 
     const handlePositionChange = ({ y }) => {
-        if (!mondeRef.current) return;
+        if (!mondeRef.current) return
 
-        const joueurEcranY = y + cameraY.current;
-        const milieu = canvasSize.height / 2;
+        const joueurEcranY = y + cameraY.current
+        const milieu = canvasSize.height / 2
+        const limiteBas = canvasSize.height - 150;
 
         if (joueurEcranY < milieu && dernierY.current > y) {
             const diff = milieu - joueurEcranY;
@@ -106,17 +116,18 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 return nouvelles.filter(p => p.y < y + canvasSize.height);
             });
         }
-        if (joueurEcranY > milieu && dernierY.current < y) {
-            const diff = joueurEcranY - milieu;
+        
+        if (joueurEcranY > limiteBas && dernierY.current < y) {
+            const diff = joueurEcranY - limiteBas;
             cameraY.current -= diff;
             mondeRef.current.y = cameraY.current;
             score.current -= diff;
             setScoreAffiche(Math.floor(score.current / 10));
         }
+
         dernierY.current = y;
 
-        const tailleJoueur = PLAT_MARGIN * 2;
-        if (y + tailleJoueur >= laveY.current) {
+        if (y + JOUEUR_HEIGHT >= laveY.current) {
             setIsGameOver(true);
         }
 
@@ -125,7 +136,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         }
     };
 
-    if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0) return null;
+    if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0) return null
 
     return (
         <pixiContainer>
@@ -154,7 +165,11 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     plateformes={plateformes}
                     onPositionChange={handlePositionChange}
                     playAreaWidth={PLAY_AREA_WIDTH}
-                    taillejoueur={PLAT_MARGIN * 2}
+                    isGameOver={isGameOver}
+                    largeurJoueur={JOUEUR_WIDTH}
+                    hauteurJoueur={JOUEUR_HEIGHT}
+                    startX={joueurStartX}
+                    startY={joueurStartY}
                 />
             </pixiContainer>
 
@@ -166,5 +181,5 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             />
             {children}
         </pixiContainer>
-    );
-};
+    )
+}

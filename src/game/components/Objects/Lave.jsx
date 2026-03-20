@@ -4,59 +4,62 @@ import { Graphics } from "pixi.js"
 
 extend({ Graphics })
 
-export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY }) => {
+export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver }) => {
     const laveRef = useRef(null)
-    const estReveillee = useRef(false)
-    const HAUTEUR_VISIBLE_MINIMUM = 80
-    const autoScrollerY = useRef(canvasHeight - HAUTEUR_VISIBLE_MINIMUM)
+    const estActive = useRef(false)
+
+    const autoScrollerY = useRef(canvasHeight - 100)
 
     useEffect(() => {
-        const reveillerLave = (e) => {
-            if (e.code === 'Space' && !estReveillee.current) {
-                estReveillee.current = true
-                window.removeEventListener('keydown', reveillerLave)
+        const monterLave = (e) => {
+            if (e.code === 'Space' && !estActive.current) {
+                estActive.current = true
+                window.removeEventListener('keydown', monterLave)
             }
         }
 
-        window.addEventListener('keydown', reveillerLave)
-        
+        window.addEventListener('keydown', monterLave)
+
         return () => {
-            window.removeEventListener('keydown', reveillerLave);
+            window.removeEventListener('keydown', monterLave)
         }
     }, [])
 
     const drawLave = useCallback((g) => {
-        g.clear().rect(0, 0, playAreaWidth, 300).fill(0xff4400)
+        g.clear().rect(0, 0, playAreaWidth, 3000).fill(0xff4400)
     }, [playAreaWidth])
 
     useTick((ticker) => {
-        if (!laveRef.current || !cameraY) return
-        
-        const basDeLecranVisible = (canvasHeight - cameraY.current) - HAUTEUR_VISIBLE_MINIMUM
-        
-        if (basDeLecranVisible < autoScrollerY.current) {
-            autoScrollerY.current = basDeLecranVisible
-        }
-        
-        if (estReveillee.current) {
-            const vitesseLave = 1.0
+        if (isGameOver || !laveRef.current) return
+
+        if (estActive.current) {
+            let vitesseLave = 2.0
+
+            if (cameraY && cameraY.current > 0) {
+                const bonusDeVitesse = (cameraY.current / 1500) * 0.5
+                vitesseLave += bonusDeVitesse
+            }
+
+            const VITESSE_MAXIMUM = 6.0
+            if (vitesseLave > VITESSE_MAXIMUM) {
+                vitesseLave = VITESSE_MAXIMUM
+            }
+
             autoScrollerY.current -= vitesseLave * ticker.deltaTime
-        } else {
-            autoScrollerY.current = basDeLecranVisible
         }
-        
+
         laveRef.current.y = autoScrollerY.current
 
         if (laveY) {
             laveY.current = autoScrollerY.current
         }
-    });
+    })
 
     return (
-        <pixiGraphics 
-            ref={laveRef} 
-            draw={drawLave} 
-            alpha={0.85} 
+        <pixiGraphics
+            ref={laveRef}
+            draw={drawLave}
+            alpha={0.85}
         />
     )
 }
