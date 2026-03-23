@@ -28,7 +28,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
 
     const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
-    const PLAT_HEIGHT = (PLAT_WIDTH / 6)*3;
+    const PLAT_HEIGHT = (PLAT_WIDTH / 6) * 3;
     const PLAT_MARGIN = PLAT_WIDTH / 10;
 
     const JOUEUR_WIDTH = 20;
@@ -75,8 +75,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/backgrounds/biome2.png"),
             PIXI.Assets.load("/assets/backgrounds/biome3.png"),
             PIXI.Assets.load("/assets/backgrounds/biome4.png"),
-            PIXI.Assets.load("/assets/backgrounds/tower_left.png"),
-            PIXI.Assets.load("/assets/backgrounds/tower_right.png"),
+            PIXI.Assets.load("/assets/backgrounds/tower_left1.png"),
+            PIXI.Assets.load("/assets/backgrounds/tower_right1.png")
         ]).then(([b1, b2, b3, b4, tl, tr]) => {
             setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
@@ -116,7 +116,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const handlePositionChange = ({ y }) => {
         if (!mondeRef.current) return
 
-        const joueurEcranY = y + cibleCameraY.current 
+        const joueurEcranY = y + cibleCameraY.current
         const milieu = canvasSize.height / 2
         const limiteBas = canvasSize.height - 150;
 
@@ -126,7 +126,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             score.current += diff;
             setScoreAffiche(Math.floor(score.current / 10));
 
-            cibleCameraY.current += diff; 
+            cibleCameraY.current += diff;
 
             setPlateformes(prev => {
                 const nouvelles = [...prev];
@@ -137,10 +137,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 return nouvelles
             });
         }
-        
+
         if (joueurEcranY > limiteBas && dernierY.current < y) {
             const diff = joueurEcranY - limiteBas;
-            cibleCameraY.current -= diff; 
+            cibleCameraY.current -= diff;
             score.current -= diff;
             setScoreAffiche(Math.floor(score.current / 10));
         }
@@ -177,10 +177,11 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         texturesTowersLeft.length === 0 ||
         texturesTowersRight.length === 0
     )
-        return null;
+    return null;
 
     return (
         <pixiContainer>
+
             <ParallaxBackground
                 biomeTextures={texturesBiomes}
                 towerTexturesLeft={texturesTowersLeft}

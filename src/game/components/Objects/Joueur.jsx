@@ -8,6 +8,7 @@ extend({ Graphics });
 export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY }) => {
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
+    const miniBoostBuffer = useRef(0);
 
     const physics = useRef({
         velocityY: 0,
@@ -116,7 +117,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
                             p.onGround = true;
                         }
                     } else {
-                        jumpBuffer.current = 10;
+                        miniBoostBuffer.current = 5;
                     }
                 } else {
                     if (overlapLeft < overlapRight) {
@@ -136,7 +137,14 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             jumpBuffer.current = 0;
         }
 
+        if (miniBoostBuffer.current > 0 && p.onGround) {
+            p.velocityY = p.jumpForce * 0.8;
+            p.onGround = false;
+            miniBoostBuffer.current = 0;
+        }
+
         if (jumpBuffer.current > 0) jumpBuffer.current -= 1;
+        if (miniBoostBuffer.current > 0) miniBoostBuffer.current -= 1;
 
         if (onPositionChange) {
             onPositionChange({ x: player.x, y: player.y });

@@ -26,7 +26,7 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver }
     }, [])
 
     const drawLave = useCallback((g) => {
-        g.clear().rect(0, 0, playAreaWidth + 1, 100).fill(0xff4400)
+        g.clear().rect(-2, 0, playAreaWidth + 4, 100).fill(0xff4400)
     }, [playAreaWidth])
 
     useTick((ticker) => {
@@ -36,7 +36,7 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver }
             let vitesseLave = 2.0
 
             if (cameraY && cameraY.current > 0) {
-                const bonusDeVitesse = (cameraY.current / 2000) * 0.5
+                const bonusDeVitesse = (cameraY.current / 3000) * 0.5
                 vitesseLave += bonusDeVitesse
             }
 
