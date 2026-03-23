@@ -148,9 +148,9 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     useTick(() => {
         setPlateformes(prev => {
-            const doitNettoyer = prev.some(p => p.y >= laveY.current + 50);
+            const doitNettoyer = prev.some(p => p.y >= laveY.current);
             if (doitNettoyer) {
-                return prev.filter(p => p.y < laveY.current + 50);
+                return prev.filter(p => p.y < laveY.current);
             }
             return prev;
         });
