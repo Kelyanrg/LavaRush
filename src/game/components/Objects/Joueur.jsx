@@ -5,7 +5,7 @@ import { checkCollision } from "../../helpers/common.js";
 
 extend({ Graphics });
 
-export const Joueur = ({ plateformes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY }) => {
+export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY }) => {
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
 
@@ -69,7 +69,7 @@ export const Joueur = ({ plateformes = [], onPositionChange, playAreaWidth, isGa
             if (onPositionChange) {
                 onPositionChange({ x: player.x, y: player.y });
             }
-            return; 
+            return;
         }
 
         let delta = ticker.deltaTime;
@@ -88,7 +88,7 @@ export const Joueur = ({ plateformes = [], onPositionChange, playAreaWidth, isGa
         if (player.x > playAreaWidth - largeurJoueur) player.x = playAreaWidth - largeurJoueur;
 
         p.velocityY += p.gravity * delta;
-        
+
         if (p.velocityY > 12) {
             p.velocityY = 12;
         }
@@ -128,6 +128,7 @@ export const Joueur = ({ plateformes = [], onPositionChange, playAreaWidth, isGa
                 }
             }
         });
+
 
         if (jumpBuffer.current > 0 && p.onGround) {
             p.velocityY = p.jumpForce;

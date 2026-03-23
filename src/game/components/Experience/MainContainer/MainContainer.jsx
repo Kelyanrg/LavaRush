@@ -3,10 +3,12 @@ import { Container, Sprite, Graphics, Text, Assets } from 'pixi.js'
 import { useState, useEffect, useRef } from "react"
 import { Plateforme } from '../../Objects/Platforme.jsx'
 import { Joueur } from '../../Objects/Joueur.jsx'
+import { Spikes } from '../../Objects/Spikes.jsx'
 import { ParallaxBackground } from '../../Objects/ParallaxBackground.jsx'
 import * as PIXI from 'pixi.js'
 import { Lave } from '../../Objects/Lave.jsx'
 import platform_normal from '../../../assets/plateform_normal.png'
+import { checkCollision } from "../../../helpers/common.js";
 
 extend({ Container, Sprite, Graphics, Text });
 
@@ -59,6 +61,9 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
         { x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT },
     ]);
+    const [spikes, setSpikes] = useState([
+        { x: colonnesX[1], y: BAS_Y - 120 + PLAT_HEIGHT, width: PLAT_WIDTH, height: PLAT_HEIGHT / 2 },
+    ]);
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
@@ -108,7 +113,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const dernierY = useRef(0);
     const laveY = useRef(1000);
 
-    const handlePositionChange = ({ y }) => {
+    const handlePositionChange = ({ x, y }) => {
         if (!mondeRef.current) return;
 
         const joueurEcranY = y + cameraY.current;
@@ -143,6 +148,13 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         }
 
         dernierY.current = y;
+        spikes.forEach((spike) => {
+            const joueurRect = { x: x, y: y, width: JOUEUR_WIDTH, height: JOUEUR_HEIGHT };
+
+            if (checkCollision(joueurRect, spike)) {
+                setIsGameOver(true);
+            }
+        });
 
         if (y + JOUEUR_HEIGHT >= laveY.current) {
             setIsGameOver(true);
@@ -151,6 +163,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         if (joueurEcranY > canvasSize.height + 50) {
             setIsGameOver(true);
         }
+
     };
 
     useTick(() => {
@@ -191,6 +204,15 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         texturePlatforme={texturePlatforme}
                     />
                 ))}
+                {spikes.map((spike, index) => (
+                    <Spikes
+                        key={index}
+                        x={spike.x}
+                        y={spike.y}
+                        width={spike.width}
+                        height={spike.height}
+                    />
+                ))}
 
                 <Lave
                     playAreaWidth={PLAY_AREA_WIDTH}
@@ -201,6 +223,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
                 <Joueur
                     plateformes={plateformes}
+                    spikes={spikes}
                     onPositionChange={handlePositionChange}
                     playAreaWidth={PLAY_AREA_WIDTH}
                     isGameOver={isGameOver}
