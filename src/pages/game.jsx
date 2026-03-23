@@ -21,10 +21,14 @@ export default function Game() {
       const { data, error } = await supabase
         .from("scores")
         .select("altitude")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .single();
 
-      if (data) setBestScore(data.altitude || 0);
+      if (data) {
+        setBestScore(data.altitude || 0);
+      } else if (error && error.code !== "PGRST116") {
+        console.error("Erreur fetch score:", error.message);
+      }
     };
 
     if (user) fetchBestScore();
@@ -38,16 +42,15 @@ export default function Game() {
       setIsNewRecord(true);
       setBestScore(finalScore);
 
-      const { error } = await supabase
-        .from("scores")
-        .update({ altitude: finalScore })
-        .eq("id", user.id);
+      const { error } = await supabase.from("scores").upsert(
+        {
+          user_id: user.id,
+          altitude: finalScore,
+        },
+        { onConflict: "user_id" },
+      );
 
-      if (error)
-        console.error(
-          "Erreur lors de la mise à jour du record:",
-          error.message,
-        );
+      if (error) console.error("Erreur détaillée:", error.message);
     } else {
       setIsNewRecord(false);
     }
@@ -76,7 +79,26 @@ export default function Game() {
 
       {/* JEU PIXI */}
       {gameState === "PLAYING" && (
-        <Experience userId={user.id} onGameOver={handleGameOver} />
+        <Experience
+          userId={user.id}
+          onGameOver={handleGameOver} // <--- IL FAUT CETTE LIGNE !
+        />
+      )}
+
+      {/* OVERLAY GAME OVER */}
+      {gameState === "GAMEOVER" && (
+        <div className="overlay game-over-screen">
+          <h2>Perdu looser</h2>
+          <p>Votre score: {currentScore}</p>
+          {isNewRecord ? (
+            <p className="new-record">Nouveau re@cord !</p>
+          ) : (
+            <p>Record actuel: {bestScore}</p>
+          )}
+          <button className="btn-main" onClick={() => setGameState("START")}>
+            REJOUER
+          </button>
+        </div>
       )}
     </div>
   );

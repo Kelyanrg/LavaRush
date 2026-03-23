@@ -69,9 +69,11 @@ export const Joueur = ({ plateformes = [], onPositionChange, playAreaWidth, isGa
             if (onPositionChange) {
                 onPositionChange({ x: player.x, y: player.y });
             }
+            return; 
         }
 
-        const delta = ticker.deltaTime;
+        let delta = ticker.deltaTime;
+        if (delta > 2) delta = 1;
 
         if (keys.current.q) p.velocityX -= p.acceleration * delta;
         if (keys.current.d) p.velocityX += p.acceleration * delta;
@@ -86,6 +88,11 @@ export const Joueur = ({ plateformes = [], onPositionChange, playAreaWidth, isGa
         if (player.x > playAreaWidth - largeurJoueur) player.x = playAreaWidth - largeurJoueur;
 
         p.velocityY += p.gravity * delta;
+        
+        if (p.velocityY > 12) {
+            p.velocityY = 12;
+        }
+
         player.y += p.velocityY * delta;
         p.onGround = false;
 
