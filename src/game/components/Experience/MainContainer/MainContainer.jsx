@@ -28,7 +28,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
 
     const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
-    const PLAT_HEIGHT = PLAT_WIDTH / 6;
+    const PLAT_HEIGHT = (PLAT_WIDTH / 6)*3;
     const PLAT_MARGIN = PLAT_WIDTH / 10;
 
     const JOUEUR_WIDTH = 20;
@@ -95,7 +95,6 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         const newY = Math.floor(yMax) - 120;
         const nbPlateformes = 2 + Math.floor(Math.random() * 2);
 
-        // --- MODIFICATION ICI : On utilise la grille pré-calculée ---
         const choisis = [...colonnesX]
             .sort(() => Math.random() - 0.5)
             .slice(0, nbPlateformes);
@@ -110,14 +109,15 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     const mondeRef = useRef(null);
     const cameraY = useRef(0);
+    const cibleCameraY = useRef(0)
     const dernierY = useRef(0);
     const laveY = useRef(1000);
 
-    const handlePositionChange = ({ x, y }) => {
-        if (!mondeRef.current) return;
+    const handlePositionChange = ({ y }) => {
+        if (!mondeRef.current) return
 
-        const joueurEcranY = y + cameraY.current;
-        const milieu = canvasSize.height / 2;
+        const joueurEcranY = y + cibleCameraY.current 
+        const milieu = canvasSize.height / 2
         const limiteBas = canvasSize.height - 150;
 
         if (joueurEcranY < milieu && dernierY.current > y) {
@@ -126,35 +126,26 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             score.current += diff;
             setScoreAffiche(Math.floor(score.current / 10));
 
-            cameraY.current += diff;
-            mondeRef.current.y = cameraY.current;
+            cibleCameraY.current += diff; 
 
-            setPlateformes((prev) => {
+            setPlateformes(prev => {
                 const nouvelles = [...prev];
-                while (Math.min(...nouvelles.map((p) => p.y)) > y - canvasSize.height) {
-                    const palier = genererPalier(Math.min(...nouvelles.map((p) => p.y)));
+                while (Math.min(...nouvelles.map(p => p.y)) > y - canvasSize.height) {
+                    const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)));
                     nouvelles.push(...palier);
                 }
-                return nouvelles;
+                return nouvelles
             });
         }
-
+        
         if (joueurEcranY > limiteBas && dernierY.current < y) {
             const diff = joueurEcranY - limiteBas;
-            cameraY.current -= diff;
-            mondeRef.current.y = cameraY.current;
+            cibleCameraY.current -= diff; 
             score.current -= diff;
             setScoreAffiche(Math.floor(score.current / 10));
         }
 
         dernierY.current = y;
-        spikes.forEach((spike) => {
-            const joueurRect = { x: x, y: y, width: JOUEUR_WIDTH, height: JOUEUR_HEIGHT };
-
-            if (checkCollision(joueurRect, spike)) {
-                setIsGameOver(true);
-            }
-        });
 
         if (y + JOUEUR_HEIGHT >= laveY.current) {
             setIsGameOver(true);
@@ -163,14 +154,19 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         if (joueurEcranY > canvasSize.height + 50) {
             setIsGameOver(true);
         }
-
     };
 
-    useTick(() => {
-        setPlateformes((prev) => {
-            const doitNettoyer = prev.some((p) => p.y >= laveY.current);
+    useTick((ticker) => {
+        cameraY.current += (cibleCameraY.current - cameraY.current) * 0.15 * ticker.deltaTime;
+
+        if (mondeRef.current) {
+            mondeRef.current.y = Math.floor(cameraY.current);
+        }
+
+        setPlateformes(prev => {
+            const doitNettoyer = prev.some(p => p.y >= laveY.current);
             if (doitNettoyer) {
-                return prev.filter((p) => p.y < laveY.current);
+                return prev.filter(p => p.y < laveY.current);
             }
             return prev;
         });
