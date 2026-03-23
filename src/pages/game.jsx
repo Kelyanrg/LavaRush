@@ -79,7 +79,10 @@ export default function Game() {
 
       {/* JEU PIXI */}
       {gameState === "PLAYING" && (
-        <Experience userId={user.id} onGameOver={handleGameOver} />
+        <Experience
+          userId={user.id}
+          onGameOver={handleGameOver} // <--- IL FAUT CETTE LIGNE !
+        />
       )}
 
       {/* OVERLAY GAME OVER */}
