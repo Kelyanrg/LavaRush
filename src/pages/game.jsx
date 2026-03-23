@@ -95,7 +95,7 @@ export default function Game() {
           ) : (
             <p>Record actuel: {bestScore}</p>
           )}
-          <button className="btn-main" onClick={() => setGameState("START")}>
+          <button className="btn-main" onClick={() => setGameState("PLAYING")}>
             REJOUER
           </button>
         </div>
