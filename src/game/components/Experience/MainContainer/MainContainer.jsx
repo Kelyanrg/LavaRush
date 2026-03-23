@@ -1,11 +1,12 @@
-import { extend, useTick } from "@pixi/react";
-import { Container, Sprite, Graphics, Text } from "pixi.js";
-import { useState, useEffect, useRef } from "react";
-import { Plateforme } from "../../Objects/Platforme.jsx";
-import { Joueur } from "../../Objects/Joueur.jsx";
-import { ParallaxBackground } from "../../Objects/ParallaxBackground.jsx";
-import * as PIXI from "pixi.js";
-import { Lave } from "../../Objects/Lave.jsx";
+import { extend } from "@pixi/react"
+import { Container, Sprite, Graphics, Text, Assets } from 'pixi.js'
+import { useState, useEffect, useRef } from "react"
+import { Plateforme } from '../../Objects/Platforme.jsx'
+import { Joueur } from '../../Objects/Joueur.jsx'
+import { ParallaxBackground } from '../../Objects/ParallaxBackground.jsx'
+import * as PIXI from 'pixi.js'
+import { Lave } from '../../Objects/Lave.jsx'
+import platform_normal from '../../../assets/plateform_normal.png'
 
 extend({ Container, Sprite, Graphics, Text });
 
@@ -13,6 +14,11 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
   const score = useRef(0);
   const [scoreAffiche, setScoreAffiche] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
+  
+  const [texturePlatforme, setTexturePlatforme] = useState(null);
+    useEffect(() => {
+        Assets.load(platform_normal).then(t => setTexturePlatforme(t));
+    }, []);
 
   if (!canvasSize || !canvasSize.width || !canvasSize.height) return null;
 
