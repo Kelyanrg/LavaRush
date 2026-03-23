@@ -12,7 +12,7 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver }
 
     useEffect(() => {
         const monterLave = (e) => {
-            if (e.code === 'Space' && !estActive.current) {
+            if ((e.code === 'Space' || e.key.toLowerCase() === 'z') && !estActive.current) {
                 estActive.current = true
                 window.removeEventListener('keydown', monterLave)
             }

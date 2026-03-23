@@ -75,8 +75,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/backgrounds/biome2.png"),
             PIXI.Assets.load("/assets/backgrounds/biome3.png"),
             PIXI.Assets.load("/assets/backgrounds/biome4.png"),
-            PIXI.Assets.load("/assets/backgrounds/tower_right.png"),
             PIXI.Assets.load("/assets/backgrounds/tower_left.png"),
+            PIXI.Assets.load("/assets/backgrounds/tower_right.png"),
         ]).then(([b1, b2, b3, b4, tl, tr]) => {
             setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);

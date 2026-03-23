@@ -22,13 +22,13 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
 
     const jumpBuffer = useRef(0);
     const nocolitionbuffer = useRef(0);
-    const keys = useRef({ q: false, d: false });
+    const keys = useRef({ q: false, d: false, z: false });
 
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (isGameOver) return;
 
-            if (e.code === 'Space') {
+            if (e.code === 'Space' || e.key.toLowerCase() === 'z') {
                 e.preventDefault();
                 jumpBuffer.current = 15;
             }
@@ -36,7 +36,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             if (e.key.toLowerCase() === 'd') keys.current.d = true;
         };
         const handleKeyUp = (e) => {
-            if (e.code === 'Space' && physics.current.velocityY < 0) {
+            if ((e.code === 'Space' || e.key.toLowerCase() === 'z') && physics.current.velocityY < 0) {
                 physics.current.velocityY *= 0.5;
                 jumpBuffer.current = 0;
             }
