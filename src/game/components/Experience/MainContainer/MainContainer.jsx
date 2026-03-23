@@ -10,7 +10,9 @@ import { Lave } from '../../Objects/Lave.jsx'
 extend({ Container, Sprite, Graphics, Text })
 
 export const MainContainer = ({ canvasSize, children, onGameOver }) => {
-
+    const scaleX = canvasSize.width / 480;
+    const scaleY = canvasSize.height / 720;
+    const scale = Math.min(scaleX, scaleY); // échelle uniforme
     const score = useRef(0);
     const [scoreAffiche, setScoreAffiche] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
@@ -23,6 +25,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
     const PLAT_HEIGHT = PLAT_WIDTH / 6;
     const PLAT_MARGIN = PLAT_WIDTH / 10;
+    const acceleration = PLAT_WIDTH / 25;
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
@@ -39,7 +42,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
         });
-    }, []); 
+    }, []);
 
     useEffect(() => {
         if (isGameOver && onGameOver) {
@@ -49,21 +52,35 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     }, [isGameOver, onGameOver, scoreAffiche]);
 
     const [plateformes, setPlateformes] = useState([
-        { x: (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 500, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 400, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: 2 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 300, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: 2 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 100, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: 3 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 200, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: 4 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 100, width: PLAT_WIDTH, height: PLAT_HEIGHT }
+        { emplacements: 1, x: (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 500, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 1, x: (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 400, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 2, x: 2 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 300, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 2, x: 2 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 100, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 3, x: 3 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 200, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 4, x: 4 * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: 100, width: PLAT_WIDTH, height: PLAT_HEIGHT }
     ]);
 
-    const genererPalier = (yMax) => {
+    const genererPalier = (yMax, emplacements) => {
         const newY = Math.floor(yMax) - 120;
-        const nbPlateformes = 2 + Math.floor(Math.random() * 2);
+        // const nbPlateformes = 1 + Math.floor(Math.random() * 2);
+        const nbPlateformes = 1;
+        const DIRECTIONS = [-1, 0, 1];
 
-        const emplacements = [0, 1, 2, 3, 4].map(i =>
-            Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
-        );
+        if (nbPlateformes === 2) {
+            // Logique pour générer 2 plateformes
+        } else {
+            let nouveauemplacement = -1;
+            while (nouveauemplacement < 0 || nouveauemplacement > 4) {
+                const  direction = DIRECTIONS[Math.floor(Math.random() * 3)];
+                nouveauemplacement = (emplacements[0] + direction);
+            }
+            return [{ emplacements: nouveauemplacement, x: nouveauemplacement * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT }];
+
+        }
+
+        // const emplacements = [0, 1, 2, 3, 4].map(i =>
+        //     Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
+        // );
 
         const choisis = emplacements
             .sort(() => Math.random() - 0.5)
@@ -100,7 +117,11 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             setPlateformes(prev => {
                 const nouvelles = [...prev];
                 while (Math.min(...nouvelles.map(p => p.y)) > y - canvasSize.height) {
-                    const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)));
+                    const yMin = Math.min(...nouvelles.map(p => p.y));
+                    const emplacementsDernierPalier = nouvelles
+                        .filter(p => p.y === yMin)
+                        .map(p => p.emplacements);
+                    const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)), emplacementsDernierPalier);
                     nouvelles.push(...palier);
                 }
                 return nouvelles.filter(p => p.y < y + canvasSize.height);
@@ -155,6 +176,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     onPositionChange={handlePositionChange}
                     playAreaWidth={PLAY_AREA_WIDTH}
                     taillejoueur={PLAT_MARGIN * 2}
+                    acceleration={acceleration}
                 />
             </pixiContainer>
 

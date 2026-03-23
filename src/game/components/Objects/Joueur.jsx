@@ -5,7 +5,7 @@ import { checkCollision } from "../../helpers/common.js";
 
 extend({ Graphics });
 
-export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, playAreaWidth = 900 }) => {
+export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, playAreaWidth = 900, acceleration = 2.5 }) => {
     const playerRef = useRef(null);
     const physics = useRef({
         velocityY: 0,
@@ -13,11 +13,11 @@ export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, 
         gravity: 1,
         jumpForce: -18,
         friction: 0.8,
-        acceleration: 2.5,
+        acceleration: acceleration,
         maxSpeed: 8,
         onGround: false
     });
-    
+
     const jumpBuffer = useRef(0);
     const nocolitionbuffer = useRef(0);
     const keys = useRef({ q: false, d: false });
@@ -58,9 +58,9 @@ export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, 
         p.velocityX *= p.friction;
         if (p.velocityX > p.maxSpeed) p.velocityX = p.maxSpeed;
         if (p.velocityX < -p.maxSpeed) p.velocityX = -p.maxSpeed;
-        
+
         player.x += p.velocityX * delta;
-        
+
         if (player.x < 0) player.x = 0;
         if (player.x > playAreaWidth - taillejoueur) player.x = playAreaWidth - taillejoueur;
 
@@ -84,7 +84,7 @@ export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, 
                     if (overlapTop < overlapBottom) {
                         if (nocolitionbuffer.current <= 0) {
                             player.y = plat.y - joueurRect.height;
-                            p.velocityY = 0; 
+                            p.velocityY = 0;
                             p.onGround = true;
                         }
                     } else {
@@ -114,7 +114,7 @@ export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, 
         }
 
         if (jumpBuffer.current > 0) jumpBuffer.current -= 1;
-        
+
         if (onPositionChange) {
             onPositionChange({ x: player.x, y: player.y });
         }
