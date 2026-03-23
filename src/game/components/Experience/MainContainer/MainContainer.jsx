@@ -1,11 +1,12 @@
 import { extend } from "@pixi/react"
-import { Container, Sprite, Graphics, Text } from 'pixi.js'
+import { Container, Sprite, Graphics, Text, Assets } from 'pixi.js'
 import { useState, useEffect, useRef } from "react"
 import { Plateforme } from '../../Objects/Platforme.jsx'
 import { Joueur } from '../../Objects/Joueur.jsx'
 import { ParallaxBackground } from '../../Objects/ParallaxBackground.jsx'
 import * as PIXI from 'pixi.js'
 import { Lave } from '../../Objects/Lave.jsx'
+import platform_normal from '../../../assets/plateform_normal.png'
 
 extend({ Container, Sprite, Graphics, Text })
 
@@ -16,6 +17,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const [isGameOver, setIsGameOver] = useState(false)
 
     if (!canvasSize || !canvasSize.width || !canvasSize.height) return null
+    const [texturePlatforme, setTexturePlatforme] = useState(null);
+    useEffect(() => {
+        Assets.load(platform_normal).then(t => setTexturePlatforme(t));
+    }, []);
 
     const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * 0.428)
     const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2
@@ -37,8 +42,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         { x: CENTRE_X - (PLAT_WIDTH / 2), y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
         { x: CENTRE_X - (PLAT_WIDTH / 2) - PLAT_WIDTH, y: BAS_Y - 150, width: PLAT_WIDTH, height: PLAT_HEIGHT },
         { x: CENTRE_X - (PLAT_WIDTH / 2) + PLAT_WIDTH, y: BAS_Y - 300, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: CENTRE_X - (PLAT_WIDTH / 2) - (PLAT_WIDTH / 2),  y: BAS_Y - 450, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: CENTRE_X - (PLAT_WIDTH / 2) + (PLAT_WIDTH / 2),  y: BAS_Y - 600, width: PLAT_WIDTH, height: PLAT_HEIGHT }
+        { x: CENTRE_X - (PLAT_WIDTH / 2) - (PLAT_WIDTH / 2), y: BAS_Y - 450, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: CENTRE_X - (PLAT_WIDTH / 2) + (PLAT_WIDTH / 2), y: BAS_Y - 600, width: PLAT_WIDTH, height: PLAT_HEIGHT }
     ]);
 
     const [texturesBiomes, setTexturesBiomes] = useState([])
@@ -116,7 +121,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 return nouvelles.filter(p => p.y < y + canvasSize.height);
             });
         }
-        
+
         if (joueurEcranY > limiteBas && dernierY.current < y) {
             const diff = joueurEcranY - limiteBas;
             cameraY.current -= diff;
@@ -157,8 +162,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     laveY={laveY}
                 />
 
-                {plateformes.map((plat, index) => (
-                    <Plateforme key={index} x={plat.x} y={plat.y} largeur={plat.width} hauteur={plat.height} />
+                {texturePlatforme && plateformes.map((plat, index) => (
+                    <Plateforme key={index} x={plat.x} y={plat.y} largeur={plat.width} hauteur={plat.height} texturePlatforme={texturePlatforme} />
                 ))}
 
                 <Joueur
