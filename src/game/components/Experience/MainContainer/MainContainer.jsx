@@ -1,4 +1,4 @@
-import { extend } from "@pixi/react"
+import { extend, useTick } from "@pixi/react"
 import { Container, Sprite, Graphics, Text, Assets } from 'pixi.js'
 import { useState, useEffect, useRef } from "react"
 import { Plateforme } from '../../Objects/Platforme.jsx'
@@ -11,212 +11,213 @@ import platform_normal from '../../../assets/plateform_normal.png'
 extend({ Container, Sprite, Graphics, Text });
 
 export const MainContainer = ({ canvasSize, children, onGameOver }) => {
-  const score = useRef(0);
-  const [scoreAffiche, setScoreAffiche] = useState(0);
-  const [isGameOver, setIsGameOver] = useState(false);
-  
-  const [texturePlatforme, setTexturePlatforme] = useState(null);
+    const score = useRef(0);
+    const [scoreAffiche, setScoreAffiche] = useState(0);
+    const [isGameOver, setIsGameOver] = useState(false);
+
+    const [texturePlatforme, setTexturePlatforme] = useState(null);
     useEffect(() => {
         Assets.load(platform_normal).then(t => setTexturePlatforme(t));
     }, []);
 
-  if (!canvasSize || !canvasSize.width || !canvasSize.height) return null;
+    if (!canvasSize || !canvasSize.width || !canvasSize.height) return null;
 
-  const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * 0.428);
-  const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
+    const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * 0.428);
+    const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
 
-  const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
-  const PLAT_HEIGHT = PLAT_WIDTH / 6;
-  const PLAT_MARGIN = PLAT_WIDTH / 10;
+    const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
+    const PLAT_HEIGHT = PLAT_WIDTH / 6;
+    const PLAT_MARGIN = PLAT_WIDTH / 10;
 
-  const JOUEUR_WIDTH = 20;
-  const JOUEUR_HEIGHT = 20;
+    const JOUEUR_WIDTH = 20;
+    const JOUEUR_HEIGHT = 20;
 
-  const BAS_Y = canvasSize.height - 250;
+    const BAS_Y = canvasSize.height - 250;
 
-  const colonnesX = [0, 1, 2, 3, 4].map((i) =>
-    Math.floor(
-      (i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN)) / 4 + PLAT_MARGIN,
-    ),
-  );
+    const colonnesX = [0, 1, 2, 3, 4].map((i) =>
+        Math.floor(
+            (i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN)) / 4 + PLAT_MARGIN,
+        ),
+    );
 
-  const joueurStartX = colonnesX[2] + PLAT_WIDTH / 2 - JOUEUR_WIDTH / 2;
-  const joueurStartY = BAS_Y - JOUEUR_HEIGHT - 10;
+    const joueurStartX = colonnesX[2] + PLAT_WIDTH / 2 - JOUEUR_WIDTH / 2;
+    const joueurStartY = BAS_Y - JOUEUR_HEIGHT - 10;
 
-  const [plateformes, setPlateformes] = useState([
-    { x: colonnesX[1], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-    { x: colonnesX[2], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-    { x: colonnesX[3], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+    const [plateformes, setPlateformes] = useState([
+        { x: colonnesX[1], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[2], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[3], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-    { x: colonnesX[1], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-    { x: colonnesX[3], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[1], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[3], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-    { x: colonnesX[0], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-    { x: colonnesX[4], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[0], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[4], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-    { x: colonnesX[1], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-    { x: colonnesX[3], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[1], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[3], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-    { x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-  ]);
+        { x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+    ]);
 
-  const [texturesBiomes, setTexturesBiomes] = useState([]);
-  const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
-  const [texturesTowersRight, setTexturesTowersRight] = useState([]);
+    const [texturesBiomes, setTexturesBiomes] = useState([]);
+    const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
+    const [texturesTowersRight, setTexturesTowersRight] = useState([]);
 
-  useEffect(() => {
-    Promise.all([
-      PIXI.Assets.load("/assets/backgrounds/biome1.png"),
-      PIXI.Assets.load("/assets/backgrounds/biome2.png"),
-      PIXI.Assets.load("/assets/backgrounds/biome3.png"),
-      PIXI.Assets.load("/assets/backgrounds/biome4.png"),
-      PIXI.Assets.load("/assets/backgrounds/tower_right.png"),
-      PIXI.Assets.load("/assets/backgrounds/tower_left.png"),
-    ]).then(([b1, b2, b3, b4, tl, tr]) => {
-      setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
-      setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
-      setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
-    });
-  }, []);
+    useEffect(() => {
+        Promise.all([
+            PIXI.Assets.load("/assets/backgrounds/biome1.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome2.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome3.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome4.png"),
+            PIXI.Assets.load("/assets/backgrounds/tower_right.png"),
+            PIXI.Assets.load("/assets/backgrounds/tower_left.png"),
+        ]).then(([b1, b2, b3, b4, tl, tr]) => {
+            setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
+            setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
+            setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
+        });
+    }, []);
 
-  useEffect(() => {
-    if (isGameOver && onGameOver) {
-      const finalScore = Math.max(0, scoreAffiche);
-      onGameOver(finalScore);
-    }
-  }, [isGameOver]);
-
-  const genererPalier = (yMax) => {
-    const newY = Math.floor(yMax) - 120;
-    const nbPlateformes = 2 + Math.floor(Math.random() * 2);
-
-    // --- MODIFICATION ICI : On utilise la grille pré-calculée ---
-    const choisis = [...colonnesX]
-      .sort(() => Math.random() - 0.5)
-      .slice(0, nbPlateformes);
-
-    return choisis.map((x) => ({
-      x,
-      y: newY,
-      width: PLAT_WIDTH,
-      height: PLAT_HEIGHT,
-    }));
-  };
-
-  const mondeRef = useRef(null);
-  const cameraY = useRef(0);
-  const dernierY = useRef(0);
-  const laveY = useRef(1000);
-
-  const handlePositionChange = ({ y }) => {
-    if (!mondeRef.current) return;
-
-    const joueurEcranY = y + cameraY.current;
-    const milieu = canvasSize.height / 2;
-    const limiteBas = canvasSize.height - 150;
-
-    if (joueurEcranY < milieu && dernierY.current > y) {
-      const diff = milieu - joueurEcranY;
-
-      score.current += diff;
-      setScoreAffiche(Math.floor(score.current / 10));
-
-      cameraY.current += diff;
-      mondeRef.current.y = cameraY.current;
-
-      setPlateformes((prev) => {
-        const nouvelles = [...prev];
-        while (Math.min(...nouvelles.map((p) => p.y)) > y - canvasSize.height) {
-          const palier = genererPalier(Math.min(...nouvelles.map((p) => p.y)));
-          nouvelles.push(...palier);
+    useEffect(() => {
+        if (isGameOver && onGameOver) {
+            const finalScore = Math.max(0, scoreAffiche);
+            onGameOver(finalScore);
         }
-        return nouvelles;
-      });
-    }
+    }, [isGameOver]);
 
-    if (joueurEcranY > limiteBas && dernierY.current < y) {
-      const diff = joueurEcranY - limiteBas;
-      cameraY.current -= diff;
-      mondeRef.current.y = cameraY.current;
-      score.current -= diff;
-      setScoreAffiche(Math.floor(score.current / 10));
-    }
+    const genererPalier = (yMax) => {
+        const newY = Math.floor(yMax) - 120;
+        const nbPlateformes = 2 + Math.floor(Math.random() * 2);
 
-    dernierY.current = y;
+        // --- MODIFICATION ICI : On utilise la grille pré-calculée ---
+        const choisis = [...colonnesX]
+            .sort(() => Math.random() - 0.5)
+            .slice(0, nbPlateformes);
 
-    if (y + JOUEUR_HEIGHT >= laveY.current) {
-      setIsGameOver(true);
-    }
+        return choisis.map((x) => ({
+            x,
+            y: newY,
+            width: PLAT_WIDTH,
+            height: PLAT_HEIGHT,
+        }));
+    };
 
-    if (joueurEcranY > canvasSize.height + 50) {
-      setIsGameOver(true);
-    }
-  };
+    const mondeRef = useRef(null);
+    const cameraY = useRef(0);
+    const dernierY = useRef(0);
+    const laveY = useRef(1000);
 
-  useTick(() => {
-    setPlateformes((prev) => {
-      const doitNettoyer = prev.some((p) => p.y >= laveY.current);
-      if (doitNettoyer) {
-        return prev.filter((p) => p.y < laveY.current);
-      }
-      return prev;
+    const handlePositionChange = ({ y }) => {
+        if (!mondeRef.current) return;
+
+        const joueurEcranY = y + cameraY.current;
+        const milieu = canvasSize.height / 2;
+        const limiteBas = canvasSize.height - 150;
+
+        if (joueurEcranY < milieu && dernierY.current > y) {
+            const diff = milieu - joueurEcranY;
+
+            score.current += diff;
+            setScoreAffiche(Math.floor(score.current / 10));
+
+            cameraY.current += diff;
+            mondeRef.current.y = cameraY.current;
+
+            setPlateformes((prev) => {
+                const nouvelles = [...prev];
+                while (Math.min(...nouvelles.map((p) => p.y)) > y - canvasSize.height) {
+                    const palier = genererPalier(Math.min(...nouvelles.map((p) => p.y)));
+                    nouvelles.push(...palier);
+                }
+                return nouvelles;
+            });
+        }
+
+        if (joueurEcranY > limiteBas && dernierY.current < y) {
+            const diff = joueurEcranY - limiteBas;
+            cameraY.current -= diff;
+            mondeRef.current.y = cameraY.current;
+            score.current -= diff;
+            setScoreAffiche(Math.floor(score.current / 10));
+        }
+
+        dernierY.current = y;
+
+        if (y + JOUEUR_HEIGHT >= laveY.current) {
+            setIsGameOver(true);
+        }
+
+        if (joueurEcranY > canvasSize.height + 50) {
+            setIsGameOver(true);
+        }
+    };
+
+    useTick(() => {
+        setPlateformes((prev) => {
+            const doitNettoyer = prev.some((p) => p.y >= laveY.current);
+            if (doitNettoyer) {
+                return prev.filter((p) => p.y < laveY.current);
+            }
+            return prev;
+        });
     });
-  });
 
-  if (
-    texturesBiomes.length === 0 ||
-    texturesTowersLeft.length === 0 ||
-    texturesTowersRight.length === 0
-  )
-    return null;
+    if (
+        texturesBiomes.length === 0 ||
+        texturesTowersLeft.length === 0 ||
+        texturesTowersRight.length === 0
+    )
+        return null;
 
-  return (
-    <pixiContainer>
-      <ParallaxBackground
-        biomeTextures={texturesBiomes}
-        towerTexturesLeft={texturesTowersLeft}
-        towerTexturesRight={texturesTowersRight}
-        canvasSize={canvasSize}
-        cameraY={cameraY}
-      />
+    return (
+        <pixiContainer>
+            <ParallaxBackground
+                biomeTextures={texturesBiomes}
+                towerTexturesLeft={texturesTowersLeft}
+                towerTexturesRight={texturesTowersRight}
+                canvasSize={canvasSize}
+                cameraY={cameraY}
+            />
 
-      <pixiContainer ref={mondeRef} x={offsetX}>
-        {plateformes.map((plat, index) => (
-          <Plateforme
-            key={index}
-            x={plat.x}
-            y={plat.y}
-            largeur={plat.width}
-            hauteur={plat.height}
-          />
-        ))}
+            <pixiContainer ref={mondeRef} x={offsetX}>
+                {plateformes.map((plat, index) => (
+                    <Plateforme
+                        key={index}
+                        x={plat.x}
+                        y={plat.y}
+                        largeur={plat.width}
+                        hauteur={plat.height}
+                        texturePlatforme={texturePlatforme}
+                    />
+                ))}
 
-        <Lave
-          playAreaWidth={PLAY_AREA_WIDTH}
-          canvasHeight={canvasSize.height}
-          cameraY={cameraY}
-          laveY={laveY}
-        />
+                <Lave
+                    playAreaWidth={PLAY_AREA_WIDTH}
+                    canvasHeight={canvasSize.height}
+                    cameraY={cameraY}
+                    laveY={laveY}
+                />
 
-        <Joueur
-          plateformes={plateformes}
-          onPositionChange={handlePositionChange}
-          playAreaWidth={PLAY_AREA_WIDTH}
-          isGameOver={isGameOver}
-          largeurJoueur={JOUEUR_WIDTH}
-          hauteurJoueur={JOUEUR_HEIGHT}
-          startX={joueurStartX}
-          startY={joueurStartY}
-        />
-      </pixiContainer>
+                <Joueur
+                    plateformes={plateformes}
+                    onPositionChange={handlePositionChange}
+                    playAreaWidth={PLAY_AREA_WIDTH}
+                    isGameOver={isGameOver}
+                    largeurJoueur={JOUEUR_WIDTH}
+                    hauteurJoueur={JOUEUR_HEIGHT}
+                    startX={joueurStartX}
+                    startY={joueurStartY}
+                />
+            </pixiContainer>
 
-      <pixiText
-        text={`Hauteur : ${scoreAffiche}m`}
-        x={10}
-        y={10}
-        style={{ fill: 0xffffff, fontSize: 24, fontWeight: "bold" }}
-      />
-      {children}
-    </pixiContainer>
-  );
+            <pixiText
+                text={`Hauteur : ${scoreAffiche}m`}
+                x={10}
+                y={10}
+                style={{ fill: 0xffffff, fontSize: 24, fontWeight: "bold" }}
+            />
+            {children}
+        </pixiContainer>
+    );
 };
