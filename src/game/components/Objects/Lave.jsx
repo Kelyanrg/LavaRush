@@ -29,18 +29,18 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver }
         g.clear().rect(0, 0, playAreaWidth, 3000).fill(0xff4400)
     }, [playAreaWidth])
 
-    useTick((ticker) => {
+useTick((ticker) => {
         if (isGameOver || !laveRef.current) return
 
         if (estActive.current) {
-            let vitesseLave = 2.0
+            let vitesseLave = 2.0 
 
             if (cameraY && cameraY.current > 0) {
-                const bonusDeVitesse = (cameraY.current / 1500) * 0.5
+                const bonusDeVitesse = (cameraY.current / 2000) * 0.3
                 vitesseLave += bonusDeVitesse
             }
 
-            const VITESSE_MAXIMUM = 6.0
+            const VITESSE_MAXIMUM = 5.0 
             if (vitesseLave > VITESSE_MAXIMUM) {
                 vitesseLave = VITESSE_MAXIMUM
             }

@@ -1,4 +1,4 @@
-import { extend } from "@pixi/react"
+import { extend, useTick } from "@pixi/react"
 import { Container, Sprite, Graphics, Text } from 'pixi.js'
 import { useState, useEffect, useRef } from "react"
 import { Plateforme } from '../../Objects/Platforme.jsx'
@@ -24,21 +24,33 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const PLAT_HEIGHT = PLAT_WIDTH / 6
     const PLAT_MARGIN = PLAT_WIDTH / 10
 
-    const JOUEUR_WIDTH = canvasSize.width * 0.0307
-    const JOUEUR_HEIGHT = canvasSize.height * 0.06 //mettre 0.1132 pour la hauteur du perso finale, mais impossible de monter pour l'instant
+    const JOUEUR_WIDTH = 20
+    const JOUEUR_HEIGHT = 20
 
-    const CENTRE_X = PLAY_AREA_WIDTH / 2;
     const BAS_Y = canvasSize.height - 250;
 
-    const joueurStartX = CENTRE_X - (JOUEUR_WIDTH / 2);
+    const colonnesX = [0, 1, 2, 3, 4].map(i =>
+        Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
+    );
+
+    const joueurStartX = colonnesX[2] + (PLAT_WIDTH / 2) - (JOUEUR_WIDTH / 2);
     const joueurStartY = BAS_Y - JOUEUR_HEIGHT - 10;
 
     const [plateformes, setPlateformes] = useState([
-        { x: CENTRE_X - (PLAT_WIDTH / 2), y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: CENTRE_X - (PLAT_WIDTH / 2) - PLAT_WIDTH, y: BAS_Y - 150, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: CENTRE_X - (PLAT_WIDTH / 2) + PLAT_WIDTH, y: BAS_Y - 300, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: CENTRE_X - (PLAT_WIDTH / 2) - (PLAT_WIDTH / 2),  y: BAS_Y - 450, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: CENTRE_X - (PLAT_WIDTH / 2) + (PLAT_WIDTH / 2),  y: BAS_Y - 600, width: PLAT_WIDTH, height: PLAT_HEIGHT }
+        { x: colonnesX[1], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[2], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[3], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        
+        { x: colonnesX[1], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[3], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+
+        { x: colonnesX[0], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[4], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+
+        { x: colonnesX[1], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { x: colonnesX[3], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+
+        { x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT }
     ]);
 
     const [texturesBiomes, setTexturesBiomes] = useState([])
@@ -50,10 +62,11 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load('/assets/backgrounds/biome1.png'),
             PIXI.Assets.load('/assets/backgrounds/biome2.png'),
             PIXI.Assets.load('/assets/backgrounds/biome3.png'),
+            PIXI.Assets.load('/assets/backgrounds/biome4.png'),
             PIXI.Assets.load('/assets/backgrounds/tower_right.png'),
             PIXI.Assets.load('/assets/backgrounds/tower_left.png'),
-        ]).then(([b1, b2, b3, tl, tr]) => {
-            setTexturesBiomes([b1, b2, b3, b1, b2, b3])
+        ]).then(([b1, b2, b3, b4, tl, tr]) => {
+            setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4])
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl])
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr])
         })
@@ -70,11 +83,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         const newY = Math.floor(yMax) - 120
         const nbPlateformes = 2 + Math.floor(Math.random() * 2)
 
-        const emplacements = [0, 1, 2, 3, 4].map(i =>
-            Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
-        )
-
-        const choisis = emplacements
+        // --- MODIFICATION ICI : On utilise la grille pré-calculée ---
+        const choisis = [...colonnesX]
             .sort(() => Math.random() - 0.5)
             .slice(0, nbPlateformes)
 
@@ -113,7 +123,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)));
                     nouvelles.push(...palier);
                 }
-                return nouvelles.filter(p => p.y < y + canvasSize.height);
+                return nouvelles
             });
         }
         
@@ -136,8 +146,18 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         }
     };
 
+    useTick(() => {
+        setPlateformes(prev => {
+            const doitNettoyer = prev.some(p => p.y >= laveY.current + 50);
+            if (doitNettoyer) {
+                return prev.filter(p => p.y < laveY.current + 50);
+            }
+            return prev;
+        });
+    });
+    
     if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0) return null
-
+ 
     return (
         <pixiContainer>
             <ParallaxBackground
@@ -150,16 +170,16 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
             <pixiContainer ref={mondeRef} x={offsetX}>
 
+                {plateformes.map((plat, index) => (
+                    <Plateforme key={index} x={plat.x} y={plat.y} largeur={plat.width} hauteur={plat.height} />
+                ))}
+
                 <Lave
                     playAreaWidth={PLAY_AREA_WIDTH}
                     canvasHeight={canvasSize.height}
                     cameraY={cameraY}
                     laveY={laveY}
                 />
-
-                {plateformes.map((plat, index) => (
-                    <Plateforme key={index} x={plat.x} y={plat.y} largeur={plat.width} hauteur={plat.height} />
-                ))}
 
                 <Joueur
                     plateformes={plateformes}
