@@ -7,7 +7,7 @@ import { ParallaxBackground } from '../../Objects/ParallaxBackground.jsx'
 import * as PIXI from 'pixi.js'
 import { Lave } from '../../Objects/Lave.jsx'
 
-extend({ Container, Sprite, Graphics, Text })
+extend({ Container, Sprite, Graphics, Text });
 
 export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
