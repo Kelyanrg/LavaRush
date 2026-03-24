@@ -5,8 +5,7 @@ import { checkCollision } from "../../helpers/common.js";
 
 extend({ Graphics });
 
-export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, playAreaWidth = 900, acceleration = 2.5 }) => {
-export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY }) => {
+export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, acceleration = 2.5 }) => {
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
 
