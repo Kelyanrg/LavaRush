@@ -7,7 +7,6 @@ import { Spikes } from '../../Objects/Spikes.jsx'
 import { ParallaxBackground } from '../../Objects/ParallaxBackground.jsx'
 import * as PIXI from 'pixi.js'
 import { Lave } from '../../Objects/Lave.jsx'
-import platform_normal from '/assets/backgrounds/plateforme2.png'
 import { checkCollision } from "../../../helpers/common.js";
 import { Mob } from "../../Objects/Mob.jsx";
 
@@ -21,11 +20,6 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const [scoreAffiche, setScoreAffiche] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
 
-    const [texturePlatforme, setTexturePlatforme] = useState(null);
-    useEffect(() => {
-        Assets.load(platform_normal).then(t => setTexturePlatforme(t));
-    }, []);
-
     if (!canvasSize || !canvasSize.width || !canvasSize.height) return null;
 
     const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * 0.428);
@@ -38,6 +32,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     const JOUEUR_WIDTH = PLAT_MARGIN * 1.8;
     const JOUEUR_HEIGHT = JOUEUR_WIDTH * 1.8;
+
+    const MOB_WIDTH = PLAT_MARGIN * 6; 
+    const MOB_HEIGHT = MOB_WIDTH * 0.6; 
+    const MOB_OFFSET_Y = MOB_HEIGHT + 10;
 
     const BAS_Y = canvasSize.height - 250;
 
@@ -73,6 +71,9 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
     const [texturesTowersRight, setTexturesTowersRight] = useState([]);
+    const [texturePlatforme, setTexturePlatforme] = useState(null);
+    const [texturesMob, setTexturesMob] = useState([]);
+
 
     useEffect(() => {
         Promise.all([
@@ -81,11 +82,18 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/backgrounds/biome3.png"),
             PIXI.Assets.load("/assets/backgrounds/biome4.png"),
             PIXI.Assets.load("/assets/backgrounds/tower_left.png"),
-            PIXI.Assets.load("/assets/backgrounds/tower_right.png")
-        ]).then(([b1, b2, b3, b4, tl, tr]) => {
+            PIXI.Assets.load("/assets/backgrounds/tower_right.png"),
+            PIXI.Assets.load("/assets/sprites/plateforme.png"),
+            PIXI.Assets.load("/assets/sprites/bat_droite_bas.png"),
+            PIXI.Assets.load("/assets/sprites/bat_droite_haut.png"),
+            PIXI.Assets.load("/assets/sprites/bat_gauche_bas.png"),
+            PIXI.Assets.load("/assets/sprites/bat_gauche_haut.png"),
+        ]).then(([b1, b2, b3, b4, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH]) => {
             setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
+            setTexturePlatforme(spritePlateforme);
+            setTexturesMob([batDB, batDH, batGB, batGH])
         });
     }, []);
 
@@ -156,6 +164,24 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 return [premierePlatforme];
             }
 
+            const altitudeActuelle = Math.floor(score.current / 10);
+
+            let chanceSpawn = 0;
+            if (altitudeActuelle >= 3800) chanceSpawn = 0.4;
+            else if (altitudeActuelle >= 2800) chanceSpawn = 0.3;
+            else if (altitudeActuelle >= 1800) chanceSpawn = 0.25;
+            else if (altitudeActuelle >= 800) chanceSpawn = 0.2;
+
+            const aUnMob = Math.random() < chanceSpawn;
+
+            return [{ 
+                emplacements: nouveauemplacement, 
+                x: nouveauemplacement * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, 
+                y: newY, 
+                width: PLAT_WIDTH, 
+                height: PLAT_HEIGHT,
+                hasMob: aUnMob
+            }];
         }
         else {
             // let nouveauemplacement = -1;
@@ -210,8 +236,9 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const cibleCameraY = useRef(0)
     const dernierY = useRef(0);
     const laveY = useRef(1000);
+    const mobsRef = useRef({});
 
-    const handlePositionChange = ({ y }) => {
+    const handlePositionChange = ({ x, y }) => {
         if (!mondeRef.current) return
 
         const joueurEcranY = y + cibleCameraY.current
@@ -256,6 +283,17 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         if (joueurEcranY > canvasSize.height + 50) {
             setIsGameOver(true);
         }
+
+        if (mobsRef.current) {
+            const joueurRect = { x, y, width: JOUEUR_WIDTH, height: JOUEUR_HEIGHT };
+            
+            for (const mobId in mobsRef.current) {
+                if (checkCollision(joueurRect, mobsRef.current[mobId])) {
+                    setIsGameOver(true);
+                }
+            }
+        }        
+
     };
 
     useTick((ticker) => {
@@ -274,8 +312,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         });
     });
 
-    if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0) return null;
-
+    if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0 || texturesMob.length === 0) return null;
+    
     return (
         <pixiContainer>
 
@@ -288,9 +326,9 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             />
 
             <pixiContainer ref={mondeRef} x={offsetX}>
-                {plateformes.map((plat, index) => (
+                {plateformes.map((plat) => (
                     <Plateforme
-                        key={index}
+                        key={`plat-${plat.x}-${plat.y}`}
                         x={plat.x}
                         y={plat.y}
                         largeur={plat.width}
@@ -298,24 +336,49 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         texturePlatforme={texturePlatforme}
                     />
                 ))}
-                {spikes.map((spike, index) => (
+
+                {spikes.map((spike) => (
                     <Spikes
-                        key={index}
+                        key={`spike-${spike.x}-${spike.y}`}
                         x={spike.x}
                         y={spike.y}
                         width={spike.width}
                         height={spike.height}
                     />
                 ))}
-{/*                 {plateformes.filter(plat => plat.hasMob).map((plat, index) => (
-                    <Mob
-                        key={`mob-${index}`}
-                        x={plat.x + (plat.width / 2) - 15}
-                        y={plat.y - 40}
-                        width={20}
-                        height={20}
-                    />
-                ))} */}
+
+                {plateformes.filter(plat => plat.hasMob).map((plat) => {
+                    const assignedColumnIdx = plat.emplacements; 
+                    
+                    let leftNeighborIdx = assignedColumnIdx - 1;
+                    let rightNeighborIdx = assignedColumnIdx + 1;
+
+                    if (assignedColumnIdx === 0) {
+                        leftNeighborIdx = 0;
+                        rightNeighborIdx = 2;
+                    } 
+                    else if (assignedColumnIdx === colonnesX.length - 1) {
+                        leftNeighborIdx = colonnesX.length - 3;
+                        rightNeighborIdx = colonnesX.length - 1;
+                    }
+
+                    const limitLeftX = colonnesX[leftNeighborIdx];
+                    const limitRightX = colonnesX[rightNeighborIdx] + plat.width;
+
+                    return (
+                        <Mob
+                            key={`mob-${plat.x}-${plat.y}`}
+                            id={`mob-${plat.x}-${plat.y}`}
+                            mobsRef={mobsRef}
+                            y={plat.y - MOB_OFFSET_Y}
+                            width={MOB_WIDTH}    
+                            height={MOB_HEIGHT}
+                            limitLeftX={limitLeftX}
+                            limitRightX={limitRightX}
+                            texturesMobs={texturesMob}                        
+                            />
+                    );
+                })}
 
                 <Lave
                     playAreaWidth={PLAY_AREA_WIDTH}
