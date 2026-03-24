@@ -95,21 +95,96 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             onGameOver(finalScore);
         }
     }, [isGameOver]);
+    const genererplatformes = (emplacementDeReference = 2, DIRECTIONS = [], newY = -1000, interdition = []) => {
+        let nouveauemplacement = -1;
+        while (nouveauemplacement < 0 || nouveauemplacement > 4 || interdition.includes(nouveauemplacement)) {
+            const direction = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
+            nouveauemplacement = (emplacementDeReference + direction);
+        }
+        return { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT };
+
+    }
 
     const genererPalier = (yMax, emplacements) => {
         const newY = Math.floor(yMax) - 120;
-        // const nbPlateformes = 1 + Math.floor(Math.random() * 2);
-        const nbPlateformes = 1;
-        const DIRECTIONS = [-1, 0, 1];
+        const nbPlateformes = 1 + Math.floor(Math.random() * 2);
+        // const nbPlateformes = 1;
+        const DIRECTIONS = [-2, -1, -1, 0, 0, 1, 1, 2];
+        const DIRECTIONS_SIMPLE = [-1, 0, 1];
 
-        if (nbPlateformes === 2) {
-            // Logique pour générer 2 plateformes
-        } else {
-            let nouveauemplacement = -1;
-            while (nouveauemplacement < 0 || nouveauemplacement > 4) {
-                const direction = DIRECTIONS[Math.floor(Math.random() * 3)];
-                nouveauemplacement = (emplacements[0] + direction);
+        if (score.current / 10 > 1000) {
+            // let nouveauemplacement = -1;
+            // while (nouveauemplacement < 0 || nouveauemplacement > 4) {
+            //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
+            //     nouveauemplacement = (emplacements[0] + direction);
+            // }
+            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY);
+
+
+            if (nbPlateformes === 2) {
+                // let nouveauemplacement2 = -1;
+                // while (nouveauemplacement2 < 0 || nouveauemplacement2 > 4 || nouveauemplacement2 === nouveauemplacement) {
+                //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
+                //     nouveauemplacement2 = (nouveauemplacement + direction);
+                // }
+                // return [
+                //     { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+                //     { emplacements: nouveauemplacement2, x: colonnesX[nouveauemplacement2], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT }
+                // ];
+
+                return [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements])];
+
+            } else {
+                return [premierePlatforme];
             }
+        } else if (score.current / 10 > 500) {
+            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS_SIMPLE, newY);
+            if (nbPlateformes === 2) {
+                // let nouveauemplacement2 = -1;
+                // while (nouveauemplacement2 < 0 || nouveauemplacement2 > 4 || nouveauemplacement2 === nouveauemplacement) {
+                //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
+                //     nouveauemplacement2 = (nouveauemplacement + direction);
+                // }
+                // return [
+                //     { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+                //     { emplacements: nouveauemplacement2, x: colonnesX[nouveauemplacement2], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT }
+                // ];
+
+                return [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS_SIMPLE, newY, [premierePlatforme.emplacements])];
+
+            } else {
+                return [premierePlatforme];
+            }
+
+        }
+        else {
+            // let nouveauemplacement = -1;
+            // while (nouveauemplacement < 0 || nouveauemplacement > 4) {
+            //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
+            //     nouveauemplacement = (emplacements[0] + direction);
+            // }
+            // let nouveauemplacement2 = -1;
+            // while (nouveauemplacement2 < 0 || nouveauemplacement2 > 4 || nouveauemplacement2 === nouveauemplacement) {
+            //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
+            //     nouveauemplacement2 = (nouveauemplacement + direction);
+            // }
+            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY);
+            const secondePlatforme = genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements]);
+            if (nbPlateformes === 2) {
+
+                return [
+                    premierePlatforme,
+                    secondePlatforme,
+                    genererplatformes(secondePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements, secondePlatforme.emplacements]),
+
+                ];
+
+            } else {
+                return [premierePlatforme, secondePlatforme];
+
+
+            }
+
 
             const aUnMob = Math.random() < 0.2;
 
