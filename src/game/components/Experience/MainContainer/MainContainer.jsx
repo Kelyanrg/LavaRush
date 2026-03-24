@@ -123,6 +123,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         let chanceSpawn = 0;
 
         if (altitudeActuelle > 1000) {
+            chanceSpawn = 0.3;
             if (altitudeActuelle >= 3800) chanceSpawn = 0.6;
             else if (altitudeActuelle >= 2800) chanceSpawn = 0.5;
             else if (altitudeActuelle >= 1800) chanceSpawn = 0.4;
@@ -133,7 +134,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             // }
             const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], chanceSpawn);
 
-
+            
             if (nbPlateformes === 2) {
                 // let nouveauemplacement2 = -1;
                 // while (nouveauemplacement2 < 0 || nouveauemplacement2 > 4 || nouveauemplacement2 === nouveauemplacement) {
