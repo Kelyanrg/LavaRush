@@ -184,7 +184,7 @@ export default function Game() {
               🏆 Classement
             </button>
             <button className="btn-secondary" onClick={() => navigate("/")}>
-              ← Menu
+              ← Menu Principal
             </button>
           </div>
 

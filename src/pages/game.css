@@ -24,7 +24,7 @@
   height: 100vh;
   overflow: hidden;
   background-color: #0d0d0d;
-  background-image: url("../public/assets/backgrounds/lava_background40.png");
+  background-image: url("/assets/backgrounds/lava_background40.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
