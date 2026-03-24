@@ -9,6 +9,7 @@ import * as PIXI from 'pixi.js'
 import { Lave } from '../../Objects/Lave.jsx'
 import platform_normal from '../../../assets/plateform_normal.png'
 import { checkCollision } from "../../../helpers/common.js";
+import { Mob } from "../../Objects/Mob.jsx";
 
 extend({ Container, Sprite, Graphics, Text });
 
@@ -75,8 +76,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/backgrounds/biome2.png"),
             PIXI.Assets.load("/assets/backgrounds/biome3.png"),
             PIXI.Assets.load("/assets/backgrounds/biome4.png"),
-            PIXI.Assets.load("/assets/backgrounds/tower_left1.png"),
-            PIXI.Assets.load("/assets/backgrounds/tower_right1.png")
+            PIXI.Assets.load("/assets/backgrounds/tower_left.png"),
+            PIXI.Assets.load("/assets/backgrounds/tower_right.png")
         ]).then(([b1, b2, b3, b4, tl, tr]) => {
             setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
@@ -99,12 +100,17 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             .sort(() => Math.random() - 0.5)
             .slice(0, nbPlateformes);
 
-        return choisis.map((x) => ({
-            x,
-            y: newY,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        }));
+        return choisis.map((x) => {
+            const aUneChauveSouris = Math.random() < 0.2; 
+            
+            return {
+                x,
+                y: newY,
+                width: PLAT_WIDTH,
+                height: PLAT_HEIGHT,
+                hasMob: aUneChauveSouris
+            };
+        });
     };
 
     const mondeRef = useRef(null);
@@ -172,12 +178,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         });
     });
 
-    if (
-        texturesBiomes.length === 0 ||
-        texturesTowersLeft.length === 0 ||
-        texturesTowersRight.length === 0
-    )
-    return null;
+    if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0) return null;
 
     return (
         <pixiContainer>
@@ -208,6 +209,15 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         y={spike.y}
                         width={spike.width}
                         height={spike.height}
+                    />
+                ))}
+                {plateformes.filter(plat => plat.hasMob).map((plat, index) => (
+                    <Mob
+                        key={`mob-${index}`}
+                        x={plat.x + (plat.width / 2) - 15}
+                        y={plat.y - 40}
+                        width={20}
+                        height={20}
                     />
                 ))}
 

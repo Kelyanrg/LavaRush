@@ -152,7 +152,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     });
 
     const drawPlayer = useCallback((g) => {
-        g.clear().rect(0, 0, largeurJoueur, hauteurJoueur).fill(0x100060);
+        g.clear().rect(0, 0, 30, 50).fill(0x100060);
     }, [largeurJoueur, hauteurJoueur]);
 
     return <pixiGraphics ref={playerRef} draw={drawPlayer} />;
