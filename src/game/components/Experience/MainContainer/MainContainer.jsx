@@ -33,8 +33,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const JOUEUR_WIDTH = PLAT_MARGIN * 1.8;
     const JOUEUR_HEIGHT = JOUEUR_WIDTH * 1.8;
 
-    const MOB_WIDTH = PLAT_MARGIN * 6; 
-    const MOB_HEIGHT = MOB_WIDTH * 0.6; 
+    const MOB_WIDTH = PLAT_MARGIN * 6;
+    const MOB_HEIGHT = MOB_WIDTH * 0.6;
     const MOB_OFFSET_Y = MOB_HEIGHT + 10;
 
     const BAS_Y = canvasSize.height - 250;
@@ -103,13 +103,13 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             onGameOver(finalScore);
         }
     }, [isGameOver]);
-    const genererplatformes = (emplacementDeReference = 2, DIRECTIONS = [], newY = -1000, interdition = []) => {
+    const genererplatformes = (emplacementDeReference = 2, DIRECTIONS = [], newY = -1000, interdition = [], chanceSpawn = 0) => {
         let nouveauemplacement = -1;
         while (nouveauemplacement < 0 || nouveauemplacement > 4 || interdition.includes(nouveauemplacement)) {
             const direction = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
             nouveauemplacement = (emplacementDeReference + direction);
         }
-        return { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT };
+        return { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT, hasMob: Math.random() < chanceSpawn };
 
     }
 
@@ -119,14 +119,19 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         // const nbPlateformes = 1;
         const DIRECTIONS = [-2, -1, -1, 0, 0, 1, 1, 2];
         const DIRECTIONS_SIMPLE = [-1, 0, 1];
+        const altitudeActuelle = Math.floor(score.current / 10);
+        let chanceSpawn = 0;
 
-        if (score.current / 10 > 1000) {
+        if (altitudeActuelle > 1000) {
+            if (altitudeActuelle >= 3800) chanceSpawn = 0.6;
+            else if (altitudeActuelle >= 2800) chanceSpawn = 0.5;
+            else if (altitudeActuelle >= 1800) chanceSpawn = 0.4;
             // let nouveauemplacement = -1;
             // while (nouveauemplacement < 0 || nouveauemplacement > 4) {
             //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
             //     nouveauemplacement = (emplacements[0] + direction);
             // }
-            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY);
+            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], chanceSpawn);
 
 
             if (nbPlateformes === 2) {
@@ -140,13 +145,14 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 //     { emplacements: nouveauemplacement2, x: colonnesX[nouveauemplacement2], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT }
                 // ];
 
-                return [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements])];
+                return [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements], chanceSpawn)];
 
             } else {
                 return [premierePlatforme];
             }
-        } else if (score.current / 10 > 500) {
-            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS_SIMPLE, newY);
+        } else if (altitudeActuelle > 500) {
+            if (altitudeActuelle >= 800) chanceSpawn = 0.3;
+            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS_SIMPLE, newY, [], chanceSpawn);
             if (nbPlateformes === 2) {
                 // let nouveauemplacement2 = -1;
                 // while (nouveauemplacement2 < 0 || nouveauemplacement2 > 4 || nouveauemplacement2 === nouveauemplacement) {
@@ -158,30 +164,12 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 //     { emplacements: nouveauemplacement2, x: colonnesX[nouveauemplacement2], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT }
                 // ];
 
-                return [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS_SIMPLE, newY, [premierePlatforme.emplacements])];
+                return [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS_SIMPLE, newY, [premierePlatforme.emplacements], chanceSpawn)];
 
             } else {
                 return [premierePlatforme];
             }
 
-            const altitudeActuelle = Math.floor(score.current / 10);
-
-            let chanceSpawn = 0;
-            if (altitudeActuelle >= 3800) chanceSpawn = 0.4;
-            else if (altitudeActuelle >= 2800) chanceSpawn = 0.3;
-            else if (altitudeActuelle >= 1800) chanceSpawn = 0.25;
-            else if (altitudeActuelle >= 800) chanceSpawn = 0.2;
-
-            const aUnMob = Math.random() < chanceSpawn;
-
-            return [{ 
-                emplacements: nouveauemplacement, 
-                x: nouveauemplacement * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, 
-                y: newY, 
-                width: PLAT_WIDTH, 
-                height: PLAT_HEIGHT,
-                hasMob: aUnMob
-            }];
         }
         else {
             // let nouveauemplacement = -1;
@@ -194,7 +182,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
             //     nouveauemplacement2 = (nouveauemplacement + direction);
             // }
-            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY);
+            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY,);
             const secondePlatforme = genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements]);
             if (nbPlateformes === 2) {
 
@@ -210,24 +198,11 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
 
             }
-
-
-            const aUnMob = Math.random() < 0.2;
-
-            return [{ 
-                emplacements: nouveauemplacement, 
-                x: nouveauemplacement * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, 
-                y: newY, 
-                width: PLAT_WIDTH, 
-                height: PLAT_HEIGHT,
-                hasMob: aUnMob
-            }];
         }
 
         // const emplacements = [0, 1, 2, 3, 4].map(i =>
         //     Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
         // );
-
 
     };
 
@@ -286,13 +261,13 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
         if (mobsRef.current) {
             const joueurRect = { x, y, width: JOUEUR_WIDTH, height: JOUEUR_HEIGHT };
-            
+
             for (const mobId in mobsRef.current) {
                 if (checkCollision(joueurRect, mobsRef.current[mobId])) {
                     setIsGameOver(true);
                 }
             }
-        }        
+        }
 
     };
 
@@ -313,7 +288,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     });
 
     if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0 || texturesMob.length === 0) return null;
-    
+
     return (
         <pixiContainer>
 
@@ -348,15 +323,15 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 ))}
 
                 {plateformes.filter(plat => plat.hasMob).map((plat) => {
-                    const assignedColumnIdx = plat.emplacements; 
-                    
+                    const assignedColumnIdx = plat.emplacements;
+
                     let leftNeighborIdx = assignedColumnIdx - 1;
                     let rightNeighborIdx = assignedColumnIdx + 1;
 
                     if (assignedColumnIdx === 0) {
                         leftNeighborIdx = 0;
                         rightNeighborIdx = 2;
-                    } 
+                    }
                     else if (assignedColumnIdx === colonnesX.length - 1) {
                         leftNeighborIdx = colonnesX.length - 3;
                         rightNeighborIdx = colonnesX.length - 1;
@@ -371,12 +346,12 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                             id={`mob-${plat.x}-${plat.y}`}
                             mobsRef={mobsRef}
                             y={plat.y - MOB_OFFSET_Y}
-                            width={MOB_WIDTH}    
+                            width={MOB_WIDTH}
                             height={MOB_HEIGHT}
                             limitLeftX={limitLeftX}
                             limitRightX={limitRightX}
-                            texturesMobs={texturesMob}                        
-                            />
+                            texturesMobs={texturesMob}
+                        />
                     );
                 })}
 
