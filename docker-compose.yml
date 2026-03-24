@@ -2,10 +2,6 @@ services:
   lavarush:
     build: .
     container_name: lavarush-app
-    context: .
-    args:
-      VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
-      VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY}
     restart: unless-stopped
     ports:
       - "8080:80"
