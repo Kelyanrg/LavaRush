@@ -5,7 +5,7 @@ import { Graphics, Sprite } from "pixi.js";
 extend({ Graphics, Sprite });
 
 export const Plateforme = ({ x, y, largeur = 120, hauteur = 20, couleur = 0xff00, texturePlatforme }) => {
-    console.log("texture reçue:", texturePlatforme);
+    // console.log("texture reçue:", texturePlatforme);
     // const draw = useCallback((graphics) => {
     //     graphics.clear().rect(0, 0, largeur, hauteur).fill(couleur);
     // }, [largeur, hauteur, couleur]);
