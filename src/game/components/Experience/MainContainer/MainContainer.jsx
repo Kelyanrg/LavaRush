@@ -36,8 +36,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const PLAT_MARGIN = PLAT_WIDTH / 10;
     const acceleration = PLAT_WIDTH / 25;
 
-    const JOUEUR_WIDTH = 20;
-    const JOUEUR_HEIGHT = 20;
+    const JOUEUR_WIDTH = PLAT_MARGIN * 1.8;
+    const JOUEUR_HEIGHT = JOUEUR_WIDTH * 1.8;
 
     const BAS_Y = canvasSize.height - 250;
 
