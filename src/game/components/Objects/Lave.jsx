@@ -33,7 +33,7 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver }
         if (isGameOver || !laveRef.current) return
 
         if (estActive.current) {
-            let vitesseLave = 2.0
+            let vitesseLave = 1.0
 
             if (cameraY && cameraY.current > 0) {
                 const bonusDeVitesse = (cameraY.current / 3000) * 0.5

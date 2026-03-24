@@ -103,36 +103,28 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         const DIRECTIONS = [-1, 0, 1];
 
         if (nbPlateformes === 2) {
-            // Logique pour générer 2 plateformes
         } else {
             let nouveauemplacement = -1;
             while (nouveauemplacement < 0 || nouveauemplacement > 4) {
                 const direction = DIRECTIONS[Math.floor(Math.random() * 3)];
                 nouveauemplacement = (emplacements[0] + direction);
             }
-            return [{ emplacements: nouveauemplacement, x: nouveauemplacement * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT }];
 
+            const aUnMob = Math.random() < 0.2;
+
+            return [{ 
+                emplacements: nouveauemplacement, 
+                x: nouveauemplacement * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, 
+                y: newY, 
+                width: PLAT_WIDTH, 
+                height: PLAT_HEIGHT,
+                hasMob: aUnMob
+            }];
         }
 
         // const emplacements = [0, 1, 2, 3, 4].map(i =>
         //     Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
         // );
-
-        const choisis = emplacements
-            .sort(() => Math.random() - 0.5)
-            .slice(0, nbPlateformes);
-
-        return choisis.map((x) => {
-            const aUneChauveSouris = Math.random() < 0.2; 
-            
-            return {
-                x,
-                y: newY,
-                width: PLAT_WIDTH,
-                height: PLAT_HEIGHT,
-                hasMob: aUneChauveSouris
-            };
-        });
     };
 
     const mondeRef = useRef(null);

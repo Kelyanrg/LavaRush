@@ -8,7 +8,7 @@ export const Mob = ({ x, y, width, height }) => {
     const mobRef = useRef(null);
 
     const drawMob = useCallback((g) => {
-        g.clear().rect(0, 0, width, height).fill(0x8B00FF); // Violet
+        g.clear().rect(0, 0, width, height).fill(0x8B00FF);
     }, [width, height]);
 
     return (
