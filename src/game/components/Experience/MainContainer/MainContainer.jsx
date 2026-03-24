@@ -65,7 +65,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         { emplacements: 2, x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT },
     ]);
     const [spikes, setSpikes] = useState([
-        { emplacements: 1, x: colonnesX[1], y: BAS_Y - 120 + PLAT_HEIGHT, width: PLAT_WIDTH, height: PLAT_HEIGHT / 2 },
+        // { emplacements: 1, x: colonnesX[1], y: BAS_Y - 120 + PLAT_HEIGHT, width: PLAT_WIDTH, height: PLAT_HEIGHT / 2 }
     ]);
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
@@ -134,7 +134,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             // }
             const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], chanceSpawn);
 
-            
+
             if (nbPlateformes === 2) {
                 // let nouveauemplacement2 = -1;
                 // while (nouveauemplacement2 < 0 || nouveauemplacement2 > 4 || nouveauemplacement2 === nouveauemplacement) {
