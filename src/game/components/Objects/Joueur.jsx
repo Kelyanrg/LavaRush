@@ -5,7 +5,7 @@ import { checkCollision } from "../../helpers/common.js";
 
 extend({ Graphics });
 
-export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY }) => {
+export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, acceleration = 2.5 }) => {
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
     const miniBoostBuffer = useRef(0);
@@ -16,7 +16,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
         gravity: 1,
         jumpForce: -18,
         friction: 0.8,
-        acceleration: 2.5,
+        acceleration: acceleration,
         maxSpeed: 8,
         onGround: false
     });

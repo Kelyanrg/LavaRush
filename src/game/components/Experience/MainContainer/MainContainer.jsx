@@ -14,6 +14,9 @@ import { Mob } from "../../Objects/Mob.jsx";
 extend({ Container, Sprite, Graphics, Text });
 
 export const MainContainer = ({ canvasSize, children, onGameOver }) => {
+    const scaleX = canvasSize.width / 480;
+    const scaleY = canvasSize.height / 720;
+    const scale = Math.min(scaleX, scaleY); // échelle uniforme
     const score = useRef(0);
     const [scoreAffiche, setScoreAffiche] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
@@ -31,6 +34,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
     const PLAT_HEIGHT = (PLAT_WIDTH / 6) * 3;
     const PLAT_MARGIN = PLAT_WIDTH / 10;
+    const acceleration = PLAT_WIDTH / 25;
 
     const JOUEUR_WIDTH = 20;
     const JOUEUR_HEIGHT = 20;
@@ -47,23 +51,23 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const joueurStartY = BAS_Y - JOUEUR_HEIGHT - 10;
 
     const [plateformes, setPlateformes] = useState([
-        { x: colonnesX[1], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: colonnesX[2], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: colonnesX[3], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 1, x: colonnesX[1], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 2, x: colonnesX[2], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 3, x: colonnesX[3], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-        { x: colonnesX[1], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: colonnesX[3], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 1, x: colonnesX[1], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 3, x: colonnesX[3], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-        { x: colonnesX[0], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: colonnesX[4], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 0, x: colonnesX[0], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 4, x: colonnesX[4], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-        { x: colonnesX[1], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { x: colonnesX[3], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 1, x: colonnesX[1], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 3, x: colonnesX[3], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-        { x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 2, x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT },
     ]);
     const [spikes, setSpikes] = useState([
-        { x: colonnesX[1], y: BAS_Y - 120 + PLAT_HEIGHT, width: PLAT_WIDTH, height: PLAT_HEIGHT / 2 },
+        { emplacements: 1, x: colonnesX[1], y: BAS_Y - 120 + PLAT_HEIGHT, width: PLAT_WIDTH, height: PLAT_HEIGHT / 2 },
     ]);
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
@@ -92,11 +96,29 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         }
     }, [isGameOver]);
 
-    const genererPalier = (yMax) => {
+    const genererPalier = (yMax, emplacements) => {
         const newY = Math.floor(yMax) - 120;
-        const nbPlateformes = 2 + Math.floor(Math.random() * 2);
+        // const nbPlateformes = 1 + Math.floor(Math.random() * 2);
+        const nbPlateformes = 1;
+        const DIRECTIONS = [-1, 0, 1];
 
-        const choisis = [...colonnesX]
+        if (nbPlateformes === 2) {
+            // Logique pour générer 2 plateformes
+        } else {
+            let nouveauemplacement = -1;
+            while (nouveauemplacement < 0 || nouveauemplacement > 4) {
+                const direction = DIRECTIONS[Math.floor(Math.random() * 3)];
+                nouveauemplacement = (emplacements[0] + direction);
+            }
+            return [{ emplacements: nouveauemplacement, x: nouveauemplacement * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT }];
+
+        }
+
+        // const emplacements = [0, 1, 2, 3, 4].map(i =>
+        //     Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
+        // );
+
+        const choisis = emplacements
             .sort(() => Math.random() - 0.5)
             .slice(0, nbPlateformes);
 
@@ -137,7 +159,11 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             setPlateformes(prev => {
                 const nouvelles = [...prev];
                 while (Math.min(...nouvelles.map(p => p.y)) > y - canvasSize.height) {
-                    const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)));
+                    const yMin = Math.min(...nouvelles.map(p => p.y));
+                    const emplacementsDernierPalier = nouvelles
+                        .filter(p => p.y === yMin)
+                        .map(p => p.emplacements);
+                    const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)), emplacementsDernierPalier);
                     nouvelles.push(...palier);
                 }
                 return nouvelles
@@ -233,6 +259,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     spikes={spikes}
                     onPositionChange={handlePositionChange}
                     playAreaWidth={PLAY_AREA_WIDTH}
+                    taillejoueur={PLAT_MARGIN * 2}
+                    acceleration={acceleration}
                     isGameOver={isGameOver}
                     largeurJoueur={JOUEUR_WIDTH}
                     hauteurJoueur={JOUEUR_HEIGHT}
