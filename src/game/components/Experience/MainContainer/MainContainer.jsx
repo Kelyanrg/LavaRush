@@ -7,7 +7,7 @@ import { Spikes } from '../../Objects/Spikes.jsx'
 import { ParallaxBackground } from '../../Objects/ParallaxBackground.jsx'
 import * as PIXI from 'pixi.js'
 import { Lave } from '../../Objects/Lave.jsx'
-import platform_normal from '../../../assets/plateform_normal.png'
+import platform_normal from '/assets/backgrounds/plateforme2.png'
 import { checkCollision } from "../../../helpers/common.js";
 import { Mob } from "../../Objects/Mob.jsx";
 
@@ -32,7 +32,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
 
     const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
-    const PLAT_HEIGHT = (PLAT_WIDTH / 6) * 3;
+    const PLAT_HEIGHT = (PLAT_WIDTH / 6) * 1.2;
     const PLAT_MARGIN = PLAT_WIDTH / 10;
     const acceleration = PLAT_WIDTH / 25;
 
@@ -110,29 +110,24 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 const direction = DIRECTIONS[Math.floor(Math.random() * 3)];
                 nouveauemplacement = (emplacements[0] + direction);
             }
-            return [{ emplacements: nouveauemplacement, x: nouveauemplacement * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT }];
 
+            const aUnMob = Math.random() < 0.2;
+
+            return [{ 
+                emplacements: nouveauemplacement, 
+                x: nouveauemplacement * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN, 
+                y: newY, 
+                width: PLAT_WIDTH, 
+                height: PLAT_HEIGHT,
+                hasMob: aUnMob
+            }];
         }
 
         // const emplacements = [0, 1, 2, 3, 4].map(i =>
         //     Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
         // );
 
-        const choisis = emplacements
-            .sort(() => Math.random() - 0.5)
-            .slice(0, nbPlateformes);
 
-        return choisis.map((x) => {
-            const aUneChauveSouris = Math.random() < 0.2; 
-            
-            return {
-                x,
-                y: newY,
-                width: PLAT_WIDTH,
-                height: PLAT_HEIGHT,
-                hasMob: aUneChauveSouris
-            };
-        });
     };
 
     const mondeRef = useRef(null);
