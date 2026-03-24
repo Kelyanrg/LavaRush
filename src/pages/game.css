@@ -41,9 +41,11 @@
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(3px);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 50;
   animation: fadeIn 0.4s ease-out;
-  background-image: url("../public/assets/backgrounds/lava_background40.png");
+  gap: 28px;
+  padding: 40px 20px;
 }
 
 @keyframes fadeIn {
@@ -122,18 +124,40 @@
   pointer-events: none;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   START SCREEN
-   ═══════════════════════════════════════════════════════════════ */
-
-.overlay-start-screen {
-  gap: 28px;
-  padding: 40px 20px;
-  background: rgba(0, 0, 0, 0.5);
+/* ─── GAME OVER TITLE ───────────────────────────────────────── */
+.gameover-title {
+  font-family: "supersquad", sans-serif;
+  font-size: clamp(2.5rem, 10vw, 4.5rem);
+  color: #ff4500;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-shadow:
+    0 0 30px rgba(255, 80, 0, 0.6),
+    0 4px 0 #8b0000;
+  animation: pulseGlowText 3s ease-in-out infinite;
+  margin: 0;
 }
 
-/* ─── INSTRUCTIONS CARD ─────────────────────────────────────── */
-.instructions {
+@keyframes pulseGlowText {
+  0%,
+  100% {
+    text-shadow:
+      0 0 25px rgba(255, 80, 0, 0.5),
+      0 4px 0 #8b0000;
+  }
+  50% {
+    text-shadow:
+      0 0 50px rgba(255, 120, 0, 0.9),
+      0 4px 0 #8b0000;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SHARED CARD STYLE (used by both screens)
+   ═══════════════════════════════════════════════════════════════ */
+
+.instructions,
+.gameover-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -149,7 +173,8 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.instructions > p {
+.instructions > p,
+.gameover-card > p {
   font-family: "acme", sans-serif;
   font-size: 1.3rem;
   color: rgba(255, 255, 255, 0.85);
@@ -160,8 +185,9 @@
   margin: 0;
 }
 
-/* ─── BEST SCORE BADGE ──────────────────────────────────────── */
-.best-score-display {
+/* ─── SCORE BADGES (shared style) ───────────────────────────── */
+.best-score-display,
+.gameover-score-badge {
   font-family: "acme", sans-serif;
   font-size: 1.5rem;
   color: rgba(255, 200, 100, 0.9);
@@ -181,6 +207,29 @@
   }
   50% {
     box-shadow: 0 0 30px rgba(255, 120, 0, 0.4);
+  }
+}
+
+/* ─── NEW RECORD BADGE ──────────────────────────────────────── */
+.new-record-badge {
+  font-family: "supersquad", sans-serif;
+  font-size: 1.3rem;
+  color: #ffd700;
+  padding: 12px 28px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 10px;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  animation: pulseRecordGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseRecordGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(255, 215, 0, 0.6);
   }
 }
 
@@ -226,7 +275,11 @@
   filter: drop-shadow(0 6px 12px rgba(255, 80, 0, 0.5));
 }
 
-/* ─── MAIN BUTTON ───────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS (shared)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── MAIN BUTTON (JOUER / REJOUER) ─────────────────────────── */
 .btn-main {
   position: relative;
   overflow: hidden;
@@ -290,210 +343,44 @@
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   GAME OVER SCREEN - EPIC VERSION
-   ═══════════════════════════════════════════════════════════════ */
-
-.game-over-screen {
-  background: rgba(0, 0, 0, 0.85);
-  gap: 0;
-}
-
-.gameover-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  padding: 40px;
-  background: rgba(20, 15, 15, 0.95);
-  border: 2px solid rgba(255, 60, 0, 0.4);
-  border-radius: 20px;
-  box-shadow:
-    0 0 60px rgba(255, 50, 0, 0.3),
-    0 0 120px rgba(255, 30, 0, 0.15),
-    inset 0 0 80px rgba(255, 50, 0, 0.05);
-  animation: containerAppear 0.5s ease-out;
-  max-width: 450px;
-  width: 90%;
-}
-
-@keyframes containerAppear {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.gameover-title {
-  font-family: "supersquad", sans-serif;
-  font-size: clamp(2.5rem, 10vw, 4rem);
-  color: #ff4500;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  text-shadow:
-    0 0 20px rgba(255, 69, 0, 0.8),
-    0 0 40px rgba(255, 50, 0, 0.6),
-    0 4px 0 #8b0000;
-  animation:
-    titleShake 0.6s ease-out,
-    gameoverPulse 2s ease-in-out infinite 0.6s;
-  margin: 0;
-}
-
-@keyframes titleShake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateX(-5px);
-  }
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateX(5px);
-  }
-}
-
-@keyframes gameoverPulse {
-  0%,
-  100% {
-    text-shadow:
-      0 0 20px rgba(255, 69, 0, 0.8),
-      0 0 40px rgba(255, 50, 0, 0.6),
-      0 4px 0 #8b0000;
-  }
-  50% {
-    text-shadow:
-      0 0 30px rgba(255, 69, 0, 1),
-      0 0 60px rgba(255, 50, 0, 0.8),
-      0 0 100px rgba(255, 30, 0, 0.4),
-      0 4px 0 #8b0000;
-  }
-}
-
-/* ─── SCORE SECTION ─────────────────────────────────────────── */
-.gameover-score-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.gameover-current-score {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.score-label {
+/* ─── SECONDARY BUTTON ──────────────────────────────────────── */
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
   font-family: "acme", sans-serif;
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  padding: 14px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.2s;
 }
 
-.score-value {
-  font-family: "supersquad", sans-serif;
-  font-size: 4rem;
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
   color: #fff;
-  text-shadow:
-    0 0 20px rgba(255, 150, 0, 0.6),
-    0 2px 0 rgba(0, 0, 0, 0.3);
-  animation: scoreCountUp 0.8s ease-out;
-  line-height: 1;
+  transform: translateY(-2px);
 }
 
-@keyframes scoreCountUp {
-  from {
-    opacity: 0;
-    transform: scale(0.5);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.btn-secondary:active {
+  transform: translateY(0) scale(0.98);
 }
 
-.gameover-best-score {
-  font-family: "acme", sans-serif;
-  font-size: 1.1rem;
-  color: rgba(255, 200, 100, 0.7);
-  letter-spacing: 1px;
-}
-
-.new-record-badge {
-  font-family: "supersquad", sans-serif;
-  font-size: 1.4rem;
-  color: #ffd700;
-  padding: 10px 24px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 200, 0, 0.2),
-    rgba(255, 150, 0, 0.1)
-  );
-  border: 2px solid rgba(255, 215, 0, 0.5);
-  border-radius: 30px;
-  text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-  animation: recordPulse 1s ease-in-out infinite;
-}
-
-@keyframes recordPulse {
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.7);
-  }
-}
-
-/* ─── GUEST SAVE PROMPT ─────────────────────────────────────── */
-.guest-save-prompt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
-  background: rgba(255, 200, 100, 0.08);
-  border: 1px dashed rgba(255, 200, 100, 0.3);
-  border-radius: 12px;
-  width: 100%;
-}
-
-.guest-save-prompt p {
-  font-family: "acme", sans-serif;
-  font-size: 1rem;
-  color: rgba(255, 200, 100, 0.9);
-  text-align: center;
-  margin: 0;
-}
-
-.btn-save-score {
+/* ─── GOLDEN BUTTON (create account) ────────────────────────── */
+.btn-golden {
   background: linear-gradient(135deg, #ffd700, #ffa500);
   border: none;
   color: #1a1a1a;
   font-family: "acme", sans-serif;
   font-size: 1rem;
   font-weight: 700;
-  padding: 12px 28px;
-  border-radius: 8px;
+  padding: 14px 28px;
+  border-radius: 10px;
   cursor: pointer;
   transition:
     transform 0.2s,
@@ -501,57 +388,71 @@
   box-shadow: 0 4px 15px rgba(255, 200, 0, 0.4);
 }
 
-.btn-save-score:hover {
+.btn-golden:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 25px rgba(255, 200, 0, 0.6);
 }
 
-.btn-save-score:active {
+.btn-golden:active {
   transform: scale(0.98);
 }
 
-/* ─── GAMEOVER BUTTONS ──────────────────────────────────────── */
-.gameover-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-}
-
-.btn-replay {
-  width: 100%;
-  max-width: 280px;
-}
-
-.gameover-secondary-buttons {
+/* ─── BUTTONS GROUP ─────────────────────────────────────────── */
+.buttons-group {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.8);
+/* ═══════════════════════════════════════════════════════════════
+   GAME OVER SPECIFIC
+   ═══════════════════════════════════════════════════════════════ */
+
+.gameover-score-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.gameover-score-section .score-label {
   font-family: "acme", sans-serif;
   font-size: 1rem;
-  padding: 12px 24px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 100, 0, 0.4);
+.gameover-score-section .score-value {
+  font-family: "supersquad", sans-serif;
+  font-size: 3.5rem;
   color: #fff;
-  transform: translateY(-2px);
+  text-shadow:
+    0 0 20px rgba(255, 150, 0, 0.5),
+    0 2px 0 rgba(0, 0, 0, 0.3);
+  line-height: 1;
 }
 
-.btn-secondary:active {
-  transform: translateY(0) scale(0.98);
+/* ─── GUEST PROMPT ──────────────────────────────────────────── */
+.guest-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: rgba(255, 200, 100, 0.05);
+  border: 1px dashed rgba(255, 200, 100, 0.3);
+  border-radius: 12px;
+  width: 100%;
+}
+
+.guest-prompt p {
+  font-family: "acme", sans-serif;
+  font-size: 1rem;
+  color: rgba(255, 200, 100, 0.9);
+  text-align: center;
+  margin: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -564,7 +465,6 @@
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.4);
   letter-spacing: 1px;
-  margin-top: 8px;
 }
 
 /* ─── FADE OUT TRANSITION ───────────────────────────────────── */
@@ -604,8 +504,9 @@
    ═══════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
-  /* ─── Start Screen ─── */
-  .overlay-start-screen {
+  .overlay,
+  .overlay-start-screen,
+  .game-over-screen {
     gap: 20px;
     padding: 30px 16px;
   }
@@ -614,7 +515,12 @@
     width: clamp(250px, 70vw, 400px);
   }
 
-  .instructions {
+  .gameover-title {
+    font-size: 2.5rem;
+  }
+
+  .instructions,
+  .gameover-card {
     padding: 20px 24px;
     gap: 16px;
   }
@@ -632,24 +538,20 @@
     font-size: 1.1rem;
   }
 
-  /* ─── Game Over ─── */
-  .gameover-container {
-    padding: 32px 24px;
-    gap: 20px;
+  .btn-secondary {
+    padding: 12px 22px;
+    font-size: 0.95rem;
   }
 
-  .gameover-title {
-    font-size: 2.5rem;
-  }
-
-  .score-value {
-    font-size: 3.5rem;
+  .gameover-score-section .score-value {
+    font-size: 3rem;
   }
 }
 
 @media (max-width: 480px) {
-  /* ─── Start Screen ─── */
-  .overlay-start-screen {
+  .overlay,
+  .overlay-start-screen,
+  .game-over-screen {
     gap: 16px;
     padding: 20px 12px;
   }
@@ -658,19 +560,32 @@
     width: 220px;
   }
 
-  .instructions {
+  .gameover-title {
+    font-size: 2rem;
+    letter-spacing: 2px;
+  }
+
+  .instructions,
+  .gameover-card {
     padding: 16px 14px;
     gap: 14px;
     width: 95%;
   }
 
-  .instructions > p {
+  .instructions > p,
+  .gameover-card > p {
     font-size: 1rem;
     padding: 10px 12px;
   }
 
-  .best-score-display {
+  .best-score-display,
+  .gameover-score-badge {
     font-size: 1.2rem;
+    padding: 10px 20px;
+  }
+
+  .new-record-badge {
+    font-size: 1.1rem;
     padding: 10px 20px;
   }
 
@@ -693,6 +608,16 @@
     font-size: 1rem;
   }
 
+  .btn-secondary {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+
+  .btn-golden {
+    padding: 12px 22px;
+    font-size: 0.95rem;
+  }
+
   .btn-back {
     top: 16px;
     left: 16px;
@@ -700,50 +625,23 @@
     font-size: 0.85rem;
   }
 
-  /* ─── Game Over ─── */
-  .gameover-container {
-    padding: 28px 20px;
-    gap: 18px;
-    width: 95%;
+  .gameover-score-section .score-value {
+    font-size: 2.5rem;
   }
 
-  .gameover-title {
-    font-size: 2rem;
-    letter-spacing: 2px;
+  .guest-prompt {
+    padding: 14px 16px;
   }
 
-  .score-value {
-    font-size: 3rem;
-  }
-
-  .new-record-badge {
-    font-size: 1.1rem;
-    padding: 8px 18px;
-  }
-
-  .btn-secondary {
-    padding: 10px 18px;
+  .guest-prompt p {
     font-size: 0.9rem;
-  }
-
-  .gameover-secondary-buttons {
-    gap: 8px;
-  }
-
-  .guest-save-prompt {
-    padding: 14px 18px;
-  }
-
-  .guest-save-prompt p {
-    font-size: 0.9rem;
-  }
-
-  .btn-save-score {
-    padding: 10px 22px;
-    font-size: 0.95rem;
   }
 
   .hint-text {
     font-size: 0.8rem;
+  }
+
+  .buttons-group {
+    gap: 8px;
   }
 }
