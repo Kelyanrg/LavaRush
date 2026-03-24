@@ -7,7 +7,7 @@ import { Spikes } from '../../Objects/Spikes.jsx'
 import { ParallaxBackground } from '../../Objects/ParallaxBackground.jsx'
 import * as PIXI from 'pixi.js'
 import { Lave } from '../../Objects/Lave.jsx'
-import platform_normal from '../../../assets/plateform_normal.png'
+import platform_normal from '/assets/backgrounds/plateforme2.png'
 import { checkCollision } from "../../../helpers/common.js";
 import { Mob } from "../../Objects/Mob.jsx";
 
@@ -32,12 +32,12 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
 
     const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
-    const PLAT_HEIGHT = (PLAT_WIDTH / 6) * 3;
+    const PLAT_HEIGHT = (PLAT_WIDTH / 6) * 1.2;
     const PLAT_MARGIN = PLAT_WIDTH / 10;
     const acceleration = PLAT_WIDTH / 25;
 
-    const JOUEUR_WIDTH = 20;
-    const JOUEUR_HEIGHT = 20;
+    const JOUEUR_WIDTH = PLAT_MARGIN * 1.8;
+    const JOUEUR_HEIGHT = JOUEUR_WIDTH * 1.8;
 
     const BAS_Y = canvasSize.height - 250;
 
@@ -103,6 +103,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         const DIRECTIONS = [-1, 0, 1];
 
         if (nbPlateformes === 2) {
+            // Logique pour générer 2 plateformes
         } else {
             let nouveauemplacement = -1;
             while (nouveauemplacement < 0 || nouveauemplacement > 4) {
@@ -125,6 +126,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         // const emplacements = [0, 1, 2, 3, 4].map(i =>
         //     Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
         // );
+
+
     };
 
     const mondeRef = useRef(null);
@@ -229,7 +232,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         height={spike.height}
                     />
                 ))}
-                {plateformes.filter(plat => plat.hasMob).map((plat, index) => (
+{/*                 {plateformes.filter(plat => plat.hasMob).map((plat, index) => (
                     <Mob
                         key={`mob-${index}`}
                         x={plat.x + (plat.width / 2) - 15}
@@ -237,7 +240,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         width={20}
                         height={20}
                     />
-                ))}
+                ))} */}
 
                 <Lave
                     playAreaWidth={PLAY_AREA_WIDTH}
