@@ -73,7 +73,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const [texturesTowersRight, setTexturesTowersRight] = useState([]);
     const [texturePlatforme, setTexturePlatforme] = useState(null);
     const [texturesMob, setTexturesMob] = useState([]);
-
+    const [texturesLaveTop, setTexturesLaveTop] = useState([]);
+    const [texturesLaveBody, setTexturesLaveBody] = useState(null);
 
     useEffect(() => {
         Promise.all([
@@ -88,12 +89,19 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/bat_droite_haut.png"),
             PIXI.Assets.load("/assets/sprites/bat_gauche_bas.png"),
             PIXI.Assets.load("/assets/sprites/bat_gauche_haut.png"),
-        ]).then(([b1, b2, b3, b4, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH]) => {
+            PIXI.Assets.load("/assets/sprites/lava1.png"),
+            PIXI.Assets.load("/assets/sprites/lava2.png"),
+            PIXI.Assets.load("/assets/sprites/lava3.png"),
+            PIXI.Assets.load("/assets/sprites/lava4.png"),
+            PIXI.Assets.load("/assets/sprites/lava_body.png"),
+        ]).then(([b1, b2, b3, b4, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody]) => {
             setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturePlatforme(spritePlateforme);
-            setTexturesMob([batDB, batDH, batGB, batGH])
+            setTexturesMob([batDB, batDH, batGB, batGH]);
+            setTexturesLaveTop([l1, l2, l3, l4]);
+            setTexturesLaveBody(lavaBody);
         });
     }, []);
 
@@ -103,6 +111,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             onGameOver(finalScore);
         }
     }, [isGameOver]);
+
     const genererplatformes = (emplacementDeReference = 2, DIRECTIONS = [], newY = -1000, interdition = [], chanceSpawn = 0) => {
         let nouveauemplacement = -1;
         while (nouveauemplacement < 0 || nouveauemplacement > 4 || interdition.includes(nouveauemplacement)) {
@@ -123,10 +132,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         let chanceSpawn = 0;
 
         if (altitudeActuelle > 1000) {
-            chanceSpawn = 0.3;
-            if (altitudeActuelle >= 3800) chanceSpawn = 0.6;
-            else if (altitudeActuelle >= 2800) chanceSpawn = 0.5;
-            else if (altitudeActuelle >= 1800) chanceSpawn = 0.4;
+            chanceSpawn = 0.15;
+            if (altitudeActuelle >= 3800) chanceSpawn = 0.4;
+            else if (altitudeActuelle >= 2800) chanceSpawn = 0.3;
+            else if (altitudeActuelle >= 1800) chanceSpawn = 0.2;
             // let nouveauemplacement = -1;
             // while (nouveauemplacement < 0 || nouveauemplacement > 4) {
             //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
@@ -288,7 +297,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         });
     });
 
-    if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0 || texturesMob.length === 0) return null;
+    if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0 || texturesMob.length === 0 || texturesLaveTop.length === 0 || !texturesLaveBody) return null;
 
     return (
         <pixiContainer>
@@ -361,6 +370,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     canvasHeight={canvasSize.height}
                     cameraY={cameraY}
                     laveY={laveY}
+                    texturesSurface={texturesLaveTop}
+                    textureCorps={texturesLaveBody}
                 />
 
                 <Joueur
