@@ -5,26 +5,31 @@ import { checkCollision } from "../../helpers/common.js";
 
 extend({ Graphics });
 
-export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, playAreaWidth = 900 }) => {
+export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, acceleration = 2.5 }) => {
     const playerRef = useRef(null);
+    const isInitialized = useRef(false);
+    const miniBoostBuffer = useRef(0);
+
     const physics = useRef({
         velocityY: 0,
         velocityX: 0,
         gravity: 1,
         jumpForce: -18,
         friction: 0.8,
-        acceleration: 2.5,
+        acceleration: acceleration,
         maxSpeed: 8,
         onGround: false
     });
-    
+
     const jumpBuffer = useRef(0);
     const nocolitionbuffer = useRef(0);
-    const keys = useRef({ q: false, d: false });
+    const keys = useRef({ q: false, d: false, z: false });
 
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.code === 'Space') {
+            if (isGameOver) return;
+
+            if (e.code === 'Space' || e.key.toLowerCase() === 'z') {
                 e.preventDefault();
                 jumpBuffer.current = 15;
             }
@@ -32,44 +37,68 @@ export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, 
             if (e.key.toLowerCase() === 'd') keys.current.d = true;
         };
         const handleKeyUp = (e) => {
-            if (e.code === 'Space' && physics.current.velocityY < 0) {
+            if ((e.code === 'Space' || e.key.toLowerCase() === 'z') && physics.current.velocityY < 0) {
                 physics.current.velocityY *= 0.5;
                 jumpBuffer.current = 0;
             }
             if (e.key.toLowerCase() === 'q') keys.current.q = false;
             if (e.key.toLowerCase() === 'd') keys.current.d = false;
         };
+
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
+
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
         };
-    }, []);
+    }, [isGameOver]);
 
     useTick((ticker) => {
-        if (!playerRef.current) return;
-        const delta = ticker.deltaTime;
-        const p = physics.current;
+        if (!playerRef.current || isGameOver) return;
+
         const player = playerRef.current;
+        const p = physics.current;
+
+        if (!isInitialized.current) {
+            player.x = startX;
+            player.y = startY;
+            p.velocityX = 0;
+            p.velocityY = 0;
+            isInitialized.current = true;
+
+            if (onPositionChange) {
+                onPositionChange({ x: player.x, y: player.y });
+            }
+            return;
+        }
+
+        let delta = ticker.deltaTime;
+        if (delta > 2) delta = 1;
 
         if (keys.current.q) p.velocityX -= p.acceleration * delta;
         if (keys.current.d) p.velocityX += p.acceleration * delta;
         p.velocityX *= p.friction;
+
         if (p.velocityX > p.maxSpeed) p.velocityX = p.maxSpeed;
         if (p.velocityX < -p.maxSpeed) p.velocityX = -p.maxSpeed;
-        
+
         player.x += p.velocityX * delta;
-        
+
         if (player.x < 0) player.x = 0;
-        if (player.x > playAreaWidth - taillejoueur) player.x = playAreaWidth - taillejoueur;
+        if (player.x > playAreaWidth - largeurJoueur) player.x = playAreaWidth - largeurJoueur;
 
         p.velocityY += p.gravity * delta;
+
+        if (p.velocityY > 12) {
+            p.velocityY = 12;
+        }
+
         player.y += p.velocityY * delta;
         p.onGround = false;
 
         plateformes.forEach((plat) => {
-            const joueurRect = { x: player.x, y: player.y, width: taillejoueur, height: taillejoueur };
+            const joueurRect = { x: player.x, y: player.y, width: largeurJoueur, height: hauteurJoueur };
 
             if (checkCollision(joueurRect, plat)) {
                 const overlapLeft = (joueurRect.x + joueurRect.width) - plat.x;
@@ -84,11 +113,11 @@ export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, 
                     if (overlapTop < overlapBottom) {
                         if (nocolitionbuffer.current <= 0) {
                             player.y = plat.y - joueurRect.height;
-                            p.velocityY = 0; 
+                            p.velocityY = 0;
                             p.onGround = true;
                         }
                     } else {
-                        jumpBuffer.current = 10;
+                        miniBoostBuffer.current = 5;
                     }
                 } else {
                     if (overlapLeft < overlapRight) {
@@ -101,11 +130,6 @@ export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, 
             }
         });
 
-        if (player.y >= 500) {
-            player.y = 500;
-            p.velocityY = 0;
-            p.onGround = true;
-        }
 
         if (jumpBuffer.current > 0 && p.onGround) {
             p.velocityY = p.jumpForce;
@@ -113,16 +137,23 @@ export const Joueur = ({ plateformes = [], onPositionChange, taillejoueur = 40, 
             jumpBuffer.current = 0;
         }
 
+        if (miniBoostBuffer.current > 0 && p.onGround) {
+            p.velocityY = p.jumpForce * 0.8;
+            p.onGround = false;
+            miniBoostBuffer.current = 0;
+        }
+
         if (jumpBuffer.current > 0) jumpBuffer.current -= 1;
-        
+        if (miniBoostBuffer.current > 0) miniBoostBuffer.current -= 1;
+
         if (onPositionChange) {
             onPositionChange({ x: player.x, y: player.y });
         }
     });
 
     const drawPlayer = useCallback((g) => {
-        g.clear().rect(0, 0, taillejoueur, taillejoueur).fill(0x100060);
-    }, [taillejoueur]);
+        g.clear().rect(0, 0, largeurJoueur, hauteurJoueur).fill(0x100060);
+    }, [largeurJoueur, hauteurJoueur]);
 
     return <pixiGraphics ref={playerRef} draw={drawPlayer} />;
-}
+};

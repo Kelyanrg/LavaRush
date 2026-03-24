@@ -1,62 +1,104 @@
-import { useCallback, useRef, useEffect } from "react"
+import { useRef, useEffect } from "react"
 import { useTick, extend } from "@pixi/react"
-import { Graphics } from "pixi.js"
+import { Sprite, Container } from "pixi.js"
 
-extend({ Graphics })
+extend({ Sprite, Container })
 
-export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY }) => {
-    const laveRef = useRef(null)
-    const estReveillee = useRef(false)
-    const HAUTEUR_VISIBLE_MINIMUM = 80
-    const autoScrollerY = useRef(canvasHeight - HAUTEUR_VISIBLE_MINIMUM)
+export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, texturesSurface, textureCorps }) => {
+    const laveContainerRef = useRef(null)
+    const surfaceRef = useRef(null)
+    const corpsRef = useRef(null)
+    const time = useRef(0)
 
+    const estActive = useRef(false)
+    const autoScrollerY = useRef(canvasHeight - 300)
+
+    const ratioLave = 385 / 586; 
+    const SURFACE_HEIGHT = playAreaWidth * ratioLave;
+
+    const HITBOX_OFFSET = SURFACE_HEIGHT * 0.4;
+    
     useEffect(() => {
-        const reveillerLave = (e) => {
-            if (e.code === 'Space' && !estReveillee.current) {
-                estReveillee.current = true
-                window.removeEventListener('keydown', reveillerLave)
+        const monterLave = (e) => {
+            if ((e.code === 'Space' || e.key.toLowerCase() === 'z') && !estActive.current) {
+                estActive.current = true
+                window.removeEventListener('keydown', monterLave)
             }
         }
 
-        window.addEventListener('keydown', reveillerLave)
-        
+        window.addEventListener('keydown', monterLave)
+
         return () => {
-            window.removeEventListener('keydown', reveillerLave);
+            window.removeEventListener('keydown', monterLave)
         }
     }, [])
 
-    const drawLave = useCallback((g) => {
-        g.clear().rect(0, 0, playAreaWidth, 300).fill(0xff4400)
-    }, [playAreaWidth])
-
     useTick((ticker) => {
-        if (!laveRef.current || !cameraY) return
-        
-        const basDeLecranVisible = (canvasHeight - cameraY.current) - HAUTEUR_VISIBLE_MINIMUM
-        
-        if (basDeLecranVisible < autoScrollerY.current) {
-            autoScrollerY.current = basDeLecranVisible
-        }
-        
-        if (estReveillee.current) {
-            const vitesseLave = 1.0
+        if (isGameOver || !laveContainerRef.current) return
+
+        if (estActive.current) {
+            let vitesseLave = 1.0
+
+            if (cameraY && cameraY.current > 0) {
+                const bonusDeVitesse = (cameraY.current / 3000) * 0.5
+                vitesseLave += bonusDeVitesse
+            }
+
+            const VITESSE_MAXIMUM = 4.8
+            if (vitesseLave > VITESSE_MAXIMUM) {
+                vitesseLave = VITESSE_MAXIMUM
+            }
+
+            if (cameraY) {
+                const positionEcranLave = autoScrollerY.current + cameraY.current;
+                const distanceSousEcran = positionEcranLave - canvasHeight;
+
+                if (distanceSousEcran > 300) {
+                    vitesseLave = 10.0 + (distanceSousEcran / 50); 
+                } else if (distanceSousEcran > 50) {
+                    vitesseLave = Math.max(vitesseLave, 6.5);
+                }
+            }
+
             autoScrollerY.current -= vitesseLave * ticker.deltaTime
-        } else {
-            autoScrollerY.current = basDeLecranVisible
         }
-        
-        laveRef.current.y = autoScrollerY.current
+
+        laveContainerRef.current.y = autoScrollerY.current
 
         if (laveY) {
-            laveY.current = autoScrollerY.current
+            laveY.current = autoScrollerY.current + HITBOX_OFFSET;
         }
-    });
+
+        if (corpsRef.current) {
+            const hauteurDynamique = canvasHeight - autoScrollerY.current + 500;
+            corpsRef.current.height = Math.max(100, hauteurDynamique);
+        }
+
+        if (surfaceRef.current && texturesSurface && texturesSurface.length === 4) {
+            time.current += ticker.deltaTime;
+            const animationSpeed = 0.15; 
+            const frameIndex = Math.floor(time.current * animationSpeed) % 4;
+            surfaceRef.current.texture = texturesSurface[frameIndex];
+        }
+    })
 
     return (
-        <pixiGraphics 
-            ref={laveRef} 
-            draw={drawLave} 
-            alpha={0.85} 
-        />
+        <pixiContainer ref={laveContainerRef}>
+            <pixiSprite
+                ref={corpsRef}
+                y={SURFACE_HEIGHT - 2}
+                width={playAreaWidth}
+                height={100}
+                texture={textureCorps}
+            />
+            
+            <pixiSprite
+                ref={surfaceRef}
+                y={0}
+                width={playAreaWidth}
+                height={SURFACE_HEIGHT}
+                texture={texturesSurface ? texturesSurface[0] : undefined}
+            />
+        </pixiContainer>
     )
 }
