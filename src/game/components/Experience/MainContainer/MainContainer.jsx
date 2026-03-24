@@ -232,7 +232,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         height={spike.height}
                     />
                 ))}
-                {plateformes.filter(plat => plat.hasMob).map((plat, index) => (
+{/*                 {plateformes.filter(plat => plat.hasMob).map((plat, index) => (
                     <Mob
                         key={`mob-${index}`}
                         x={plat.x + (plat.width / 2) - 15}
@@ -240,7 +240,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         width={20}
                         height={20}
                     />
-                ))}
+                ))} */}
 
                 <Lave
                     playAreaWidth={PLAY_AREA_WIDTH}
