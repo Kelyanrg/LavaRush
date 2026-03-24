@@ -8,6 +8,7 @@ extend({ Graphics });
 export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, acceleration = 2.5 }) => {
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
+    const miniBoostBuffer = useRef(0);
 
     const physics = useRef({
         velocityY: 0,
@@ -22,13 +23,13 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
 
     const jumpBuffer = useRef(0);
     const nocolitionbuffer = useRef(0);
-    const keys = useRef({ q: false, d: false });
+    const keys = useRef({ q: false, d: false, z: false });
 
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (isGameOver) return;
 
-            if (e.code === 'Space') {
+            if (e.code === 'Space' || e.key.toLowerCase() === 'z') {
                 e.preventDefault();
                 jumpBuffer.current = 15;
             }
@@ -36,7 +37,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             if (e.key.toLowerCase() === 'd') keys.current.d = true;
         };
         const handleKeyUp = (e) => {
-            if (e.code === 'Space' && physics.current.velocityY < 0) {
+            if ((e.code === 'Space' || e.key.toLowerCase() === 'z') && physics.current.velocityY < 0) {
                 physics.current.velocityY *= 0.5;
                 jumpBuffer.current = 0;
             }
@@ -116,7 +117,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
                             p.onGround = true;
                         }
                     } else {
-                        jumpBuffer.current = 10;
+                        miniBoostBuffer.current = 5;
                     }
                 } else {
                     if (overlapLeft < overlapRight) {
@@ -136,7 +137,14 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             jumpBuffer.current = 0;
         }
 
+        if (miniBoostBuffer.current > 0 && p.onGround) {
+            p.velocityY = p.jumpForce * 0.8;
+            p.onGround = false;
+            miniBoostBuffer.current = 0;
+        }
+
         if (jumpBuffer.current > 0) jumpBuffer.current -= 1;
+        if (miniBoostBuffer.current > 0) miniBoostBuffer.current -= 1;
 
         if (onPositionChange) {
             onPositionChange({ x: player.x, y: player.y });
@@ -144,7 +152,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     });
 
     const drawPlayer = useCallback((g) => {
-        g.clear().rect(0, 0, largeurJoueur, hauteurJoueur).fill(0x100060);
+        g.clear().rect(0, 0, 30, 50).fill(0x100060);
     }, [largeurJoueur, hauteurJoueur]);
 
     return <pixiGraphics ref={playerRef} draw={drawPlayer} />;
