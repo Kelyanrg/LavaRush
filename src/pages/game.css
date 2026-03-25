@@ -52,6 +52,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -103,10 +104,12 @@
 }
 
 @keyframes pulseGlow {
+
   0%,
   100% {
     filter: drop-shadow(0 0 25px rgba(255, 80, 0, 0.5));
   }
+
   50% {
     filter: drop-shadow(0 0 50px rgba(255, 120, 0, 0.9));
   }
@@ -139,12 +142,14 @@
 }
 
 @keyframes pulseGlowText {
+
   0%,
   100% {
     text-shadow:
       0 0 25px rgba(255, 80, 0, 0.5),
       0 4px 0 #8b0000;
   }
+
   50% {
     text-shadow:
       0 0 50px rgba(255, 120, 0, 0.9),
@@ -173,8 +178,8 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.instructions > p,
-.gameover-card > p {
+.instructions>p,
+.gameover-card>p {
   font-family: "acme", sans-serif;
   font-size: 1.3rem;
   color: rgba(255, 255, 255, 0.85);
@@ -201,10 +206,12 @@
 }
 
 @keyframes pulseScoreGlow {
+
   0%,
   100% {
     box-shadow: 0 0 15px rgba(255, 80, 0, 0.2);
   }
+
   50% {
     box-shadow: 0 0 30px rgba(255, 120, 0, 0.4);
   }
@@ -224,10 +231,12 @@
 }
 
 @keyframes pulseRecordGlow {
+
   0%,
   100% {
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
   }
+
   50% {
     box-shadow: 0 0 35px rgba(255, 215, 0, 0.6);
   }
@@ -323,12 +332,10 @@
   left: -75%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
+  background: linear-gradient(120deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent);
   transform: skewX(-20deg);
   animation: btnShine 3s ease-in-out infinite;
 }
@@ -337,6 +344,7 @@
   0% {
     left: -75%;
   }
+
   40%,
   100% {
     left: 125%;
@@ -386,277 +394,282 @@
     gameoverPulse 2s ease-in-out infinite 0.6s;
   margin: 0;
   text-align: center;
-/* ─── GOLDEN BUTTON (create account) ────────────────────────── */
-.btn-golden {
-  background: linear-gradient(135deg, #ffd700, #ffa500);
-  border: none;
-  color: #1a1a1a;
-  font-family: "acme", sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  padding: 14px 28px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-  box-shadow: 0 4px 15px rgba(255, 200, 0, 0.4);
-}
 
-.btn-golden:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 25px rgba(255, 200, 0, 0.6);
-}
+  /* ─── GOLDEN BUTTON (create account) ────────────────────────── */
+  .btn-golden {
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    border: none;
+    color: #1a1a1a;
+    font-family: "acme", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(255, 200, 0, 0.4);
+  }
 
-.btn-golden:active {
-  transform: scale(0.98);
-}
+  .btn-golden:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px rgba(255, 200, 0, 0.6);
+  }
 
-/* ─── BUTTONS GROUP ─────────────────────────────────────────── */
-.buttons-group {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
+  .btn-golden:active {
+    transform: scale(0.98);
+  }
 
-/* ═══════════════════════════════════════════════════════════════
+  /* ─── BUTTONS GROUP ─────────────────────────────────────────── */
+  .buttons-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
    GAME OVER SPECIFIC
    ═══════════════════════════════════════════════════════════════ */
 
-.gameover-score-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.gameover-score-section .score-label {
-  font-family: "acme", sans-serif;
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-.gameover-score-section .score-value {
-  font-family: "supersquad", sans-serif;
-  font-size: 3.5rem;
-  color: #fff;
-  text-shadow:
-    0 0 20px rgba(255, 150, 0, 0.5),
-    0 2px 0 rgba(0, 0, 0, 0.3);
-  line-height: 1;
-}
-
-/* ─── GUEST PROMPT ──────────────────────────────────────────── */
-.guest-prompt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
-  background: rgba(255, 200, 100, 0.05);
-  border: 1px dashed rgba(255, 200, 100, 0.3);
-  border-radius: 12px;
-  width: 100%;
-}
-
-.guest-prompt p {
-  font-family: "acme", sans-serif;
-  font-size: 1rem;
-  color: rgba(255, 200, 100, 0.9);
-  text-align: center;
-  margin: 0;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SHARED ELEMENTS
-   ═══════════════════════════════════════════════════════════════ */
-
-/* ─── HINT TEXT ─────────────────────────────────────────────── */
-.hint-text {
-  font-family: "acme", sans-serif;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.4);
-  letter-spacing: 1px;
-}
-
-/* ─── FADE OUT TRANSITION ───────────────────────────────────── */
-.fading-out {
-  animation: fadeOut 0.5s ease-out forwards;
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-/* ─── SCORE DISPLAY IN-GAME (HUD) ───────────────────────────── */
-.hud-score {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: "supersquad", sans-serif;
-  font-size: 1.8rem;
-  color: #fff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-  z-index: 30;
-  pointer-events: none;
-}
-
-.hud-score span {
-  color: #ff9a40;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE
-   ═══════════════════════════════════════════════════════════════ */
-
-@media (max-width: 768px) {
-  .overlay,
-  .overlay-start-screen,
-  .game-over-screen {
-    gap: 20px;
-    padding: 30px 16px;
+  .gameover-score-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
   }
 
-  .title-img {
-    width: clamp(250px, 70vw, 400px);
-  }
-
-  .gameover-title {
-    font-size: 2.5rem;
-  }
-
-  .instructions,
-  .gameover-card {
-    padding: 20px 24px;
-    gap: 16px;
-  }
-
-  .controls {
-    gap: 20px;
-  }
-
-  .control-icon {
-    height: 48px;
-  }
-
-  .btn-main {
-    padding: 16px 50px;
-    font-size: 1.1rem;
-  }
-
-  .btn-secondary {
-    padding: 12px 22px;
-    font-size: 0.95rem;
-  }
-
-  .gameover-score-section .score-value {
-    font-size: 3rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .overlay,
-  .overlay-start-screen,
-  .game-over-screen {
-    gap: 16px;
-    padding: 20px 12px;
-  }
-
-  .title-img {
-    width: 220px;
-  }
-
-  .gameover-title {
-    font-size: 2rem;
+  .gameover-score-section .score-label {
+    font-family: "acme", sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
     letter-spacing: 2px;
   }
 
-  .instructions,
-  .gameover-card {
-    padding: 16px 14px;
-    gap: 14px;
-    width: 95%;
-  }
-
-  .instructions > p,
-  .gameover-card > p {
-    font-size: 1rem;
-    padding: 10px 12px;
-  }
-
-  .best-score-display,
-  .gameover-score-badge {
-    font-size: 1.2rem;
-    padding: 10px 20px;
-  }
-
-  .new-record-badge {
-    font-size: 1.1rem;
-    padding: 10px 20px;
-  }
-
-  .controls {
-    gap: 14px;
-  }
-
-  .control-icon {
-    height: 42px;
-  }
-
-  .control-gauche p,
-  .control-droite p,
-  .control-jump p {
-    font-size: 0.85rem;
-  }
-
-  .btn-main {
-    padding: 14px 40px;
-    font-size: 1rem;
-  }
-
-  .btn-secondary {
-    padding: 10px 18px;
-    font-size: 0.9rem;
-  }
-
-  .btn-golden {
-    padding: 12px 22px;
-    font-size: 0.95rem;
-  }
-
-  .btn-back {
-    top: 16px;
-    left: 16px;
-    padding: 8px 16px;
-    font-size: 0.85rem;
-  }
-
   .gameover-score-section .score-value {
-    font-size: 2.5rem;
+    font-family: "supersquad", sans-serif;
+    font-size: 3.5rem;
+    color: #fff;
+    text-shadow:
+      0 0 20px rgba(255, 150, 0, 0.5),
+      0 2px 0 rgba(0, 0, 0, 0.3);
+    line-height: 1;
   }
 
+  /* ─── GUEST PROMPT ──────────────────────────────────────────── */
   .guest-prompt {
-    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: rgba(255, 200, 100, 0.05);
+    border: 1px dashed rgba(255, 200, 100, 0.3);
+    border-radius: 12px;
+    width: 100%;
   }
 
   .guest-prompt p {
-    font-size: 0.9rem;
+    font-family: "acme", sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 200, 100, 0.9);
+    text-align: center;
+    margin: 0;
   }
 
+  /* ═══════════════════════════════════════════════════════════════
+   SHARED ELEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+  /* ─── HINT TEXT ─────────────────────────────────────────────── */
   .hint-text {
-    font-size: 0.8rem;
+    font-family: "acme", sans-serif;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
   }
 
-  .buttons-group {
-    gap: 8px;
+  /* ─── FADE OUT TRANSITION ───────────────────────────────────── */
+  .fading-out {
+    animation: fadeOut 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* ─── SCORE DISPLAY IN-GAME (HUD) ───────────────────────────── */
+  .hud-score {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: "supersquad", sans-serif;
+    font-size: 1.8rem;
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    z-index: 30;
+    pointer-events: none;
+  }
+
+  .hud-score span {
+    color: #ff9a40;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+  @media (max-width: 768px) {
+
+    .overlay,
+    .overlay-start-screen,
+    .game-over-screen {
+      gap: 20px;
+      padding: 30px 16px;
+    }
+
+    .title-img {
+      width: clamp(250px, 70vw, 400px);
+    }
+
+    .gameover-title {
+      font-size: 2.5rem;
+    }
+
+    .instructions,
+    .gameover-card {
+      padding: 20px 24px;
+      gap: 16px;
+    }
+
+    .controls {
+      gap: 20px;
+    }
+
+    .control-icon {
+      height: 48px;
+    }
+
+    .btn-main {
+      padding: 16px 50px;
+      font-size: 1.1rem;
+    }
+
+    .btn-secondary {
+      padding: 12px 22px;
+      font-size: 0.95rem;
+    }
+
+    .gameover-score-section .score-value {
+      font-size: 3rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+
+    .overlay,
+    .overlay-start-screen,
+    .game-over-screen {
+      gap: 16px;
+      padding: 20px 12px;
+    }
+
+    .title-img {
+      width: 220px;
+    }
+
+    .gameover-title {
+      font-size: 2rem;
+      letter-spacing: 2px;
+    }
+
+    .instructions,
+    .gameover-card {
+      padding: 16px 14px;
+      gap: 14px;
+      width: 95%;
+    }
+
+    .instructions>p,
+    .gameover-card>p {
+      font-size: 1rem;
+      padding: 10px 12px;
+    }
+
+    .best-score-display,
+    .gameover-score-badge {
+      font-size: 1.2rem;
+      padding: 10px 20px;
+    }
+
+    .new-record-badge {
+      font-size: 1.1rem;
+      padding: 10px 20px;
+    }
+
+    .controls {
+      gap: 14px;
+    }
+
+    .control-icon {
+      height: 42px;
+    }
+
+    .control-gauche p,
+    .control-droite p,
+    .control-jump p {
+      font-size: 0.85rem;
+    }
+
+    .btn-main {
+      padding: 14px 40px;
+      font-size: 1rem;
+    }
+
+    .btn-secondary {
+      padding: 10px 18px;
+      font-size: 0.9rem;
+    }
+
+    .btn-golden {
+      padding: 12px 22px;
+      font-size: 0.95rem;
+    }
+
+    .btn-back {
+      top: 16px;
+      left: 16px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+    }
+
+    .gameover-score-section .score-value {
+      font-size: 2.5rem;
+    }
+
+    .guest-prompt {
+      padding: 14px 16px;
+    }
+
+    .guest-prompt p {
+      font-size: 0.9rem;
+    }
+
+    .hint-text {
+      font-size: 0.8rem;
+    }
+
+    .buttons-group {
+      gap: 8px;
+    }
   }
 }

@@ -5,8 +5,7 @@ import { checkCollision } from "../../helpers/common.js";
 
 extend({ Sprite });
 
-export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, acceleration = 2.5, texturesPerso }) => {
-export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, ScaleY = 1, ScaleX = 1, Scale = 1 }) => {
+export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, ScaleY = 1, ScaleX = 1, Scale = 1, texturesPerso }) => {
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
     const regardeAGauche = useRef(false);
@@ -162,12 +161,12 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             if (p.velocityX > 0.5) regardeAGauche.current = false;
 
             if (!p.onGround) {
-                textureFinale = regardeAGauche.current 
+                textureFinale = regardeAGauche.current
                     ? texturesPerso[3]
                     : texturesPerso[2];
             } else {
                 if (Math.abs(p.velocityX) > 0.5) {
-                    textureFinale = regardeAGauche.current 
+                    textureFinale = regardeAGauche.current
                         ? texturesPerso[5]
                         : texturesPerso[4];
                 } else {
@@ -188,11 +187,11 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     });
 
     return (
-        <pixiSprite 
-            ref={playerRef} 
+        <pixiSprite
+            ref={playerRef}
             width={largeurJoueur}
             height={hauteurJoueur}
-            texture={texturesPerso && texturesPerso.length > 0 ? texturesPerso[0] : undefined} 
+            texture={texturesPerso && texturesPerso.length > 0 ? texturesPerso[0] : undefined}
         />
     );
 };
