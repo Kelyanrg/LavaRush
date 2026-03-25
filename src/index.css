@@ -1,9 +1,31 @@
+@font-face {
+  font-family: "supersquad";
+  src: url("/assets/fonts/super_squad/Super_Squad.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "acme";
+  src: url("/assets/fonts/acme/Acme-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 html,
-body,
-#root {
+body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   font-family: "acme", sans-serif;
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
 }

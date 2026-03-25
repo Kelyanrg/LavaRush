@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import "./signup.css";
 import { Helmet } from "react-helmet-async";
@@ -11,19 +11,36 @@ export default function Signup() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const pendingScore = location.state?.pendingScore ?? null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const { error } = await supabase.auth.signUp({
+
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { username } },
     });
-    if (error) setError(error.message);
-    else navigate("/game");
+
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+    // Si un score est en attente (vient d'une partie en guest), on le sauvegarde
+    if (pendingScore !== null && pendingScore > 0 && data.user) {
+      await supabase.from("scores").upsert(
+        { user_id: data.user.id, altitude: pendingScore },
+        { onConflict: "user_id" }
+      );
+    }
+
     setLoading(false);
+    navigate("/game");
   };
 
   return (
