@@ -76,7 +76,7 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
 
         if (surfaceRef.current && texturesSurface && texturesSurface.length === 4) {
             time.current += ticker.deltaTime;
-            const animationSpeed = 0.15; 
+            const animationSpeed = 0.12; 
             const frameIndex = Math.floor(time.current * animationSpeed) % 4;
             surfaceRef.current.texture = texturesSurface[frameIndex];
         }

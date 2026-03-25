@@ -1,13 +1,15 @@
 import { extend, useTick } from "@pixi/react";
-import { Graphics } from "pixi.js";
+import { Sprite } from "pixi.js";
 import { useCallback, useRef, useEffect } from "react";
 import { checkCollision } from "../../helpers/common.js";
 
-extend({ Graphics });
+extend({ Sprite });
 
-export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, acceleration = 2.5 }) => {
+export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, acceleration = 2.5, texturesPerso }) => {
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
+    const regardeAGauche = useRef(false);
+
     const miniBoostBuffer = useRef(0);
 
     const physics = useRef({
@@ -146,14 +148,55 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
         if (jumpBuffer.current > 0) jumpBuffer.current -= 1;
         if (miniBoostBuffer.current > 0) miniBoostBuffer.current -= 1;
 
+        // ========================================================
+        // --- ANIMATION DU JOUEUR ---
+        // ========================================================
+        // On vérifie qu'on a bien nos 6 images maintenant !
+        if (texturesPerso && texturesPerso.length === 6) {
+            let textureFinale = texturesPerso[0]; // Neutre Droite par défaut
+
+            // 1. Mémorisation de la direction
+            if (p.velocityX < -0.5) regardeAGauche.current = true;
+            if (p.velocityX > 0.5) regardeAGauche.current = false;
+
+            // 2. Choix de l'image
+            if (!p.onGround) {
+                // EN L'AIR
+                textureFinale = regardeAGauche.current 
+                    ? texturesPerso[3]  // Saut Gauche
+                    : texturesPerso[2]; // Saut Droite
+            } else {
+                // AU SOL
+                if (Math.abs(p.velocityX) > 0.5) {
+                    // IL COURT
+                    textureFinale = regardeAGauche.current 
+                        ? texturesPerso[5]  // Course Gauche
+                        : texturesPerso[4]; // Course Droite
+                } else {
+                    // IMMOBILE
+                    textureFinale = regardeAGauche.current
+                        ? texturesPerso[1]  // Neutre Gauche
+                        : texturesPerso[0]; // Neutre Droite
+                }
+            }
+
+            // 3. Application ultra rapide de la texture
+            if (player.texture !== textureFinale) {
+                player.texture = textureFinale;
+            }
+        }
+
         if (onPositionChange) {
             onPositionChange({ x: player.x, y: player.y });
         }
     });
 
-    const drawPlayer = useCallback((g) => {
-        g.clear().rect(0, 0, largeurJoueur, hauteurJoueur).fill(0x100060);
-    }, [largeurJoueur, hauteurJoueur]);
-
-    return <pixiGraphics ref={playerRef} draw={drawPlayer} />;
+    return (
+        <pixiSprite 
+            ref={playerRef} 
+            width={largeurJoueur}
+            height={hauteurJoueur}
+            texture={texturesPerso && texturesPerso.length > 0 ? texturesPerso[0] : undefined} 
+        />
+    );
 };

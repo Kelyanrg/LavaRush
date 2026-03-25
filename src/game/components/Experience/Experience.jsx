@@ -18,7 +18,18 @@ export const Experience = ({ onGameOver, userId }) => {
   }, []);
 
   return (
-    <Application width={canvasSize.width} height={canvasSize.height}>
+    <Application 
+    width={canvasSize.width} 
+    height={canvasSize.height} 
+    style={{ 
+                width: `${canvasSize.width}px`, 
+                height: `${canvasSize.height}px` 
+            }}
+    options={{ 
+                resolution: window.devicePixelRatio || 2, 
+                autoDensity: true,
+                antialias: true
+            }}>
       <MainContainer canvasSize={taille} onGameOver={onGameOver} />
     </Application>
   );
