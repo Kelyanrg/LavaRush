@@ -30,8 +30,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const PLAT_MARGIN = PLAT_WIDTH / 10;
     const acceleration = PLAT_WIDTH / 25;
 
-    const JOUEUR_WIDTH = PLAT_MARGIN * 1.8;
-    const JOUEUR_HEIGHT = JOUEUR_WIDTH * 1.8;
+    const JOUEUR_WIDTH = PLAT_MARGIN * 3;
+    const JOUEUR_HEIGHT = JOUEUR_WIDTH * 2;
 
     const MOB_WIDTH = PLAT_MARGIN * 6;
     const MOB_HEIGHT = MOB_WIDTH * 0.6;
@@ -39,6 +39,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     const BAS_Y = canvasSize.height - 250;
     const GAP_BETWEEN_PLAT = canvasSize.height / 5.9;
+
+    const SPIKE_HEIGHT = PLAT_HEIGHT / 2;
 
     const colonnesX = [0, 1, 2, 3, 4].map((i) =>
         Math.floor(
@@ -50,92 +52,39 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const joueurStartY = BAS_Y - JOUEUR_HEIGHT - 10;
 
     const [plateformes, setPlateformes] = useState([
-        {
-            emplacements: 1,
-            x: colonnesX[1],
-            y: BAS_Y,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        },
-        {
-            emplacements: 2,
-            x: colonnesX[2],
-            y: BAS_Y,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        },
-        {
-            emplacements: 3,
-            x: colonnesX[3],
-            y: BAS_Y,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        },
+        { emplacements: 1, x: colonnesX[1], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 2, x: colonnesX[2], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 3, x: colonnesX[3], y: BAS_Y, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-        {
-            emplacements: 1,
-            x: colonnesX[1],
-            y: BAS_Y - GAP_BETWEEN_PLAT,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        },
-        {
-            emplacements: 3,
-            x: colonnesX[3],
-            y: BAS_Y - GAP_BETWEEN_PLAT,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        },
+        { emplacements: 1, x: colonnesX[1], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 3, x: colonnesX[3], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-        {
-            emplacements: 0,
-            x: colonnesX[0],
-            y: BAS_Y - GAP_BETWEEN_PLAT * 2,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        },
-        {
-            emplacements: 4,
-            x: colonnesX[4],
-            y: BAS_Y - GAP_BETWEEN_PLAT * 2,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        },
+        { emplacements: 0, x: colonnesX[0], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 4, x: colonnesX[4], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT, hasSpike: true },
 
-        {
-            emplacements: 1,
-            x: colonnesX[1],
-            y: BAS_Y - GAP_BETWEEN_PLAT * 3,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        },
-        {
-            emplacements: 3,
-            x: colonnesX[3],
-            y: BAS_Y - GAP_BETWEEN_PLAT * 3,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        },
+        { emplacements: 1, x: colonnesX[1], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 3, x: colonnesX[3], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
-        {
-            emplacements: 2,
-            x: colonnesX[2],
-            y: BAS_Y - GAP_BETWEEN_PLAT * 4,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-        },
+        { emplacements: 2, x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT },
     ]);
-    const [spikes, setSpikes] = useState([
-        // { emplacements: 1, x: colonnesX[1], y: BAS_Y - 120 + PLAT_HEIGHT, width: PLAT_WIDTH, height: PLAT_HEIGHT / 2 }
-    ]);
+
+    const [spikes, setSpikes] = useState([{ 
+            emplacements: 4, 
+            x: colonnesX[4], 
+            y: (BAS_Y - 240) + PLAT_HEIGHT,
+            width: PLAT_WIDTH, 
+            height: SPIKE_HEIGHT 
+        }]);
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
     const [texturesTowersRight, setTexturesTowersRight] = useState([]);
     const [texturePlatforme, setTexturePlatforme] = useState(null);
     const [texturesMob, setTexturesMob] = useState([]);
+    const [textureSpikes, setTextureSpikes] = useState(null);
     const [texturesLaveTop, setTexturesLaveTop] = useState([]);
     const [texturesLaveBody, setTexturesLaveBody] = useState(null);
+    const [texturesPerso, setTexturesPerso] = useState([])
 
     useEffect(() => {
         Promise.all([
@@ -150,39 +99,33 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/bat_droite_haut.png"),
             PIXI.Assets.load("/assets/sprites/bat_gauche_bas.png"),
             PIXI.Assets.load("/assets/sprites/bat_gauche_haut.png"),
-            PIXI.Assets.load("/assets/sprites/lava1.png"),
-            PIXI.Assets.load("/assets/sprites/lava2.png"),
-            PIXI.Assets.load("/assets/sprites/lava3.png"),
-            PIXI.Assets.load("/assets/sprites/lava4.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava1.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava2.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava3.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava4.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava5.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava6.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava7.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava8.png"),
             PIXI.Assets.load("/assets/sprites/lava_body.png"),
-        ]).then(
-            ([
-                b1,
-                b2,
-                b3,
-                b4,
-                tl,
-                tr,
-                spritePlateforme,
-                batDB,
-                batDH,
-                batGB,
-                batGH,
-                l1,
-                l2,
-                l3,
-                l4,
-                lavaBody,
-            ]) => {
-                setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
-                setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
-                setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
-                setTexturePlatforme(spritePlateforme);
-                setTexturesMob([batDB, batDH, batGB, batGH]);
-                setTexturesLaveTop([l1, l2, l3, l4]);
-                setTexturesLaveBody(lavaBody);
-            },
-        );
+            PIXI.Assets.load("/assets/sprites/perso_neutre_droite.png"),
+            PIXI.Assets.load("/assets/sprites/perso_neutre_gauche.png"),
+            PIXI.Assets.load("/assets/sprites/perso_jump_droite.png"),
+            PIXI.Assets.load("/assets/sprites/perso_jump_gauche.png"),
+            PIXI.Assets.load("/assets/sprites/perso_run_droite.png"),
+            PIXI.Assets.load("/assets/sprites/perso_run_gauche.png"),
+            PIXI.Assets.load("/assets/sprites/spike_teste.png"),
+        ]).then(([b1, b2, b3, b4, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, l5, l6, l7, l8, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {            
+            setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
+            setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
+            setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
+            setTexturePlatforme(spritePlateforme);
+            setTexturesMob([batDB, batDH, batGB, batGH]);
+            setTexturesLaveTop([l1, l2, l3, l4, l5, l6, l7, l8]);
+            setTexturesLaveBody(lavaBody);
+            setTexturesPerso([persoND, persoNG, persoJD, persoJG, persoRD, persoRG]);
+            setTextureSpikes(spikes);
+        });
     }, []);
 
     useEffect(() => {
@@ -192,13 +135,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         }
     }, [isGameOver]);
 
-    const genererplatformes = (
-        emplacementDeReference = 2,
-        DIRECTIONS = [],
-        newY = -1000,
-        interdition = [],
-        chanceSpawn = 0,
-    ) => {
+    const genererplatformes = (emplacementDeReference = 2, DIRECTIONS = [], newY = -1000, interdition = [], chanceSpikes = 0) => {
         let nouveauemplacement = -1;
         while (
             nouveauemplacement < 0 ||
@@ -209,139 +146,88 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
             nouveauemplacement = emplacementDeReference + direction;
         }
-        return {
-            emplacements: nouveauemplacement,
-            x: colonnesX[nouveauemplacement],
-            y: newY,
-            width: PLAT_WIDTH,
-            height: PLAT_HEIGHT,
-            hasMob: Math.random() < chanceSpawn,
+
+        const isSpiked = chanceSpikes > 0 && Math.random() < chanceSpikes;
+        
+        if (chanceSpikes > 0 && Math.random() < chanceSpikes) {
+            setSpikes(prev => [...prev, { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY + PLAT_HEIGHT, width: PLAT_WIDTH, height: SPIKE_HEIGHT }]);
+        }
+        
+        return { 
+            emplacements: nouveauemplacement, 
+            x: colonnesX[nouveauemplacement], 
+            y: newY, 
+            width: PLAT_WIDTH, 
+            height: PLAT_HEIGHT, 
+            hasMob: false, 
+            hasSpike: isSpiked 
         };
-    };
+    }
 
     const genererPalier = (yMax, emplacements) => {
         const newY = Math.floor(yMax) - GAP_BETWEEN_PLAT;
         const nbPlateformes = 1 + Math.floor(Math.random() * 2);
-        // const nbPlateformes = 1;
         const DIRECTIONS = [-2, -1, -1, 0, 0, 1, 1, 2];
         const DIRECTIONS_SIMPLE = [-1, 0, 1];
         const altitudeActuelle = Math.floor(score.current / 10);
-        let chanceSpawn = 0;
+        let chanceSpawnMob = 0;
 
         if (altitudeActuelle > 1000) {
-            chanceSpawn = 0.15;
-            if (altitudeActuelle >= 3800) chanceSpawn = 0.4;
-            else if (altitudeActuelle >= 2800) chanceSpawn = 0.3;
-            else if (altitudeActuelle >= 1800) chanceSpawn = 0.2;
-            // let nouveauemplacement = -1;
-            // while (nouveauemplacement < 0 || nouveauemplacement > 4) {
-            //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
-            //     nouveauemplacement = (emplacements[0] + direction);
-            // }
-            const premierePlatforme = genererplatformes(
-                emplacements[0],
-                DIRECTIONS,
-                newY,
-                [],
-                chanceSpawn,
-            );
+            chanceSpawnMob = 0.2;
+            if (altitudeActuelle >= 3800) chanceSpawnMob = 0.5;
+            else if (altitudeActuelle >= 2800) chanceSpawnMob = 0.4;
+            else if (altitudeActuelle >= 1800) chanceSpawnMob = 0.3;
+        } else if (altitudeActuelle > 500) {
+            if (altitudeActuelle >= 800) chanceSpawnMob = 0.2;
+        }
 
+        let plateformesDuPalier = [];
+        
+        const chanceSpikes = (nbPlateformes === 1) ? 0 : (chanceSpawnMob / 2);
+
+        if (altitudeActuelle > 1000) {
+            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], chanceSpikes);
             if (nbPlateformes === 2) {
-                // let nouveauemplacement2 = -1;
-                // while (nouveauemplacement2 < 0 || nouveauemplacement2 > 4 || nouveauemplacement2 === nouveauemplacement) {
-                //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
-                //     nouveauemplacement2 = (nouveauemplacement + direction);
-                // }
-                // return [
-                //     { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-                //     { emplacements: nouveauemplacement2, x: colonnesX[nouveauemplacement2], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT }
-                // ];
-
-                return [
-                    premierePlatforme,
-                    genererplatformes(
-                        premierePlatforme.emplacements,
-                        DIRECTIONS,
-                        newY,
-                        [premierePlatforme.emplacements],
-                        chanceSpawn,
-                    ),
-                ];
+                const chanceSpikes2 = premierePlatforme.hasSpike ? 0 : chanceSpikes;
+                plateformesDuPalier = [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements], chanceSpikes2)];
             } else {
-                return [premierePlatforme];
+                plateformesDuPalier = [premierePlatforme];
             }
         } else if (altitudeActuelle > 500) {
-            if (altitudeActuelle >= 800) chanceSpawn = 0.3;
-            const premierePlatforme = genererplatformes(
-                emplacements[0],
-                DIRECTIONS_SIMPLE,
-                newY,
-                [],
-                chanceSpawn,
-            );
+            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS_SIMPLE, newY, [], chanceSpikes);
             if (nbPlateformes === 2) {
-                // let nouveauemplacement2 = -1;
-                // while (nouveauemplacement2 < 0 || nouveauemplacement2 > 4 || nouveauemplacement2 === nouveauemplacement) {
-                //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
-                //     nouveauemplacement2 = (nouveauemplacement + direction);
-                // }
-                // return [
-                //     { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-                //     { emplacements: nouveauemplacement2, x: colonnesX[nouveauemplacement2], y: newY, width: PLAT_WIDTH, height: PLAT_HEIGHT }
-                // ];
-
-                return [
-                    premierePlatforme,
-                    genererplatformes(
-                        premierePlatforme.emplacements,
-                        DIRECTIONS_SIMPLE,
-                        newY,
-                        [premierePlatforme.emplacements],
-                        chanceSpawn,
-                    ),
-                ];
+                const chanceSpikes2 = premierePlatforme.hasSpike ? 0 : chanceSpikes;
+                plateformesDuPalier = [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS_SIMPLE, newY, [premierePlatforme.emplacements], chanceSpikes2)];
             } else {
-                return [premierePlatforme];
+                plateformesDuPalier = [premierePlatforme];
             }
         } else {
-            // let nouveauemplacement = -1;
-            // while (nouveauemplacement < 0 || nouveauemplacement > 4) {
-            //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
-            //     nouveauemplacement = (emplacements[0] + direction);
-            // }
-            // let nouveauemplacement2 = -1;
-            // while (nouveauemplacement2 < 0 || nouveauemplacement2 > 4 || nouveauemplacement2 === nouveauemplacement) {
-            //     const direction = DIRECTIONS[Math.floor(Math.random() * 8)];
-            //     nouveauemplacement2 = (nouveauemplacement + direction);
-            // }
-            const premierePlatforme = genererplatformes(
-                emplacements[0],
-                DIRECTIONS,
-                newY,
-            );
-            const secondePlatforme = genererplatformes(
-                premierePlatforme.emplacements,
-                DIRECTIONS,
-                newY,
-                [premierePlatforme.emplacements],
-            );
+            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], 0);
+            const secondePlatforme = genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements], 0);
+            
             if (nbPlateformes === 2) {
-                return [
+                plateformesDuPalier = [
                     premierePlatforme,
                     secondePlatforme,
-                    genererplatformes(secondePlatforme.emplacements, DIRECTIONS, newY, [
-                        premierePlatforme.emplacements,
-                        secondePlatforme.emplacements,
-                    ]),
+                    genererplatformes(secondePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements, secondePlatforme.emplacements], 0),
                 ];
             } else {
-                return [premierePlatforme, secondePlatforme];
+                plateformesDuPalier = [premierePlatforme, secondePlatforme];
             }
         }
 
-        // const emplacements = [0, 1, 2, 3, 4].map(i =>
-        //     Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
-        // );
+        if (chanceSpawnMob > 0 && Math.random() < chanceSpawnMob) {
+            const plateformesDispos = plateformesDuPalier.filter(p => !p.hasSpike);
+            if (plateformesDispos.length > 0) {
+                const indexAleatoire = Math.floor(Math.random() * plateformesDispos.length);
+                plateformesDispos[indexAleatoire].hasMob = true;
+            } else if (plateformesDuPalier.length > 0) {
+                const indexAleatoire = Math.floor(Math.random() * plateformesDuPalier.length);
+                plateformesDuPalier[indexAleatoire].hasMob = true;
+            }
+        }
+
+        return plateformesDuPalier;
     };
     console.log("ScaleX:", scaleX, "ScaleY:", scaleY, "Scale:", scale);
     const mondeRef = useRef(null);
@@ -366,17 +252,43 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
             cibleCameraY.current += diff;
 
-            setPlateformes((prev) => {
-                const nouvelles = [...prev];
-                while (Math.min(...nouvelles.map((p) => p.y)) > y - canvasSize.height) {
-                    const yMin = Math.min(...nouvelles.map((p) => p.y));
+            setPlateformes(prev => {
+                let nouvelles = prev.map(p => ({ ...p })); 
+                
+                while (Math.min(...nouvelles.map(p => p.y)) > y - canvasSize.height) {
+                    const yMin = Math.min(...nouvelles.map(p => p.y));
+                    
                     const emplacementsDernierPalier = nouvelles
-                        .filter((p) => p.y === yMin)
-                        .map((p) => p.emplacements);
-                    const palier = genererPalier(
-                        Math.min(...nouvelles.map((p) => p.y)),
-                        emplacementsDernierPalier,
-                    );
+                        .filter(p => p.y === yMin)
+                        .map(p => p.emplacements);
+                        
+                    const emplacementsAvantDernier = nouvelles
+                        .filter(p => p.y === yMin + 120)
+                        .map(p => p.emplacements);
+
+                    const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)), emplacementsDernierPalier);
+                    
+                    palier.forEach(nouvellePlat => {
+                        const col = nouvellePlat.emplacements;
+                        
+                        if (emplacementsDernierPalier.includes(col) && emplacementsAvantDernier.includes(col)) {
+                            nouvellePlat.hasMob = false;
+                            nouvelles = nouvelles.map(p => {
+                                if (p.emplacements === col && (p.y === yMin || p.y === yMin + 120)) {
+                                    return { ...p, hasMob: false };
+                                }
+                                return p;
+                            });
+
+                            setSpikes(prevSpikes => prevSpikes.filter(spike => {
+                                const surNouvelle = (spike.emplacements === col && spike.y === nouvellePlat.y + PLAT_HEIGHT);
+                                const surNiveauMoins1 = (spike.emplacements === col && spike.y === yMin + PLAT_HEIGHT);
+                                const surNiveauMoins2 = (spike.emplacements === col && spike.y === yMin + 120 + PLAT_HEIGHT);
+                                return !(surNouvelle || surNiveauMoins1 || surNiveauMoins2);
+                            }));
+                        }
+                    });
+
                     nouvelles.push(...palier);
                 }
                 return nouvelles;
@@ -391,6 +303,13 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         }
 
         dernierY.current = y;
+        spikes.forEach((spike) => {
+            const joueurRect = { x: x, y: y, width: JOUEUR_WIDTH, height: JOUEUR_HEIGHT };
+
+            if (checkCollision(joueurRect, spike)) {
+                setIsGameOver(true);
+            }
+        });
 
         if (y + JOUEUR_HEIGHT >= laveY.current) {
             setIsGameOver(true);
@@ -428,15 +347,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         });
     });
 
-    if (
-        texturesBiomes.length === 0 ||
-        texturesTowersLeft.length === 0 ||
-        texturesTowersRight.length === 0 ||
-        texturesMob.length === 0 ||
-        texturesLaveTop.length === 0 ||
-        !texturesLaveBody
-    )
-        return null;
+    if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0 || texturesMob.length === 0 || texturesLaveTop.length === 0 || !texturesLaveBody || texturesPerso.length === 0 || !textureSpikes) return null;
 
     return (
         <pixiContainer>
@@ -467,6 +378,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         y={spike.y}
                         width={spike.width}
                         height={spike.height}
+                        textureSpikes={textureSpikes}
                     />
                 ))}
 
@@ -524,6 +436,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     hauteurJoueur={JOUEUR_HEIGHT}
                     startX={joueurStartX}
                     startY={joueurStartY}
+                    texturesPerso={texturesPerso}
                     ScaleX={scaleX}
                     ScaleY={scaleY}
                     Scale={scale}

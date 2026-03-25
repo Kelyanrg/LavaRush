@@ -1,13 +1,16 @@
 import { extend, useTick } from "@pixi/react";
-import { Graphics } from "pixi.js";
+import { Sprite } from "pixi.js";
 import { useCallback, useRef, useEffect } from "react";
 import { checkCollision } from "../../helpers/common.js";
 
-extend({ Graphics });
+extend({ Sprite });
 
+export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, acceleration = 2.5, texturesPerso }) => {
 export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, ScaleY = 1, ScaleX = 1, Scale = 1 }) => {
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
+    const regardeAGauche = useRef(false);
+
     const miniBoostBuffer = useRef(0);
     const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 5) * Scale);
     const friction = 0.7;
@@ -152,14 +155,44 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
         if (jumpBuffer.current > 0) jumpBuffer.current -= 1;
         if (miniBoostBuffer.current > 0) miniBoostBuffer.current -= 1;
 
+        if (texturesPerso && texturesPerso.length === 6) {
+            let textureFinale = texturesPerso[0];
+
+            if (p.velocityX < -0.5) regardeAGauche.current = true;
+            if (p.velocityX > 0.5) regardeAGauche.current = false;
+
+            if (!p.onGround) {
+                textureFinale = regardeAGauche.current 
+                    ? texturesPerso[3]
+                    : texturesPerso[2];
+            } else {
+                if (Math.abs(p.velocityX) > 0.5) {
+                    textureFinale = regardeAGauche.current 
+                        ? texturesPerso[5]
+                        : texturesPerso[4];
+                } else {
+                    textureFinale = regardeAGauche.current
+                        ? texturesPerso[1]
+                        : texturesPerso[0];
+                }
+            }
+
+            if (player.texture !== textureFinale) {
+                player.texture = textureFinale;
+            }
+        }
+
         if (onPositionChange) {
             onPositionChange({ x: player.x, y: player.y });
         }
     });
 
-    const drawPlayer = useCallback((g) => {
-        g.clear().rect(0, 0, largeurJoueur, hauteurJoueur).fill(0x100060);
-    }, [largeurJoueur, hauteurJoueur]);
-
-    return <pixiGraphics ref={playerRef} draw={drawPlayer} />;
+    return (
+        <pixiSprite 
+            ref={playerRef} 
+            width={largeurJoueur}
+            height={hauteurJoueur}
+            texture={texturesPerso && texturesPerso.length > 0 ? texturesPerso[0] : undefined} 
+        />
+    );
 };

@@ -4,13 +4,9 @@ import { useCallback } from "react";
 
 extend({ Graphics, Sprite });
 
-export const Spikes = ({ x, y, width, height }) => {
-    const draw = useCallback((graphics) => {
-        graphics.clear().rect(0, 0, width, height).fill(0xff0000);
-    }, [width, height]);
+export const Spikes = ({ x, y, width, height, textureSpikes }) => {
+    if (!textureSpikes) return null
     return (
-        <pixiGraphics
-            draw={draw} x={x} y={y}
-        />
+        <pixiSprite x={x} y={y} width={width} height={height} texture={textureSpikes} />
     );
 };
