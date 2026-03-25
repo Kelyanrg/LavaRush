@@ -342,6 +342,7 @@
     titleShake 0.6s ease-out,
     gameoverPulse 2s ease-in-out infinite 0.6s;
   margin: 0;
+  text-align: center;
 }
 
 @keyframes titleShake {
