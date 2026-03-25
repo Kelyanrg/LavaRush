@@ -14,7 +14,7 @@ export default function Game() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const isGuest = user?.app_metadata?.provider === "anonymous";
+  const isGuest = user?.is_anonymous === true;
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -55,15 +55,17 @@ export default function Game() {
       setIsNewRecord(true);
       setBestScore(finalScore);
 
-      const { error } = await supabase.from("scores").upsert(
-        {
-          user_id: user.id,
-          altitude: finalScore,
-        },
-        { onConflict: "user_id" },
-      );
+      if (!isGuest && user) {
+        const { error } = await supabase.from("scores").upsert(
+          {
+            user_id: user.id,
+            altitude: finalScore,
+          },
+          { onConflict: "user_id" },
+        );
 
-      if (error) console.error("Erreur détaillée:", error.message);
+        if (error) console.error("Erreur détaillée:", error.message);
+      }
     } else {
       setIsNewRecord(false);
     }
@@ -164,7 +166,7 @@ export default function Game() {
                 <p>Crée un compte pour sauvegarder ton score !</p>
                 <button
                   className="btn-golden"
-                  onClick={() => navigate("/register")}
+                  onClick={() => navigate("/signup", { state: { pendingScore: currentScore } })}
                 >
                   Créer un compte
                 </button>
