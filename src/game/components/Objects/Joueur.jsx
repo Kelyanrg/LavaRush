@@ -9,8 +9,8 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
     const miniBoostBuffer = useRef(0);
-    const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 25) * Scale);
-    const friction = 0.67 * ScaleX;
+    const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 5) * Scale);
+    const friction = 0.7;
     const gravity = 0.98 * ScaleY;
     const maxSpeed = 8 * Scale;
 
@@ -59,7 +59,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             window.removeEventListener('keyup', handleKeyUp);
         };
     }, [isGameOver]);
-
+    console.log("acceleration:", acceleration);
     useTick((ticker) => {
         if (!playerRef.current || isGameOver) return;
 
@@ -84,7 +84,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
 
         if (keys.current.q) p.velocityX -= p.acceleration * delta;
         if (keys.current.d) p.velocityX += p.acceleration * delta;
-        p.velocityX *= p.friction;
+        p.velocityX *= Math.pow(p.friction, delta);
 
         if (p.velocityX > p.maxSpeed) p.velocityX = p.maxSpeed;
         if (p.velocityX < -p.maxSpeed) p.velocityX = -p.maxSpeed;
