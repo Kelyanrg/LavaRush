@@ -59,7 +59,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         { emplacements: 3, x: colonnesX[3], y: BAS_Y - 120, width: PLAT_WIDTH, height: PLAT_HEIGHT },
 
         { emplacements: 0, x: colonnesX[0], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
-        { emplacements: 4, x: colonnesX[4], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT },
+        { emplacements: 4, x: colonnesX[4], y: BAS_Y - 240, width: PLAT_WIDTH, height: PLAT_HEIGHT, hasSpike: true },
 
         { emplacements: 1, x: colonnesX[1], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
         { emplacements: 3, x: colonnesX[3], y: BAS_Y - 360, width: PLAT_WIDTH, height: PLAT_HEIGHT },
@@ -67,7 +67,13 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         { emplacements: 2, x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT },
     ]);
 
-    const [spikes, setSpikes] = useState([]);
+    const [spikes, setSpikes] = useState([{ 
+            emplacements: 4, 
+            x: colonnesX[4], 
+            y: (BAS_Y - 240) + PLAT_HEIGHT,
+            width: PLAT_WIDTH, 
+            height: SPIKE_HEIGHT 
+        }]);
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
@@ -96,6 +102,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/test/lava2.png"),
             PIXI.Assets.load("/assets/sprites/test/lava3.png"),
             PIXI.Assets.load("/assets/sprites/test/lava4.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava5.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava6.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava7.png"),
+            PIXI.Assets.load("/assets/sprites/test/lava8.png"),
             PIXI.Assets.load("/assets/sprites/lava_body.png"),
             PIXI.Assets.load("/assets/sprites/perso_neutre_droite.png"),
             PIXI.Assets.load("/assets/sprites/perso_neutre_gauche.png"),
@@ -103,14 +113,14 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/perso_jump_gauche.png"),
             PIXI.Assets.load("/assets/sprites/perso_run_droite.png"),
             PIXI.Assets.load("/assets/sprites/perso_run_gauche.png"),
-            PIXI.Assets.load("/assets/sprites/spike.png"),
-        ]).then(([b1, b2, b3, b4, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {            
+            PIXI.Assets.load("/assets/sprites/spike_teste.png"),
+        ]).then(([b1, b2, b3, b4, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, l5, l6, l7, l8, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {            
             setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturePlatforme(spritePlateforme);
             setTexturesMob([batDB, batDH, batGB, batGH]);
-            setTexturesLaveTop([l1, l2, l3, l4]);
+            setTexturesLaveTop([l1, l2, l3, l4, l5, l6, l7, l8]);
             setTexturesLaveBody(lavaBody);
             setTexturesPerso([persoND, persoNG, persoJD, persoJG, persoRD, persoRG]);
             setTextureSpikes(spikes);
@@ -130,6 +140,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             const direction = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
             nouveauemplacement = (emplacementDeReference + direction);
         }
+
+        const isSpiked = chanceSpikes > 0 && Math.random() < chanceSpikes;
         
         if (chanceSpikes > 0 && Math.random() < chanceSpikes) {
             setSpikes(prev => [...prev, { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY + PLAT_HEIGHT, width: PLAT_WIDTH, height: SPIKE_HEIGHT }]);
@@ -142,7 +154,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             width: PLAT_WIDTH, 
             height: PLAT_HEIGHT, 
             hasMob: false, 
-            hasSpike: chanceSpikes > 0 && Math.random() < chanceSpikes 
+            hasSpike: isSpiked 
         };
     }
 
@@ -155,29 +167,31 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         let chanceSpawnMob = 0;
 
         if (altitudeActuelle > 1000) {
-            chanceSpawnMob = 0.15;
-            if (altitudeActuelle >= 3800) chanceSpawnMob = 0.4;
-            else if (altitudeActuelle >= 2800) chanceSpawnMob = 0.3;
-            else if (altitudeActuelle >= 1800) chanceSpawnMob = 0.2;
+            chanceSpawnMob = 0.2;
+            if (altitudeActuelle >= 3800) chanceSpawnMob = 0.5;
+            else if (altitudeActuelle >= 2800) chanceSpawnMob = 0.4;
+            else if (altitudeActuelle >= 1800) chanceSpawnMob = 0.3;
         } else if (altitudeActuelle > 500) {
-            if (altitudeActuelle >= 800) chanceSpawnMob = 0.3;
+            if (altitudeActuelle >= 800) chanceSpawnMob = 0.2;
         }
 
         let plateformesDuPalier = [];
         
-        const chanceSpikes = chanceSpawnMob / 2; 
+        const chanceSpikes = (nbPlateformes === 1) ? 0 : (chanceSpawnMob / 2);
 
         if (altitudeActuelle > 1000) {
             const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], chanceSpikes);
             if (nbPlateformes === 2) {
-                plateformesDuPalier = [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements], chanceSpikes)];
+                const chanceSpikes2 = premierePlatforme.hasSpike ? 0 : chanceSpikes;
+                plateformesDuPalier = [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements], chanceSpikes2)];
             } else {
                 plateformesDuPalier = [premierePlatforme];
             }
         } else if (altitudeActuelle > 500) {
             const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS_SIMPLE, newY, [], chanceSpikes);
             if (nbPlateformes === 2) {
-                plateformesDuPalier = [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS_SIMPLE, newY, [premierePlatforme.emplacements], chanceSpikes)];
+                const chanceSpikes2 = premierePlatforme.hasSpike ? 0 : chanceSpikes;
+                plateformesDuPalier = [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS_SIMPLE, newY, [premierePlatforme.emplacements], chanceSpikes2)];
             } else {
                 plateformesDuPalier = [premierePlatforme];
             }
