@@ -143,62 +143,52 @@ export default function Game() {
       {/* OVERLAY GAME OVER */}
       {gameState === "GAMEOVER" && (
         <div className="overlay game-over-screen">
-          <div className="gameover-container">
-            <h2 className="gameover-title">Perdu Looser</h2>
+          <h2 className="gameover-title">Perdu Looser</h2>
 
+          <div className="gameover-card">
             <div className="gameover-score-section">
-              <div className="gameover-current-score">
-                <span className="score-label">Score</span>
-                <span className="score-value">{currentScore}</span>
-              </div>
-
-              {isNewRecord ? (
-                <div className="new-record-badge">🔥 Nouveau Record ! 🔥</div>
-              ) : (
-                <div className="gameover-best-score">
-                  Meilleur : {bestScore}
-                </div>
-              )}
+              <span className="score-label">Score</span>
+              <span className="score-value">{currentScore}</span>
             </div>
 
+            {isNewRecord ? (
+              <div className="new-record-badge">🔥 Nouveau Record !</div>
+            ) : (
+              <div className="gameover-score-badge">
+                Meilleur score : {bestScore}
+              </div>
+            )}
+
             {isGuest && (
-              <div className="guest-save-prompt">
+              <div className="guest-prompt">
                 <p>Crée un compte pour sauvegarder ton score !</p>
                 <button
-                  className="btn-save-score"
+                  className="btn-golden"
                   onClick={() => navigate("/register")}
                 >
                   Créer un compte
                 </button>
               </div>
             )}
-
-            <div className="gameover-buttons">
-              <button
-                className="btn-main btn-replay"
-                onClick={() => setGameState("PLAYING")}
-              >
-                Rejouer
-              </button>
-
-              <div className="gameover-secondary-buttons">
-                <button
-                  className="btn-secondary"
-                  onClick={() => navigate("/leaderboard")}
-                >
-                  🏆 Classement
-                </button>
-                <button
-                  className="btn-secondary"
-                  onClick={() => setGameState("START")}
-                >
-                  ← Menu Principal
-                </button>
-              </div>
-            </div>
-
-            <p className="hint-text">Appuie sur ESPACE pour rejouer</p>
           </div>
+
+          <button className="btn-main" onClick={() => setGameState("PLAYING")}>
+            Rejouer
+          </button>
+
+          <div className="buttons-group">
+            <button
+              className="btn-secondary"
+              onClick={() => navigate("/leaderboard")}
+            >
+              🏆 Classement
+            </button>
+            <button className="btn-secondary" onClick={() => navigate("/")}>
+              ← Menu Principal
+            </button>
+          </div>
+
+          <p className="hint-text">Appuie sur ESPACE pour rejouer</p>
         </div>
       )}
     </div>

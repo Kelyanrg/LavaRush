@@ -1,21 +1,21 @@
-import { extend, useTick } from "@pixi/react"
-import { Container, Sprite, Graphics, Text, Assets } from 'pixi.js'
-import { useState, useEffect, useRef } from "react"
-import { Plateforme } from '../../Objects/Platforme.jsx'
-import { Joueur } from '../../Objects/Joueur.jsx'
-import { Spikes } from '../../Objects/Spikes.jsx'
-import { ParallaxBackground } from '../../Objects/ParallaxBackground.jsx'
-import * as PIXI from 'pixi.js'
-import { Lave } from '../../Objects/Lave.jsx'
+import { extend, useTick } from "@pixi/react";
+import { Container, Sprite, Graphics, Text, Assets } from "pixi.js";
+import { useState, useEffect, useRef } from "react";
+import { Plateforme } from "../../Objects/Platforme.jsx";
+import { Joueur } from "../../Objects/Joueur.jsx";
+import { Spikes } from "../../Objects/Spikes.jsx";
+import { ParallaxBackground } from "../../Objects/ParallaxBackground.jsx";
+import * as PIXI from "pixi.js";
+import { Lave } from "../../Objects/Lave.jsx";
 import { checkCollision } from "../../../helpers/common.js";
 import { Mob } from "../../Objects/Mob.jsx";
 
 extend({ Container, Sprite, Graphics, Text });
 
 export const MainContainer = ({ canvasSize, children, onGameOver }) => {
-    const scaleX = canvasSize.width / 480;
-    const scaleY = canvasSize.height / 720;
-    const scale = Math.min(scaleX, scaleY);
+    const scaleX = canvasSize.width / 1440;
+    const scaleY = canvasSize.height / 700;
+    const scale = Math.min(scaleX, scaleY); // échelle uniforme
     const score = useRef(0);
     const [scoreAffiche, setScoreAffiche] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
@@ -38,6 +38,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const MOB_OFFSET_Y = MOB_HEIGHT + 10;
 
     const BAS_Y = canvasSize.height - 250;
+    const GAP_BETWEEN_PLAT = canvasSize.height / 5.9;
 
     const SPIKE_HEIGHT = PLAT_HEIGHT / 2;
 
@@ -91,8 +92,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/backgrounds/biome2.png"),
             PIXI.Assets.load("/assets/backgrounds/biome3.png"),
             PIXI.Assets.load("/assets/backgrounds/biome4.png"),
-            PIXI.Assets.load("/assets/backgrounds/tower_left.png"),
-            PIXI.Assets.load("/assets/backgrounds/tower_right.png"),
+            PIXI.Assets.load("/assets/backgrounds/tower_left_1.png"),
+            PIXI.Assets.load("/assets/backgrounds/tower_right_1.png"),
             PIXI.Assets.load("/assets/sprites/plateforme.png"),
             PIXI.Assets.load("/assets/sprites/bat_droite_bas.png"),
             PIXI.Assets.load("/assets/sprites/bat_droite_haut.png"),
@@ -136,9 +137,14 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     const genererplatformes = (emplacementDeReference = 2, DIRECTIONS = [], newY = -1000, interdition = [], chanceSpikes = 0) => {
         let nouveauemplacement = -1;
-        while (nouveauemplacement < 0 || nouveauemplacement > 4 || interdition.includes(nouveauemplacement)) {
-            const direction = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
-            nouveauemplacement = (emplacementDeReference + direction);
+        while (
+            nouveauemplacement < 0 ||
+            nouveauemplacement > 4 ||
+            interdition.includes(nouveauemplacement)
+        ) {
+            const direction =
+                DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
+            nouveauemplacement = emplacementDeReference + direction;
         }
 
         const isSpiked = chanceSpikes > 0 && Math.random() < chanceSpikes;
@@ -159,7 +165,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     }
 
     const genererPalier = (yMax, emplacements) => {
-        const newY = Math.floor(yMax) - 120;
+        const newY = Math.floor(yMax) - GAP_BETWEEN_PLAT;
         const nbPlateformes = 1 + Math.floor(Math.random() * 2);
         const DIRECTIONS = [-2, -1, -1, 0, 0, 1, 1, 2];
         const DIRECTIONS_SIMPLE = [-1, 0, 1];
@@ -223,19 +229,19 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
         return plateformesDuPalier;
     };
-
+    console.log("ScaleX:", scaleX, "ScaleY:", scaleY, "Scale:", scale);
     const mondeRef = useRef(null);
     const cameraY = useRef(0);
-    const cibleCameraY = useRef(0)
+    const cibleCameraY = useRef(0);
     const dernierY = useRef(0);
     const laveY = useRef(1000);
     const mobsRef = useRef({});
 
     const handlePositionChange = ({ x, y }) => {
-        if (!mondeRef.current) return
+        if (!mondeRef.current) return;
 
-        const joueurEcranY = y + cibleCameraY.current
-        const milieu = canvasSize.height / 2
+        const joueurEcranY = y + cibleCameraY.current;
+        const milieu = canvasSize.height / 2;
         const limiteBas = canvasSize.height - 150;
 
         if (joueurEcranY < milieu && dernierY.current > y) {
@@ -322,20 +328,20 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 }
             }
         }
-
     };
 
     useTick((ticker) => {
-        cameraY.current += (cibleCameraY.current - cameraY.current) * 0.15 * ticker.deltaTime;
+        cameraY.current +=
+            (cibleCameraY.current - cameraY.current) * 0.15 * ticker.deltaTime;
 
         if (mondeRef.current) {
             mondeRef.current.y = Math.floor(cameraY.current);
         }
 
-        setPlateformes(prev => {
-            const doitNettoyer = prev.some(p => p.y >= laveY.current);
+        setPlateformes((prev) => {
+            const doitNettoyer = prev.some((p) => p.y >= laveY.current);
             if (doitNettoyer) {
-                return prev.filter(p => p.y < laveY.current);
+                return prev.filter((p) => p.y < laveY.current);
             }
             return prev;
         });
@@ -345,7 +351,6 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     return (
         <pixiContainer>
-
             <ParallaxBackground
                 biomeTextures={texturesBiomes}
                 towerTexturesLeft={texturesTowersLeft}
@@ -377,38 +382,39 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     />
                 ))}
 
-                {plateformes.filter(plat => plat.hasMob).map((plat) => {
-                    const assignedColumnIdx = plat.emplacements;
+                {plateformes
+                    .filter((plat) => plat.hasMob)
+                    .map((plat) => {
+                        const assignedColumnIdx = plat.emplacements;
 
-                    let leftNeighborIdx = assignedColumnIdx - 1;
-                    let rightNeighborIdx = assignedColumnIdx + 1;
+                        let leftNeighborIdx = assignedColumnIdx - 1;
+                        let rightNeighborIdx = assignedColumnIdx + 1;
 
-                    if (assignedColumnIdx === 0) {
-                        leftNeighborIdx = 0;
-                        rightNeighborIdx = 2;
-                    }
-                    else if (assignedColumnIdx === colonnesX.length - 1) {
-                        leftNeighborIdx = colonnesX.length - 3;
-                        rightNeighborIdx = colonnesX.length - 1;
-                    }
+                        if (assignedColumnIdx === 0) {
+                            leftNeighborIdx = 0;
+                            rightNeighborIdx = 2;
+                        } else if (assignedColumnIdx === colonnesX.length - 1) {
+                            leftNeighborIdx = colonnesX.length - 3;
+                            rightNeighborIdx = colonnesX.length - 1;
+                        }
 
-                    const limitLeftX = colonnesX[leftNeighborIdx];
-                    const limitRightX = colonnesX[rightNeighborIdx] + plat.width;
+                        const limitLeftX = colonnesX[leftNeighborIdx];
+                        const limitRightX = colonnesX[rightNeighborIdx] + plat.width;
 
-                    return (
-                        <Mob
-                            key={`mob-${plat.x}-${plat.y}`}
-                            id={`mob-${plat.x}-${plat.y}`}
-                            mobsRef={mobsRef}
-                            y={plat.y - MOB_OFFSET_Y}
-                            width={MOB_WIDTH}
-                            height={MOB_HEIGHT}
-                            limitLeftX={limitLeftX}
-                            limitRightX={limitRightX}
-                            texturesMobs={texturesMob}
-                        />
-                    );
-                })}
+                        return (
+                            <Mob
+                                key={`mob-${plat.x}-${plat.y}`}
+                                id={`mob-${plat.x}-${plat.y}`}
+                                mobsRef={mobsRef}
+                                y={plat.y - MOB_OFFSET_Y}
+                                width={MOB_WIDTH}
+                                height={MOB_HEIGHT}
+                                limitLeftX={limitLeftX}
+                                limitRightX={limitRightX}
+                                texturesMobs={texturesMob}
+                            />
+                        );
+                    })}
 
                 <Lave
                     playAreaWidth={PLAY_AREA_WIDTH}
@@ -425,13 +431,15 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     onPositionChange={handlePositionChange}
                     playAreaWidth={PLAY_AREA_WIDTH}
                     taillejoueur={PLAT_MARGIN * 2}
-                    acceleration={acceleration}
                     isGameOver={isGameOver}
                     largeurJoueur={JOUEUR_WIDTH}
                     hauteurJoueur={JOUEUR_HEIGHT}
                     startX={joueurStartX}
                     startY={joueurStartY}
                     texturesPerso={texturesPerso}
+                    ScaleX={scaleX}
+                    ScaleY={scaleY}
+                    Scale={scale}
                 />
             </pixiContainer>
 

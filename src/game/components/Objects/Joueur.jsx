@@ -6,20 +6,27 @@ import { checkCollision } from "../../helpers/common.js";
 extend({ Sprite });
 
 export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, acceleration = 2.5, texturesPerso }) => {
+export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, ScaleY = 1, ScaleX = 1, Scale = 1 }) => {
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
     const regardeAGauche = useRef(false);
 
     const miniBoostBuffer = useRef(0);
+    const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 5) * Scale);
+    const friction = 0.7;
+    const gravity = 0.98 * ScaleY;
+    const maxSpeed = 8 * Scale;
+
+
 
     const physics = useRef({
         velocityY: 0,
         velocityX: 0,
-        gravity: 1,
-        jumpForce: -18,
-        friction: 0.8,
+        gravity: gravity,
+        jumpForce: gravity * -18,
+        friction: friction,
         acceleration: acceleration,
-        maxSpeed: 8,
+        maxSpeed: maxSpeed,
         onGround: false
     });
 
@@ -55,7 +62,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             window.removeEventListener('keyup', handleKeyUp);
         };
     }, [isGameOver]);
-
+    console.log("acceleration:", acceleration);
     useTick((ticker) => {
         if (!playerRef.current || isGameOver) return;
 
@@ -80,7 +87,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
 
         if (keys.current.q) p.velocityX -= p.acceleration * delta;
         if (keys.current.d) p.velocityX += p.acceleration * delta;
-        p.velocityX *= p.friction;
+        p.velocityX *= Math.pow(p.friction, delta);
 
         if (p.velocityX > p.maxSpeed) p.velocityX = p.maxSpeed;
         if (p.velocityX < -p.maxSpeed) p.velocityX = -p.maxSpeed;

@@ -25,7 +25,7 @@
   margin: 0;
   padding: 0;
   background-color: #0d0d0d;
-  background-image: url("../assets/backgrounds/lava_background40.png");
+  background-image: url("/assets/backgrounds/lava_background40.png");
   background-size: cover;
   background-position: center;
 }
