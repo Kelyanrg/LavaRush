@@ -1,0 +1,392 @@
+@font-face {
+  font-family: "supersquad";
+  src: url("../assets/fonts/super_squad/Super_Squad.ttf") format("truetype");
+}
+@font-face {
+  font-family: "acme";
+  src: url("../assets/fonts/acme/Acme-Regular.ttf") format("truetype");
+}
+
+/* ─────────────────────────────────────────
+   Page
+───────────────────────────────────────── */
+.leaderboard-page {
+  min-height: 100vh;
+  background-image: url("/assets/backgrounds/lava_background40.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: #0d0d0d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 120px;
+  font-family: "acme", sans-serif;
+  color: #fff;
+}
+
+/* ─── TOPBAR ─────────────────────────────── */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 80, 0, 0.2);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+.topbar-logo {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+  padding: 0;
+}
+.topbar-logo:hover {
+  transform: scale(1.15) rotate(-5deg);
+}
+.logo-img {
+  height: 44px;
+}
+
+.topbar-links {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.topbar-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  font-family: "acme", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+.topbar-btn:hover {
+  color: #fff;
+}
+.topbar-login {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+.topbar-login:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #fff;
+}
+.topbar-user-info {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "acme", sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.user-highlight {
+  color: #ff9a40;
+  font-weight: 700;
+}
+
+/* ─── TITRE ──────────────────────────────── */
+.leaderboard-title {
+  font-family: "supersquad", sans-serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: 0.12em;
+  color: #fff;
+  text-shadow:
+    0 0 24px rgba(255, 100, 0, 0.7),
+    0 2px 8px rgba(0, 0, 0, 0.9);
+  margin: 110px 0 36px;
+  text-align: center;
+}
+
+/* ─── FEEDBACK ───────────────────────────── */
+.leaderboard-feedback {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ccc;
+  font-size: 1.1rem;
+  margin-top: 60px;
+}
+.leaderboard-error {
+  color: #ff6060;
+}
+.leaderboard-spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(255, 150, 0, 0.3);
+  border-top-color: #ff9a40;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── PANELS ─────────────────────────────── */
+.leaderboard-panels {
+  display: flex;
+  gap: 28px;
+  width: 90%;
+  max-width: 1100px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.leaderboard-panel {
+  flex: 1;
+  min-width: 300px;
+  max-width: 500px;
+  background: rgba(10, 10, 10, 0.78);
+  border: 1.5px solid rgba(255, 110, 0, 0.55);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 0 30px rgba(255, 70, 0, 0.15),
+    inset 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── ROWS ───────────────────────────────── */
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  align-items: center;
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s;
+  gap: 8px;
+}
+.leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-row.rank-1 {
+  background: linear-gradient(
+    90deg,
+    rgba(160, 0, 0, 0.85),
+    rgba(120, 0, 0, 0.75)
+  );
+}
+.leaderboard-row.rank-2 {
+  background: linear-gradient(
+    90deg,
+    rgba(120, 0, 0, 0.75),
+    rgba(90, 0, 0, 0.65)
+  );
+}
+.leaderboard-row.rank-3 {
+  background: linear-gradient(90deg, rgba(90, 0, 0, 0.7), rgba(70, 0, 0, 0.55));
+}
+.leaderboard-row.row-even {
+  background: rgba(45, 45, 45, 0.45);
+}
+.leaderboard-row.row-odd {
+  background: rgba(30, 30, 30, 0.3);
+}
+
+/* Ligne du joueur connecté */
+.leaderboard-row.row-me {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 100, 0, 0.18),
+    rgba(255, 60, 0, 0.1)
+  ) !important;
+  border-left: 3px solid #ff6a00;
+}
+.leaderboard-row:not(.rank-1):not(.rank-2):not(.rank-3):not(.row-me):hover {
+  background: rgba(255, 90, 0, 0.1);
+}
+
+/* ─── CELLULES ───────────────────────────── */
+.rank-cell {
+  font-family: "acme", sans-serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ddd;
+  text-align: center;
+  min-width: 36px;
+}
+.medal {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.username-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  color: #f0f0f0;
+  letter-spacing: 0.03em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.me-badge {
+  font-size: 0.65rem;
+  background: #ff6a00;
+  color: #fff;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: "acme", sans-serif;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.score-cell {
+  font-family: "acme", sans-serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ff9a40;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ─── PAGINATION ─────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+}
+.page-btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 110, 0, 0.35);
+  border-radius: 8px;
+  color: #ccc;
+  font-family: "acme", sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    color 0.18s,
+    transform 0.1s;
+}
+.page-btn:hover:not(:disabled) {
+  background: rgba(255, 100, 0, 0.2);
+  border-color: rgba(255, 110, 0, 0.8);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.page-btn--active {
+  background: linear-gradient(135deg, #ff6a00, #ee0909);
+  border-color: transparent;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(255, 80, 0, 0.5);
+}
+.page-btn--active:hover {
+  transform: translateY(-1px);
+}
+
+/* ─── ACTIONS (inline, après la pagination) ── */
+.leaderboard-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 36px;
+  justify-content: center;
+}
+.action-btn {
+  padding: 13px 28px;
+  border-radius: 12px;
+  border: none;
+  font-family: "acme", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    filter 0.15s;
+  backdrop-filter: blur(8px);
+}
+.action-btn:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.15);
+}
+.action-btn:active {
+  transform: translateY(0);
+}
+
+.action-btn--home {
+  background: rgba(30, 30, 30, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  color: #ddd;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+.action-btn--home:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.action-btn--play {
+  background: linear-gradient(135deg, #ff6a00, #ee0909);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(255, 80, 0, 0.45);
+}
+.action-btn--play:hover {
+  box-shadow: 0 6px 28px rgba(255, 80, 0, 0.7);
+}
+
+/* ─── FOOTER ─────────────────────────────── */
+.footer {
+  width: 100%;
+  margin-top: 40px;
+  padding: 16px 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  border-top: 1px solid rgba(255, 80, 0, 0.1);
+}
+
+/* ─── RESPONSIVE ─────────────────────────── */
+@media (max-width: 720px) {
+  .leaderboard-panels {
+    flex-direction: column;
+    align-items: center;
+    width: 95%;
+  }
+  .leaderboard-panel {
+    max-width: 100%;
+    width: 100%;
+  }
+  .leaderboard-title {
+    margin-top: 90px;
+  }
+  .leaderboard-actions {
+    gap: 10px;
+  }
+  .action-btn {
+    padding: 11px 20px;
+    font-size: 0.9rem;
+  }
+  .topbar-user-info {
+    display: none;
+  }
+}
