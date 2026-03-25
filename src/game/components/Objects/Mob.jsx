@@ -29,10 +29,7 @@ export const Mob = ({ id, mobsRef, y, width, height, limitLeftX, limitRightX, te
             mobRef.current.y = y + Math.cos(time.current * 2) * (height * 0.15);
 
             if (texturesMobs && texturesMobs.length === 4) {
-
-
                 const isMovingRight = Math.cos(time.current) > 0;
-
                 const flapSpeed = 8;
                 const isWingsUp = Math.floor(time.current * flapSpeed) % 2 === 0;
 

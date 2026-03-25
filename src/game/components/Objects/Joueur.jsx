@@ -148,39 +148,28 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
         if (jumpBuffer.current > 0) jumpBuffer.current -= 1;
         if (miniBoostBuffer.current > 0) miniBoostBuffer.current -= 1;
 
-        // ========================================================
-        // --- ANIMATION DU JOUEUR ---
-        // ========================================================
-        // On vérifie qu'on a bien nos 6 images maintenant !
         if (texturesPerso && texturesPerso.length === 6) {
-            let textureFinale = texturesPerso[0]; // Neutre Droite par défaut
+            let textureFinale = texturesPerso[0];
 
-            // 1. Mémorisation de la direction
             if (p.velocityX < -0.5) regardeAGauche.current = true;
             if (p.velocityX > 0.5) regardeAGauche.current = false;
 
-            // 2. Choix de l'image
             if (!p.onGround) {
-                // EN L'AIR
                 textureFinale = regardeAGauche.current 
-                    ? texturesPerso[3]  // Saut Gauche
-                    : texturesPerso[2]; // Saut Droite
+                    ? texturesPerso[3]
+                    : texturesPerso[2];
             } else {
-                // AU SOL
                 if (Math.abs(p.velocityX) > 0.5) {
-                    // IL COURT
                     textureFinale = regardeAGauche.current 
-                        ? texturesPerso[5]  // Course Gauche
-                        : texturesPerso[4]; // Course Droite
+                        ? texturesPerso[5]
+                        : texturesPerso[4];
                 } else {
-                    // IMMOBILE
                     textureFinale = regardeAGauche.current
-                        ? texturesPerso[1]  // Neutre Gauche
-                        : texturesPerso[0]; // Neutre Droite
+                        ? texturesPerso[1]
+                        : texturesPerso[0];
                 }
             }
 
-            // 3. Application ultra rapide de la texture
             if (player.texture !== textureFinale) {
                 player.texture = textureFinale;
             }

@@ -11,7 +11,7 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
     const time = useRef(0)
 
     const estActive = useRef(false)
-    const autoScrollerY = useRef(canvasHeight - 300)
+    const autoScrollerY = useRef(canvasHeight - 200)
 
     const ratioLave = 385 / 586; 
     const SURFACE_HEIGHT = playAreaWidth * ratioLave;
