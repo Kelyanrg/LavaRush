@@ -34,7 +34,7 @@ export default function Login() {
     const { error } = await supabase.auth.signInAnonymously();
 
     if (error) {
-      setError("Erreur lors de la connexion invité : " + error.message);
+      setError("Connexion invité impossible. Réessaie.");
     } else {
       navigate("/game");
     }
@@ -94,25 +94,29 @@ export default function Login() {
               <p style={{ color: "#ff4444", fontSize: "0.8rem" }}>{error}</p>
             )}
 
-            <span className="login-label">E-mail</span>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Votre adresse e-mail"
-            />
+            <form onSubmit={handleSubmit} noValidate>
+              <span className="login-label">E-mail</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Votre adresse e-mail"
+                autoComplete="email"
+              />
 
-            <span className="login-label">Mot de passe</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Votre mot de passe"
-            />
+              <span className="login-label">Mot de passe</span>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Votre mot de passe"
+                autoComplete="current-password"
+              />
 
-            <button onClick={handleSubmit} disabled={loading}>
-              {loading ? "Chargement..." : "Se connecter"}
-            </button>
+              <button type="submit" disabled={loading}>
+                {loading ? "Chargement..." : "Se connecter"}
+              </button>
+            </form>
 
             <p>
               Pas de compte ? <Link to="/signup"> Créer un compte</Link>

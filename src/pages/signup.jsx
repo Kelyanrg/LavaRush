@@ -16,17 +16,36 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
+    // ── Validation côté client ──
+    if (!username.trim()) {
+      setError("Le pseudo est requis.");
+      return;
+    }
+    if (!/^[a-zA-Z0-9_-]{3,20}$/.test(username.trim())) {
+      setError("Pseudo : 3 à 20 caractères (lettres, chiffres, _ ou -).");
+      return;
+    }
+    if (!email.trim()) {
+      setError("L'adresse email est requise.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Le mot de passe doit faire au moins 6 caractères.");
+      return;
+    }
+
+    setLoading(true);
+
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email: email.trim(),
       password,
-      options: { data: { username } },
+      options: { data: { username: username.trim() } },
     });
 
-    if (error) {
-      setError(error.message);
+    if (signUpError) {
+      setError("Inscription impossible. Vérifie tes informations.");
       setLoading(false);
       return;
     }
@@ -88,33 +107,38 @@ export default function Signup() {
           <div className="signup-frame">
             <span>Inscrivez vous pour rejoindre l'aventure</span>
 
-            {error && <p style={{ color: "#ff4444" }}>{error}</p>}
+            {error && <p style={{ color: "#ff4444", fontSize: "0.85rem" }}>{error}</p>}
 
-            <span className="signup-label">Pseudo</span>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Pseudo"
-            />
+            <form onSubmit={handleSubmit} noValidate>
+              <span className="signup-label">Pseudo</span>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Pseudo"
+                autoComplete="username"
+              />
 
-            <span className="signup-label">Email</span>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-            />
-            <span className="signup-label">Mot de passe</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Mot de passe"
-            />
-            <button onClick={handleSubmit} disabled={loading}>
-              {loading ? "Inscription..." : "S'inscrire"}
-            </button>
+              <span className="signup-label">Email</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                autoComplete="email"
+              />
+              <span className="signup-label">Mot de passe</span>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Mot de passe (min. 6 caractères)"
+                autoComplete="new-password"
+              />
+              <button type="submit" disabled={loading}>
+                {loading ? "Inscription..." : "S'inscrire"}
+              </button>
+            </form>
             <p>
               Déjà un compte ? <Link to="/login">Se connecter</Link>
             </p>
