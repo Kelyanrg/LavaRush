@@ -4,31 +4,90 @@ import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { Experience } from "../game/components/Experience/Experience.jsx";
 import { Helmet } from "react-helmet-async";
+import * as PIXI from "pixi.js";
 import "../pages/game.css";
+
+const GAME_ASSETS = [
+  "/assets/backgrounds/biome1.png",
+  "/assets/backgrounds/biome2.png",
+  "/assets/backgrounds/biome3.png",
+  "/assets/backgrounds/biome4.png",
+  "/assets/backgrounds/tower_left_1.png",
+  "/assets/backgrounds/tower_right_1.png",
+  "/assets/sprites/plateforme.png",
+  "/assets/sprites/bat_droite_bas.png",
+  "/assets/sprites/bat_droite_haut.png",
+  "/assets/sprites/bat_gauche_bas.png",
+  "/assets/sprites/bat_gauche_haut.png",
+  "/assets/sprites/test/lava1.png",
+  "/assets/sprites/test/lava2.png",
+  "/assets/sprites/test/lava3.png",
+  "/assets/sprites/test/lava4.png",
+  "/assets/sprites/test/lava5.png",
+  "/assets/sprites/test/lava6.png",
+  "/assets/sprites/test/lava7.png",
+  "/assets/sprites/test/lava8.png",
+  "/assets/sprites/lava_body.png",
+  "/assets/sprites/perso_neutre_droite.png",
+  "/assets/sprites/perso_neutre_gauche.png",
+  "/assets/sprites/perso_jump_droite.png",
+  "/assets/sprites/perso_jump_gauche.png",
+  "/assets/sprites/perso_run_droite.png",
+  "/assets/sprites/perso_run_gauche.png",
+  "/assets/sprites/spike_teste.png",
+];
 
 export default function Game() {
   const [gameState, setGameState] = useState("START");
   const [currentScore, setCurrentScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
   const [isNewRecord, setIsNewRecord] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const isGuest = user?.app_metadata?.provider === "anonymous";
+  const isGuest = user?.is_anonymous === true;
 
+  // ── Touche ESPACE pour lancer/rejouer ──
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === " ") {
         if (gameState === "GAMEOVER" || gameState === "START") {
-          setGameState("PLAYING");
+          startLoading();
         }
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [gameState]);
 
+  // ── Préchargement réel des assets PIXI ──
+  const startLoading = () => {
+    setLoadProgress(0);
+    setGameState("LOADING");
+  };
+
+  useEffect(() => {
+    if (gameState !== "LOADING") return;
+
+    let cancelled = false;
+
+    PIXI.Assets.load(GAME_ASSETS, (progress) => {
+      if (!cancelled) setLoadProgress(Math.round(progress * 100));
+    })
+      .then(() => {
+        if (!cancelled) setGameState("PLAYING");
+      })
+      .catch(() => {
+        if (!cancelled) setGameState("PLAYING");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [gameState]);
+
+  // ── Récupération du meilleur score ──
   useEffect(() => {
     const fetchBestScore = async () => {
       const { data, error } = await supabase
@@ -55,15 +114,15 @@ export default function Game() {
       setIsNewRecord(true);
       setBestScore(finalScore);
 
-      const { error } = await supabase.from("scores").upsert(
-        {
-          user_id: user.id,
-          altitude: finalScore,
-        },
-        { onConflict: "user_id" },
-      );
-
-      if (error) console.error("Erreur détaillée:", error.message);
+      if (!isGuest && user) {
+        const { error } = await supabase
+          .from("scores")
+          .upsert(
+            { user_id: user.id, altitude: finalScore },
+            { onConflict: "user_id" },
+          );
+        if (error) console.error("Erreur détaillée:", error.message);
+      }
     } else {
       setIsNewRecord(false);
     }
@@ -129,15 +188,42 @@ export default function Game() {
               </div>
             </div>
           </div>
-          <button className="btn-main" onClick={() => setGameState("PLAYING")}>
+          <button className="btn-main" onClick={startLoading}>
             JOUER
           </button>
         </div>
       )}
 
-      {/* JEU PIXI */}
+      {/* JEU PIXI — monté uniquement quand les assets sont prêts */}
       {gameState === "PLAYING" && (
         <Experience userId={user.id} onGameOver={handleGameOver} />
+      )}
+
+      {/* OVERLAY CHARGEMENT */}
+      {gameState === "LOADING" && (
+        <div className="overlay-loading">
+          <div className="loading-content">
+            <img
+              src="./assets/ui/lavarush_text_icon.svg"
+              alt="Lava Rush"
+              className="loading-logo"
+            />
+            <div className="loading-bar-wrap">
+              <div
+                className="loading-bar"
+                style={{
+                  width: `${loadProgress}%`,
+                  transition:
+                    loadProgress === 0 ? "none" : "width 0.2s ease-out",
+                }}
+              />
+            </div>
+            <p className="loading-text">
+              {loadProgress < 100 ? `Chargement… ${loadProgress}%` : "Prêt !"}
+            </p>
+          </div>
+          <div className="loading-lava-wave" />
+        </div>
       )}
 
       {/* OVERLAY GAME OVER */}
@@ -164,7 +250,11 @@ export default function Game() {
                 <p>Crée un compte pour sauvegarder ton score !</p>
                 <button
                   className="btn-golden"
-                  onClick={() => navigate("/register")}
+                  onClick={() =>
+                    navigate("/signup", {
+                      state: { pendingScore: currentScore },
+                    })
+                  }
                 >
                   Créer un compte
                 </button>
@@ -172,7 +262,7 @@ export default function Game() {
             )}
           </div>
 
-          <button className="btn-main" onClick={() => setGameState("PLAYING")}>
+          <button className="btn-main" onClick={startLoading}>
             Rejouer
           </button>
 
