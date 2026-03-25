@@ -10,7 +10,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     const isInitialized = useRef(false);
     const miniBoostBuffer = useRef(0);
     const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 25) * Scale);
-    const friction = 0.7 * ScaleX;
+    const friction = 0.67 * ScaleX;
     const gravity = 0.98 * ScaleY;
     const maxSpeed = 8 * Scale;
 
