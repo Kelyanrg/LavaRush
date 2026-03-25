@@ -9,15 +9,16 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
     const miniBoostBuffer = useRef(0);
+    const Default_Value = acceleration / 4;
 
     const physics = useRef({
         velocityY: 0,
         velocityX: 0,
-        gravity: 1,
-        jumpForce: -18,
-        friction: 0.8,
+        gravity: Default_Value,
+        jumpForce: Default_Value * -18,
+        friction: Default_Value * 0.7,
         acceleration: acceleration,
-        maxSpeed: 8,
+        maxSpeed: Default_Value * 8,
         onGround: false
     });
 
