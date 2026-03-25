@@ -11,12 +11,12 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
     const time = useRef(0)
 
     const estActive = useRef(false)
-    const autoScrollerY = useRef(canvasHeight - 300)
+    const autoScrollerY = useRef(canvasHeight - 200)
 
     const ratioLave = 385 / 586; 
     const SURFACE_HEIGHT = playAreaWidth * ratioLave;
 
-    const HITBOX_OFFSET = SURFACE_HEIGHT * 0.4;
+    const HITBOX_OFFSET = SURFACE_HEIGHT * 0.1;
     
     useEffect(() => {
         const monterLave = (e) => {
@@ -74,9 +74,9 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
             corpsRef.current.height = Math.max(100, hauteurDynamique);
         }
 
-        if (surfaceRef.current && texturesSurface && texturesSurface.length === 4) {
+        if (surfaceRef.current && texturesSurface && texturesSurface.length === 8) {
             time.current += ticker.deltaTime;
-            const animationSpeed = 0.15; 
+            const animationSpeed = 0.08; 
             const frameIndex = Math.floor(time.current * animationSpeed) % 4;
             surfaceRef.current.texture = texturesSurface[frameIndex];
         }
