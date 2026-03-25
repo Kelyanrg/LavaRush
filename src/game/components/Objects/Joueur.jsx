@@ -5,20 +5,25 @@ import { checkCollision } from "../../helpers/common.js";
 
 extend({ Graphics });
 
-export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, acceleration = 2.5 }) => {
+export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAreaWidth, isGameOver, largeurJoueur, hauteurJoueur, startX, startY, ScaleY = 1, ScaleX = 1, Scale = 1 }) => {
     const playerRef = useRef(null);
     const isInitialized = useRef(false);
     const miniBoostBuffer = useRef(0);
-    const Default_Value = acceleration / 4;
+    const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 25) * Scale);
+    const friction = 0.7 * ScaleX;
+    const gravity = 0.98 * ScaleY;
+    const maxSpeed = 8 * Scale;
+
+
 
     const physics = useRef({
         velocityY: 0,
         velocityX: 0,
-        gravity: Default_Value,
-        jumpForce: Default_Value * -18,
-        friction: Default_Value * 0.7,
+        gravity: gravity,
+        jumpForce: gravity * -18,
+        friction: friction,
         acceleration: acceleration,
-        maxSpeed: Default_Value * 8,
+        maxSpeed: maxSpeed,
         onGround: false
     });
 

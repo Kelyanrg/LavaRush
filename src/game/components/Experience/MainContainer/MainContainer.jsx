@@ -13,8 +13,8 @@ import { Mob } from "../../Objects/Mob.jsx";
 extend({ Container, Sprite, Graphics, Text });
 
 export const MainContainer = ({ canvasSize, children, onGameOver }) => {
-    const scaleX = canvasSize.width / 480;
-    const scaleY = canvasSize.height / 720;
+    const scaleX = canvasSize.width / 1440;
+    const scaleY = canvasSize.height / 700;
     const scale = Math.min(scaleX, scaleY); // échelle uniforme
     const score = useRef(0);
     const [scoreAffiche, setScoreAffiche] = useState(0);
@@ -228,7 +228,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         const altitudeActuelle = Math.floor(score.current / 10);
         let chanceSpawn = 0;
 
-        if (altitudeActuelle > 0) {
+        if (altitudeActuelle > 1000) {
             chanceSpawn = 0.15;
             if (altitudeActuelle >= 3800) chanceSpawn = 0.4;
             else if (altitudeActuelle >= 2800) chanceSpawn = 0.3;
@@ -343,7 +343,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         //     Math.floor(i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN) / 4 + PLAT_MARGIN)
         // );
     };
-    console.log(acceleration);
+    console.log("ScaleX:", scaleX, "ScaleY:", scaleY, "Scale:", scale);
     const mondeRef = useRef(null);
     const cameraY = useRef(0);
     const cibleCameraY = useRef(0);
@@ -519,12 +519,14 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     onPositionChange={handlePositionChange}
                     playAreaWidth={PLAY_AREA_WIDTH}
                     taillejoueur={PLAT_MARGIN * 2}
-                    acceleration={acceleration}
                     isGameOver={isGameOver}
                     largeurJoueur={JOUEUR_WIDTH}
                     hauteurJoueur={JOUEUR_HEIGHT}
                     startX={joueurStartX}
                     startY={joueurStartY}
+                    ScaleX={scaleX}
+                    ScaleY={scaleY}
+                    Scale={scale}
                 />
             </pixiContainer>
 
