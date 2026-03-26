@@ -15,7 +15,7 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
 
     const ratioLave = 385 / 586; 
     const SURFACE_HEIGHT = playAreaWidth * ratioLave;
-
+    
     const HITBOX_OFFSET = SURFACE_HEIGHT * 0.1;
     
     useEffect(() => {

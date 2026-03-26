@@ -15,7 +15,7 @@ extend({ Container, Sprite, Graphics, Text });
 export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const scaleX = canvasSize.width / 1440;
     const scaleY = canvasSize.height / 700;
-    const scale = Math.min(scaleX, scaleY); // échelle uniforme
+    const scale = Math.min(scaleX, scaleY);
     const score = useRef(0);
     const [scoreAffiche, setScoreAffiche] = useState(0);
     const [isGameOver, setIsGameOver] = useState(false);
@@ -68,23 +68,25 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         { emplacements: 2, x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT },
     ]);
 
-    const [spikes, setSpikes] = useState([{ 
-            emplacements: 4, 
-            x: colonnesX[4], 
-            y: (BAS_Y - 240) + PLAT_HEIGHT,
-            width: PLAT_WIDTH, 
-            height: SPIKE_HEIGHT 
+    const [spikes, setSpikes] = useState([{
+        emplacements: 4,
+        x: colonnesX[4],
+        y: (BAS_Y - 240) + PLAT_HEIGHT,
+        width: PLAT_WIDTH,
+        height: SPIKE_HEIGHT
     }]);
 
     const [messageAlerte, setMessageAlerte] = useState(null);
-    
+
     const alerte800m = useRef(false);
     const alerte1800m = useRef(false);
+    const mob850mSpawned = useRef(false);
+    const spikes1900m = useRef(false);
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
     const [texturesTowersRight, setTexturesTowersRight] = useState([]);
-    const [texturePlatforme, setTexturePlatforme] = useState(null);
+    const [texturesPlatforme, setTexturesPlatforme] = useState(null);
     const [texturesMob, setTexturesMob] = useState([]);
     const [textureSpikes, setTextureSpikes] = useState(null);
     const [texturesLaveTop, setTexturesLaveTop] = useState([]);
@@ -99,6 +101,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/backgrounds/biome4.png"),
             PIXI.Assets.load("/assets/backgrounds/biome5.png"),
             PIXI.Assets.load("/assets/backgrounds/biome6.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome7.png"),
             PIXI.Assets.load("/assets/backgrounds/tower_left_1.png"),
             PIXI.Assets.load("/assets/backgrounds/tower_right_1.png"),
             PIXI.Assets.load("/assets/sprites/plateforme.png"),
@@ -117,12 +120,15 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/perso_jump_gauche.png"),
             PIXI.Assets.load("/assets/sprites/perso_run_droite.png"),
             PIXI.Assets.load("/assets/sprites/perso_run_gauche.png"),
-            PIXI.Assets.load("/assets/sprites/plateforme_spike.png"),
-        ]).then(([b1, b2, b3, b4, b5, b6, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {            
-            setTexturesBiomes([b1, b2, b3, b4, b5, b6, b1, b2, b3, b4, b5, b6]);
+            PIXI.Assets.load("/assets/sprites/plateforme_spike_2.png"),
+            PIXI.Assets.load("/assets/fonts/super_squad/Super_Squad.ttf"),
+            PIXI.Assets.load("/assets/fonts/acme/Acme-Regular.ttf"),
+
+        ]).then(([b1, b2, b3, b4, b5, b6, b7, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
+            setTexturesBiomes([b1, b2, b3, b4, b5, b6, b7, b1, b2, b3, b4, b5, b6, b7]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
-            setTexturePlatforme(spritePlateforme);
+            setTexturesPlatforme(spritePlateforme);
             setTexturesMob([batDB, batDH, batGB, batGH]);
             setTexturesLaveTop([l1, l2, l3, l4]);
             setTexturesLaveBody(lavaBody);
@@ -151,27 +157,34 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         }
 
         const isSpiked = chanceSpikes > 0 && Math.random() < chanceSpikes;
-        
+
         if (chanceSpikes > 0 && Math.random() < chanceSpikes) {
             setSpikes(prev => [...prev, { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY + PLAT_HEIGHT, width: PLAT_WIDTH, height: SPIKE_HEIGHT }]);
         }
-        
-        return { 
-            emplacements: nouveauemplacement, 
-            x: colonnesX[nouveauemplacement], 
-            y: newY, 
-            width: PLAT_WIDTH, 
-            height: PLAT_HEIGHT, 
-            hasMob: false, 
-            hasSpike: isSpiked 
+
+        return {
+            emplacements: nouveauemplacement,
+            x: colonnesX[nouveauemplacement],
+            y: newY,
+            width: PLAT_WIDTH,
+            height: PLAT_HEIGHT,
+            hasMob: false,
+            hasSpike: isSpiked
         };
     }
 
     const genererPalier = (yMax, emplacements) => {
         const newY = Math.floor(yMax) - GAP_BETWEEN_PLAT;
-        const nbPlateformes = 1 + Math.floor(Math.random() * 2);
+
+        const altitudePlateformePrecedente = Math.floor((BAS_Y - yMax) / 10);
+        const altitudeNouvellePlateforme = Math.floor((BAS_Y - newY) / 10);
+
+        const isPalier1900m = altitudePlateformePrecedente < 1850 && altitudeNouvellePlateforme >= 1850;
+
+        let nbPlateformes = 1 + Math.floor(Math.random() * 2);
         const DIRECTIONS = [-2, -1, -1, 0, 0, 1, 1, 2];
         const DIRECTIONS_SIMPLE = [-1, 0, 1];
+
         const altitudeActuelle = Math.floor(score.current / 10);
         let chanceSpawnMob = 0;
 
@@ -185,8 +198,14 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         }
 
         let plateformesDuPalier = [];
-        
-        const chanceSpikes = (nbPlateformes === 1 || altitudeActuelle < 1800) ? 0 : (chanceSpawnMob / 2);
+
+        let forcerPic = false;
+        if (isPalier1900m) {
+            forcerPic = true;
+            nbPlateformes = 2; 
+        }
+
+        const chanceSpikes = forcerPic ? 1 : ((nbPlateformes === 1 || altitudeActuelle < 1800) ? 0 : (chanceSpawnMob / 2));
 
         if (altitudeActuelle > 1000) {
             const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], chanceSpikes);
@@ -207,7 +226,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         } else {
             const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], 0);
             const secondePlatforme = genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements], 0);
-            
+
             if (nbPlateformes === 2) {
                 plateformesDuPalier = [
                     premierePlatforme,
@@ -232,6 +251,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
         return plateformesDuPalier;
     };
+
     console.log("ScaleX:", scaleX, "ScaleY:", scaleY, "Scale:", scale);
     const mondeRef = useRef(null);
     const cameraY = useRef(0);
@@ -254,40 +274,46 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             setScoreAffiche(Math.floor(score.current / 10));
 
             const nouvelleAltitude = Math.floor(score.current / 10);
-            
-            if (nouvelleAltitude >= 800 && !alerte800m.current) {
+
+            if (nouvelleAltitude >= 850 && !alerte800m.current) {
                 alerte800m.current = true;
-                setMessageAlerte("Attention !\nLes chauves-souris\narrivent !");
-                setTimeout(() => setMessageAlerte(null), 4000);
+                setMessageAlerte({
+                    titre: "ALERTE !",
+                    corps: "Les chauves-souris\narrivent !"
+                });
+                setTimeout(() => setMessageAlerte(null), 5000);
             }
-            
+
             if (nouvelleAltitude >= 1800 && !alerte1800m.current) {
                 alerte1800m.current = true;
-                setMessageAlerte("Danger !\nApparition\nde pics !");
-                setTimeout(() => setMessageAlerte(null), 4000);
+                setMessageAlerte({
+                    titre: "ALERTE !",
+                    corps: "Apparition\nde pics !"
+                });
+                setTimeout(() => setMessageAlerte(null), 5000);
             }
 
             cibleCameraY.current += diff;
 
             setPlateformes(prev => {
-                let nouvelles = prev.map(p => ({ ...p })); 
-                
+                let nouvelles = prev.map(p => ({ ...p }));
+
                 while (Math.min(...nouvelles.map(p => p.y)) > y - canvasSize.height) {
                     const yMin = Math.min(...nouvelles.map(p => p.y));
-                    
+
                     const emplacementsDernierPalier = nouvelles
                         .filter(p => p.y === yMin)
                         .map(p => p.emplacements);
-                        
+
                     const emplacementsAvantDernier = nouvelles
                         .filter(p => p.y === yMin + 120)
                         .map(p => p.emplacements);
 
                     const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)), emplacementsDernierPalier);
-                    
+
                     palier.forEach(nouvellePlat => {
                         const col = nouvellePlat.emplacements;
-                        
+
                         if (emplacementsDernierPalier.includes(col) && emplacementsAvantDernier.includes(col)) {
                             nouvellePlat.hasMob = false;
                             nouvelles = nouvelles.map(p => {
@@ -306,8 +332,28 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         }
                     });
 
+                    if (palier.length > 0) {
+                        const altitudeDuPalier = Math.floor((BAS_Y - palier[0].y) / 10);
+
+                        if (altitudeDuPalier >= 850 && !mob850mSpawned.current) {
+                            const plateformesValides = palier.filter(p => {
+                                const col = p.emplacements;
+                                const estNettoye = emplacementsDernierPalier.includes(col) && emplacementsAvantDernier.includes(col);
+                                return !p.hasSpike && !estNettoye;
+                            });
+
+                            if (plateformesValides.length > 0) {
+                                if (!plateformesValides.some(p => p.hasMob)) {
+                                    plateformesValides[0].hasMob = true;
+                                }
+                                mob850mSpawned.current = true;
+                            }
+                        }
+                    }
+
                     nouvelles.push(...palier);
                 }
+
                 return nouvelles;
             });
         }
@@ -384,7 +430,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         y={plat.y}
                         largeur={plat.width}
                         hauteur={plat.hasSpike ? plat.height + SPIKE_HEIGHT : plat.height}
-                        texturePlatforme={plat.hasSpike ? textureSpikes : texturePlatforme}
+                        texturesPlatforme={plat.hasSpike ? textureSpikes : texturesPlatforme}
                     />
                 ))}
 
@@ -450,29 +496,85 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             </pixiContainer>
 
             <pixiText
-                text={`Hauteur : ${scoreAffiche}m`}
-                x={10}
-                y={10}
-                style={{ fill: 0xffffff, fontSize: 24, fontWeight: "bold" }}
+                text={`Altitude : ${scoreAffiche} m`}
+                x={Math.round(offsetX / 2)}
+                y={Math.round(canvasSize.height * 0.05)}
+                anchor={{ x: 0.5, y: 0 }}
+                scale={0.25}
+                style={{
+                    fontFamily: "supersquad, sans-serif",
+                    fill: '#FFD700',
+                    fontSize: 120,
+                    stroke: '#330000',
+                    strokeThickness: 12,
+                    dropShadow: true,
+                    dropShadowColor: '#000000',
+                    dropShadowBlur: 8,
+                    dropShadowDistance: 6
+                }}
             />
             {messageAlerte && (
-                <pixiText
-                    text={messageAlerte}
-                    x={20}
-                    y={canvasSize.height / 3}
-                    style={{ 
-                        fill: 0xffcc00,
-                        fontSize: 22, 
-                        fontWeight: "bold",
-                        align: "center",
-                        dropShadow: true,
-                        dropShadowColor: '#000000',
-                        dropShadowBlur: 4,
-                        dropShadowDistance: 2,
-                        wordWrap: true,
-                        wordWrapWidth: offsetX - 40 
-                    }}
-                />
+                <pixiContainer
+                    x={Math.round(offsetX / 2)}
+                    y={Math.round(canvasSize.height * 0.33)}
+                >
+                    <pixiGraphics
+                        ref={(g) => {
+                            if (g) {
+                                g.clear();
+                                g.beginFill(0x2A0800, 0.95);
+                                g.lineStyle(2, 0xFF3300, 1);
+
+                                const boxWidth = Math.min(280, offsetX * 0.8);
+                                const boxHeight = 130;
+
+                                g.drawRoundedRect(-boxWidth / 2, -boxHeight / 2, boxWidth, boxHeight, 10);
+                                g.endFill();
+                            }
+                        }}
+                    />
+
+                    <pixiText
+                        text={messageAlerte.titre}
+                        anchor={0.5}
+                        y={-25}
+                        scale={0.25}
+                        style={{
+                            fontFamily: "supersquad, sans-serif",
+                            fill: '#FF4500',
+                            fontSize: 104,
+                            stroke: '#330000',
+                            strokeThickness: 12,
+                            dropShadow: true,
+                            dropShadowColor: '#000000',
+                            dropShadowBlur: 8,
+                            dropShadowDistance: 8,
+                            align: 'center',
+                            wordWrap: true,
+                            wordWrapWidth: (Math.min(280, offsetX * 0.8) - 20) * 4
+                        }}
+                    />
+
+                    <pixiText
+                        text={messageAlerte.corps}
+                        anchor={0.5}
+                        y={25}
+                        scale={0.25}
+                        style={{
+                            fontFamily: "acme, sans-serif",
+                            fill: '#FFFFFF',
+                            fontSize: 80,
+                            fontWeight: "bold",
+                            dropShadow: true,
+                            dropShadowColor: '#000000',
+                            dropShadowBlur: 8,
+                            dropShadowDistance: 4,
+                            align: 'center',
+                            wordWrap: true,
+                            wordWrapWidth: (Math.min(280, offsetX * 0.8) - 20) * 4
+                        }}
+                    />
+                </pixiContainer>
             )}
             {children}
         </pixiContainer>

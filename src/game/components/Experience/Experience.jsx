@@ -26,7 +26,7 @@ export const Experience = ({ onGameOver, userId }) => {
                 height: `${canvasSize.height}px` 
             }}
     options={{ 
-                resolution: window.devicePixelRatio || 2, 
+                resolution: window.devicePixelRatio || 1, 
                 autoDensity: true,
                 antialias: true
             }}>
