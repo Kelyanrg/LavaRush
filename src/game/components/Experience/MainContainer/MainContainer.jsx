@@ -25,9 +25,9 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * 0.428);
     const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
 
-    const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
+    const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - ((PLAY_AREA_WIDTH / 50) * 2);
     const PLAT_HEIGHT = (PLAT_WIDTH / 6) * 1.2;
-    const PLAT_MARGIN = PLAT_WIDTH / 10;
+    const PLAT_MARGIN = PLAY_AREA_WIDTH / 50;
     const acceleration = PLAT_WIDTH / 25;
 
     const JOUEUR_WIDTH = PLAT_MARGIN * 3;
@@ -44,7 +44,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     const colonnesX = [0, 1, 2, 3, 4].map((i) =>
         Math.floor(
-            (i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN)) / 4 + PLAT_MARGIN,
+            (i * (PLAT_WIDTH + 2 * PLAT_MARGIN)) + PLAT_MARGIN,
         ),
     );
 

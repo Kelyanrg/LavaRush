@@ -1,19 +1,3 @@
-@font-face {
-  font-family: "supersquad";
-  src: url("../assets/fonts/super_squad/Super_Squad.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "acme";
-  src: url("../assets/fonts/acme/Acme-Regular.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* ═══════════════════════════════════════════════════════════════
    GAME PAGE - BASE
    ═══════════════════════════════════════════════════════════════ */
@@ -153,6 +137,33 @@
   50% {
     text-shadow:
       0 0 50px rgba(255, 120, 0, 0.9),
+      0 4px 0 #8b0000;
+  }
+}
+
+/* ─── GAME OVER ANIMATIONS ──────────────────────────────────── */
+@keyframes titleShake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10%       { transform: translateX(-10px) rotate(-1.5deg); }
+  20%       { transform: translateX(10px)  rotate(1.5deg); }
+  30%       { transform: translateX(-7px); }
+  40%       { transform: translateX(7px); }
+  50%       { transform: translateX(-4px); }
+  60%       { transform: translateX(4px); }
+  75%       { transform: translateX(-2px); }
+}
+
+@keyframes gameoverPulse {
+  0%, 100% {
+    text-shadow:
+      0 0 20px rgba(255, 69, 0, 0.8),
+      0 0 40px rgba(255, 50, 0, 0.6),
+      0 4px 0 #8b0000;
+  }
+  50% {
+    text-shadow:
+      0 0 40px rgba(255, 100, 0, 1),
+      0 0 80px rgba(255, 70, 0, 0.8),
       0 4px 0 #8b0000;
   }
 }
@@ -394,282 +405,351 @@
     gameoverPulse 2s ease-in-out infinite 0.6s;
   margin: 0;
   text-align: center;
+}
 
-  /* ─── GOLDEN BUTTON (create account) ────────────────────────── */
-  .btn-golden {
-    background: linear-gradient(135deg, #ffd700, #ffa500);
-    border: none;
-    color: #1a1a1a;
-    font-family: "acme", sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    padding: 14px 28px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition:
-      transform 0.2s,
-      box-shadow 0.2s;
-    box-shadow: 0 4px 15px rgba(255, 200, 0, 0.4);
-  }
+/* ─── GOLDEN BUTTON (create account) ────────────────────────── */
+.btn-golden {
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  border: none;
+  color: #1a1a1a;
+  font-family: "acme", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(255, 200, 0, 0.4);
+}
 
-  .btn-golden:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 25px rgba(255, 200, 0, 0.6);
-  }
+.btn-golden:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 25px rgba(255, 200, 0, 0.6);
+}
 
-  .btn-golden:active {
-    transform: scale(0.98);
-  }
+.btn-golden:active {
+  transform: scale(0.98);
+}
 
-  /* ─── BUTTONS GROUP ─────────────────────────────────────────── */
-  .buttons-group {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+/* ─── BUTTONS GROUP ──────────────────────────────────────────── */
+.buttons-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
 
-  /* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    GAME OVER SPECIFIC
    ═══════════════════════════════════════════════════════════════ */
 
-  .gameover-score-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
+.gameover-score-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
 
-  .gameover-score-section .score-label {
-    font-family: "acme", sans-serif;
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.5);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
+.gameover-score-section .score-label {
+  font-family: "acme", sans-serif;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
 
-  .gameover-score-section .score-value {
-    font-family: "supersquad", sans-serif;
-    font-size: 3.5rem;
-    color: #fff;
-    text-shadow:
-      0 0 20px rgba(255, 150, 0, 0.5),
-      0 2px 0 rgba(0, 0, 0, 0.3);
-    line-height: 1;
-  }
+.gameover-score-section .score-value {
+  font-family: "supersquad", sans-serif;
+  font-size: 3.5rem;
+  color: #fff;
+  text-shadow:
+    0 0 20px rgba(255, 150, 0, 0.5),
+    0 2px 0 rgba(0, 0, 0, 0.3);
+  line-height: 1;
+}
 
-  /* ─── GUEST PROMPT ──────────────────────────────────────────── */
-  .guest-prompt {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 24px;
-    background: rgba(255, 200, 100, 0.05);
-    border: 1px dashed rgba(255, 200, 100, 0.3);
-    border-radius: 12px;
-    width: 100%;
-  }
+/* ─── GUEST PROMPT ───────────────────────────────────────────── */
+.guest-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: rgba(255, 200, 100, 0.05);
+  border: 1px dashed rgba(255, 200, 100, 0.3);
+  border-radius: 12px;
+  width: 100%;
+}
 
-  .guest-prompt p {
-    font-family: "acme", sans-serif;
-    font-size: 1rem;
-    color: rgba(255, 200, 100, 0.9);
-    text-align: center;
-    margin: 0;
-  }
+.guest-prompt p {
+  font-family: "acme", sans-serif;
+  font-size: 1rem;
+  color: rgba(255, 200, 100, 0.9);
+  text-align: center;
+  margin: 0;
+}
 
-  /* ═══════════════════════════════════════════════════════════════
-   SHARED ELEMENTS
-   ═══════════════════════════════════════════════════════════════ */
+/* ─── HINT TEXT ──────────────────────────────────────────────── */
+.hint-text {
+  font-family: "acme", sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 1px;
+}
 
-  /* ─── HINT TEXT ─────────────────────────────────────────────── */
-  .hint-text {
-    font-family: "acme", sans-serif;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.4);
-    letter-spacing: 1px;
-  }
+/* ─── FADE OUT TRANSITION ────────────────────────────────────── */
+.fading-out {
+  animation: fadeOut 0.5s ease-out forwards;
+}
 
-  /* ─── FADE OUT TRANSITION ───────────────────────────────────── */
-  .fading-out {
-    animation: fadeOut 0.5s ease-out forwards;
-  }
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
 
-  @keyframes fadeOut {
-    from {
-      opacity: 1;
-    }
+/* ─── HUD SCORE (in-game) ────────────────────────────────────── */
+.hud-score {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: "supersquad", sans-serif;
+  font-size: 1.8rem;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  z-index: 30;
+  pointer-events: none;
+}
 
-    to {
-      opacity: 0;
-    }
-  }
+.hud-score span {
+  color: #ff9a40;
+}
 
-  /* ─── SCORE DISPLAY IN-GAME (HUD) ───────────────────────────── */
-  .hud-score {
-    position: absolute;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: "supersquad", sans-serif;
-    font-size: 1.8rem;
-    color: #fff;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-    z-index: 30;
-    pointer-events: none;
-  }
-
-  .hud-score span {
-    color: #ff9a40;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════ */
 
-  @media (max-width: 768px) {
-
-    .overlay,
-    .overlay-start-screen,
-    .game-over-screen {
-      gap: 20px;
-      padding: 30px 16px;
-    }
-
-    .title-img {
-      width: clamp(250px, 70vw, 400px);
-    }
-
-    .gameover-title {
-      font-size: 2.5rem;
-    }
-
-    .instructions,
-    .gameover-card {
-      padding: 20px 24px;
-      gap: 16px;
-    }
-
-    .controls {
-      gap: 20px;
-    }
-
-    .control-icon {
-      height: 48px;
-    }
-
-    .btn-main {
-      padding: 16px 50px;
-      font-size: 1.1rem;
-    }
-
-    .btn-secondary {
-      padding: 12px 22px;
-      font-size: 0.95rem;
-    }
-
-    .gameover-score-section .score-value {
-      font-size: 3rem;
-    }
+@media (max-width: 768px) {
+  .overlay,
+  .overlay-start-screen,
+  .game-over-screen {
+    gap: 20px;
+    padding: 30px 16px;
   }
 
-  @media (max-width: 480px) {
-
-    .overlay,
-    .overlay-start-screen,
-    .game-over-screen {
-      gap: 16px;
-      padding: 20px 12px;
-    }
-
-    .title-img {
-      width: 220px;
-    }
-
-    .gameover-title {
-      font-size: 2rem;
-      letter-spacing: 2px;
-    }
-
-    .instructions,
-    .gameover-card {
-      padding: 16px 14px;
-      gap: 14px;
-      width: 95%;
-    }
-
-    .instructions>p,
-    .gameover-card>p {
-      font-size: 1rem;
-      padding: 10px 12px;
-    }
-
-    .best-score-display,
-    .gameover-score-badge {
-      font-size: 1.2rem;
-      padding: 10px 20px;
-    }
-
-    .new-record-badge {
-      font-size: 1.1rem;
-      padding: 10px 20px;
-    }
-
-    .controls {
-      gap: 14px;
-    }
-
-    .control-icon {
-      height: 42px;
-    }
-
-    .control-gauche p,
-    .control-droite p,
-    .control-jump p {
-      font-size: 0.85rem;
-    }
-
-    .btn-main {
-      padding: 14px 40px;
-      font-size: 1rem;
-    }
-
-    .btn-secondary {
-      padding: 10px 18px;
-      font-size: 0.9rem;
-    }
-
-    .btn-golden {
-      padding: 12px 22px;
-      font-size: 0.95rem;
-    }
-
-    .btn-back {
-      top: 16px;
-      left: 16px;
-      padding: 8px 16px;
-      font-size: 0.85rem;
-    }
-
-    .gameover-score-section .score-value {
-      font-size: 2.5rem;
-    }
-
-    .guest-prompt {
-      padding: 14px 16px;
-    }
-
-    .guest-prompt p {
-      font-size: 0.9rem;
-    }
-
-    .hint-text {
-      font-size: 0.8rem;
-    }
-
-    .buttons-group {
-      gap: 8px;
-    }
+  .gameover-title {
+    font-size: 2.5rem;
   }
+
+  .instructions,
+  .gameover-card {
+    padding: 20px 24px;
+    gap: 16px;
+  }
+
+  .controls {
+    gap: 20px;
+  }
+
+  .control-icon {
+    height: 48px;
+  }
+
+  .btn-main {
+    padding: 16px 50px;
+    font-size: 1.1rem;
+  }
+
+  .btn-secondary {
+    padding: 12px 22px;
+    font-size: 0.95rem;
+  }
+
+  .gameover-score-section .score-value {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .overlay,
+  .overlay-start-screen,
+  .game-over-screen {
+    gap: 16px;
+    padding: 20px 12px;
+  }
+
+  .title-img {
+    width: 220px;
+  }
+
+  .gameover-title {
+    font-size: 2rem;
+    letter-spacing: 2px;
+  }
+
+  .instructions,
+  .gameover-card {
+    padding: 16px 14px;
+    gap: 14px;
+    width: 95%;
+  }
+
+  .instructions > p,
+  .gameover-card > p {
+    font-size: 1rem;
+    padding: 10px 12px;
+  }
+
+  .best-score-display,
+  .gameover-score-badge {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+  }
+
+  .new-record-badge {
+    font-size: 1.1rem;
+    padding: 10px 20px;
+  }
+
+  .controls {
+    gap: 14px;
+  }
+
+  .control-icon {
+    height: 42px;
+  }
+
+  .control-gauche p,
+  .control-droite p,
+  .control-jump p {
+    font-size: 0.85rem;
+  }
+
+  .btn-main {
+    padding: 14px 40px;
+    font-size: 1rem;
+  }
+
+  .btn-secondary {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+
+  .btn-golden {
+    padding: 12px 22px;
+    font-size: 0.95rem;
+  }
+
+  .btn-back {
+    top: 16px;
+    left: 16px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+
+  .gameover-score-section .score-value {
+    font-size: 2.5rem;
+  }
+
+  .guest-prompt {
+    padding: 14px 16px;
+  }
+
+  .guest-prompt p {
+    font-size: 0.9rem;
+  }
+
+  .hint-text {
+    font-size: 0.8rem;
+  }
+
+  .buttons-group {
+    gap: 8px;
+  }
+}
+
+/* ──────────────────────────────────────────
+   OVERLAY CHARGEMENT
+   ────────────────────────────────────────── */
+
+.overlay-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 110%, #3a0800 0%, #0a0000 60%);
+  overflow: hidden;
+}
+
+/* Logo pulsant */
+.loading-logo {
+  width: 220px;
+  max-width: 60vw;
+  animation: loadingPulse 1.2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 20px rgba(255, 80, 0, 0.6));
+}
+
+@keyframes loadingPulse {
+  from { opacity: 0.75; transform: scale(0.97); filter: drop-shadow(0 0 10px rgba(255, 80, 0, 0.4)); }
+  to   { opacity: 1;    transform: scale(1.03); filter: drop-shadow(0 0 28px rgba(255, 120, 0, 0.8)); }
+}
+
+/* Barre de progression */
+.loading-bar-wrap {
+  width: 280px;
+  max-width: 55vw;
+  height: 6px;
+  background: rgba(255, 100, 0, 0.15);
+  border-radius: 999px;
+  margin-top: 36px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 100, 0, 0.25);
+}
+
+.loading-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff4500, #ffaa00, #ff6a00);
+  border-radius: 999px;
+  box-shadow: 0 0 8px rgba(255, 120, 0, 0.7);
+  /* La largeur est pilotée par le style inline React (progression réelle) */
+}
+
+/* Texte clignotant */
+.loading-text {
+  margin-top: 14px;
+  color: rgba(255, 154, 64, 0.85);
+  font-family: 'acme', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  animation: loadingBlink 1s ease-in-out infinite alternate;
+}
+
+@keyframes loadingBlink {
+  from { opacity: 0.4; }
+  to   { opacity: 1; }
+}
+
+/* Vague de lave en bas */
+.loading-lava-wave {
+  position: absolute;
+  bottom: 0;
+  left: -10%;
+  width: 120%;
+  height: 80px;
+  background: linear-gradient(to top, #cc2200, #ff5500 60%, transparent);
+  border-radius: 50% 50% 0 0 / 30px 30px 0 0;
+  animation: lavaRise 2s ease-in-out infinite alternate;
+  opacity: 0.7;
+}
+
+@keyframes lavaRise {
+  from { transform: translateY(20px) scaleX(1);   opacity: 0.5; }
+  to   { transform: translateY(0px)  scaleX(1.03); opacity: 0.8; }
 }
