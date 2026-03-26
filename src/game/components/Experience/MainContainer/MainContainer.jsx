@@ -25,9 +25,9 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * 0.428);
     const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
 
-    const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - (PLAY_AREA_WIDTH / 50) * 2;
+    const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - ((PLAY_AREA_WIDTH / 50) * 2);
     const PLAT_HEIGHT = (PLAT_WIDTH / 6) * 1.2;
-    const PLAT_MARGIN = PLAT_WIDTH / 10;
+    const PLAT_MARGIN = PLAY_AREA_WIDTH / 50;
     const acceleration = PLAT_WIDTH / 25;
 
     const JOUEUR_WIDTH = PLAT_MARGIN * 3;
@@ -44,7 +44,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     const colonnesX = [0, 1, 2, 3, 4].map((i) =>
         Math.floor(
-            (i * (PLAY_AREA_WIDTH - PLAT_WIDTH - PLAT_MARGIN)) / 4 + PLAT_MARGIN,
+            (i * (PLAT_WIDTH + 2 * PLAT_MARGIN)) + PLAT_MARGIN,
         ),
     );
 
@@ -68,13 +68,13 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         { emplacements: 2, x: colonnesX[2], y: BAS_Y - 480, width: PLAT_WIDTH, height: PLAT_HEIGHT },
     ]);
 
-    const [spikes, setSpikes] = useState([{ 
-            emplacements: 4, 
-            x: colonnesX[4], 
-            y: (BAS_Y - 240) + PLAT_HEIGHT,
-            width: PLAT_WIDTH, 
-            height: SPIKE_HEIGHT 
-        }]);
+    const [spikes, setSpikes] = useState([{
+        emplacements: 4,
+        x: colonnesX[4],
+        y: (BAS_Y - 240) + PLAT_HEIGHT,
+        width: PLAT_WIDTH,
+        height: SPIKE_HEIGHT
+    }]);
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
@@ -115,7 +115,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/perso_run_droite.png"),
             PIXI.Assets.load("/assets/sprites/perso_run_gauche.png"),
             PIXI.Assets.load("/assets/sprites/spike_teste.png"),
-        ]).then(([b1, b2, b3, b4, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, l5, l6, l7, l8, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {            
+        ]).then(([b1, b2, b3, b4, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, l5, l6, l7, l8, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
             setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
@@ -148,19 +148,19 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         }
 
         const isSpiked = chanceSpikes > 0 && Math.random() < chanceSpikes;
-        
+
         if (chanceSpikes > 0 && Math.random() < chanceSpikes) {
             setSpikes(prev => [...prev, { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY + PLAT_HEIGHT, width: PLAT_WIDTH, height: SPIKE_HEIGHT }]);
         }
-        
-        return { 
-            emplacements: nouveauemplacement, 
-            x: colonnesX[nouveauemplacement], 
-            y: newY, 
-            width: PLAT_WIDTH, 
-            height: PLAT_HEIGHT, 
-            hasMob: false, 
-            hasSpike: isSpiked 
+
+        return {
+            emplacements: nouveauemplacement,
+            x: colonnesX[nouveauemplacement],
+            y: newY,
+            width: PLAT_WIDTH,
+            height: PLAT_HEIGHT,
+            hasMob: false,
+            hasSpike: isSpiked
         };
     }
 
@@ -182,7 +182,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         }
 
         let plateformesDuPalier = [];
-        
+
         const chanceSpikes = (nbPlateformes === 1) ? 0 : (chanceSpawnMob / 2);
 
         if (altitudeActuelle > 1000) {
@@ -204,7 +204,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         } else {
             const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], 0);
             const secondePlatforme = genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements], 0);
-            
+
             if (nbPlateformes === 2) {
                 plateformesDuPalier = [
                     premierePlatforme,
@@ -253,24 +253,24 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             cibleCameraY.current += diff;
 
             setPlateformes(prev => {
-                let nouvelles = prev.map(p => ({ ...p })); 
-                
+                let nouvelles = prev.map(p => ({ ...p }));
+
                 while (Math.min(...nouvelles.map(p => p.y)) > y - canvasSize.height) {
                     const yMin = Math.min(...nouvelles.map(p => p.y));
-                    
+
                     const emplacementsDernierPalier = nouvelles
                         .filter(p => p.y === yMin)
                         .map(p => p.emplacements);
-                        
+
                     const emplacementsAvantDernier = nouvelles
                         .filter(p => p.y === yMin + 120)
                         .map(p => p.emplacements);
 
                     const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)), emplacementsDernierPalier);
-                    
+
                     palier.forEach(nouvellePlat => {
                         const col = nouvellePlat.emplacements;
-                        
+
                         if (emplacementsDernierPalier.includes(col) && emplacementsAvantDernier.includes(col)) {
                             nouvellePlat.hasMob = false;
                             nouvelles = nouvelles.map(p => {
