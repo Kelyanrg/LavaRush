@@ -5,18 +5,19 @@ import "./home.css";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 
-// 🗓️ Date de lancement — lundi 30 mars 2026 à 09h00
-const LAUNCH_DATE = new Date("2026-03-30T09:00:00");
+// 🗓️ Date de lancement — lundi 30 mars 2026 à 14h00
+const LAUNCH_DATE = new Date("2026-03-30T14:00:00");
 
 function useCountdown(target) {
   const calc = () => {
     const diff = target - Date.now();
-    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, done: true };
+    if (diff <= 0)
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, done: true };
     return {
-      days:    Math.floor(diff / 86400000),
-      hours:   Math.floor((diff % 86400000) / 3600000),
-      minutes: Math.floor((diff % 3600000)  / 60000),
-      seconds: Math.floor((diff % 60000)    / 1000),
+      days: Math.floor(diff / 86400000),
+      hours: Math.floor((diff % 86400000) / 3600000),
+      minutes: Math.floor((diff % 3600000) / 60000),
+      seconds: Math.floor((diff % 60000) / 1000),
       done: false,
     };
   };
@@ -127,17 +128,17 @@ export default function Home() {
               </p>
 
               <div className="countdown-blocks">
-                <CountdownBlock value={countdown.days}    label="Jours"    />
+                <CountdownBlock value={countdown.days} label="Jours" />
                 <span className="cd-sep">:</span>
-                <CountdownBlock value={countdown.hours}   label="Heures"   />
+                <CountdownBlock value={countdown.hours} label="Heures" />
                 <span className="cd-sep">:</span>
-                <CountdownBlock value={countdown.minutes} label="Minutes"  />
+                <CountdownBlock value={countdown.minutes} label="Minutes" />
                 <span className="cd-sep">:</span>
                 <CountdownBlock value={countdown.seconds} label="Secondes" />
               </div>
 
               <p className="countdown-sublabel">
-                Disponible <strong>lundi 30 mars</strong> à 9h00
+                Disponible <strong>lundi 30 mars</strong> à 14h00
               </p>
 
               <button
