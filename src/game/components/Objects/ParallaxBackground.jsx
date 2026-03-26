@@ -1,3 +1,9 @@
+import { useRef } from 'react';
+import { useTick, extend } from '@pixi/react';
+import { Container, Sprite } from 'pixi.js';
+
+extend({ Container, Sprite });
+
 export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerTexturesRight, canvasSize, cameraY }) => {
     const biomeSpritesRef = useRef([]);
     const towerLeftSpritesRef = useRef([]);
@@ -55,7 +61,6 @@ export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerText
 
     return (
         <pixiContainer>
-            {/* BIOMES */}
             <pixiContainer>
                 {biomeTextures.map((texture, index) => (
                     <pixiSprite

@@ -9,7 +9,6 @@ import * as PIXI from "pixi.js";
 import { Lave } from "../../Objects/Lave.jsx";
 import { checkCollision } from "../../../helpers/common.js";
 import { Mob } from "../../Objects/Mob.jsx";
-import { Sound } from '@pixi/sound';
 
 extend({ Container, Sprite, Graphics, Text });
 
