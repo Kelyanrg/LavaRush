@@ -33,9 +33,14 @@ export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerText
             if (!sprite) return;
             sprite.y += movement;
 
-            if (sprite.y >= canvasSize.height + (totalHeight - canvasSize.height)) {
+            // REBOUCLAGE VERS LE HAUT (Quand on monte dans le jeu, les sprites descendent)
+            // Si le haut du sprite dépasse le bas de l'écran :
+            if (sprite.y >= canvasSize.height) {
                 sprite.y -= totalHeight;
             } 
+            
+            // REBOUCLAGE VERS LE BAS (Si on redescend, rare mais possible)
+            // Si le bas du sprite remonte au-dessus du "plafond" de la pile :
             else if (sprite.y < canvasSize.height - totalHeight) {
                 sprite.y += totalHeight;
             }
