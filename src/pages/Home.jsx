@@ -15,7 +15,7 @@ export default function Home() {
   const displayName = user?.user_metadata?.username || "Anonyme";
 
   return (
-    <>
+    <div className="home-page">
       <Helmet>
         <title>LavaRush - Accueil</title>
         <link rel="icon" href="./assets/ui/lavarush_petio_icon.svg" />
@@ -104,14 +104,31 @@ export default function Home() {
 
       <div className="info-section">
         <div className="info-card">
-          <h3>Blabla titre</h3>
-          <p>blabla descriptione</p>
+          <h3>Grimpe sans fin</h3>
+          <p>
+            Saute de plateforme en plateforme et monte le plus haut possible. La
+            lave monte, pas question de t'arrêter.
+          </p>
+        </div>
+        <div className="info-card">
+          <h3>Évite les dangers</h3>
+          <p>
+            Plateformes cassantes, chauves-souris qui patrouillent... chaque
+            seconde peut être la dernière. Reste en alerte.
+          </p>
+        </div>
+        <div className="info-card">
+          <h3>Bats ton record</h3>
+          <p>
+            Chaque partie compte. Sauvegarde ton meilleur score et grimpe au
+            classement.
+          </p>
         </div>
       </div>
 
       <div className="footer">
         <p>© 2025 Lava Rush - Tous droits réservés</p>
       </div>
-    </>
+    </div>
   );
 }
