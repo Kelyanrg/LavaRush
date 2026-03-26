@@ -156,7 +156,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/fonts/super_squad/Super_Squad.ttf"),
             PIXI.Assets.load("/assets/fonts/acme/Acme-Regular.ttf"),
         ]).then(([b1, b2, b3, b4, b5, b6, b7, b8, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
-            setTexturesBiomes([b7, b8]);
+            setTexturesBiomes([b1, b2, b3, b4, b5, b6, b7, b8, b1, b2, b3, b4, b5, b6, b7, b8]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturesPlatforme(spritePlateforme);
