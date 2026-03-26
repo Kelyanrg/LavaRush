@@ -79,9 +79,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const [messageAlerte, setMessageAlerte] = useState(null);
 
     const alerte800m = useRef(false);
-    const alerte1800m = useRef(false);
+    const alerte1400m = useRef(false);
     const mob850mSpawned = useRef(false);
-    const spikes1900m = useRef(false);
 
     const musicRef = useRef(null);
 
@@ -90,36 +89,34 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         musicRef.current.loop = true;
         musicRef.current.volume = 0.3;
     }
-    const hasStartedAudio = useRef(false);
 
     useEffect(() => {
         const music = musicRef.current;
 
         const playAudio = () => {
-            music.play()
-                .then(() => {
-                    console.log("Musique démarrée !");
-                    // Une fois que ça joue, on nettoie TOUS les écouteurs
-                    window.removeEventListener('mousedown', playAudio);
-                    window.removeEventListener('keydown', playAudio);
-                    window.removeEventListener('touchstart', playAudio);
-                })
-                .catch(() => {
-                    // Le navigateur bloque encore, on attend la prochaine interaction
-                });
+            music.play().then(() => {
+                console.log("Musique débloquée !");
+                window.removeEventListener('mousedown', playAudio);
+                window.removeEventListener('keydown', playAudio);
+                window.removeEventListener('touchstart', playAudio);
+            }).catch(() => {});
         };
 
-        // On écoute le clic souris, le clavier ET le tactile (mobile)
         window.addEventListener('mousedown', playAudio);
         window.addEventListener('keydown', playAudio);
         window.addEventListener('touchstart', playAudio);
+
+        if (isGameOver) {
+            music.pause();
+            music.currentTime = 0; 
+        }
 
         return () => {
             window.removeEventListener('mousedown', playAudio);
             window.removeEventListener('keydown', playAudio);
             window.removeEventListener('touchstart', playAudio);
         };
-    }, []);
+    }, [isGameOver]);
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
@@ -140,6 +137,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/backgrounds/biome5.png"),
             PIXI.Assets.load("/assets/backgrounds/biome6.png"),
             PIXI.Assets.load("/assets/backgrounds/biome7.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome8.png"),
             PIXI.Assets.load("/assets/backgrounds/tower_left_1.png"),
             PIXI.Assets.load("/assets/backgrounds/tower_right_1.png"),
             PIXI.Assets.load("/assets/sprites/plateforme.png"),
@@ -158,11 +156,11 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/perso_jump_gauche.png"),
             PIXI.Assets.load("/assets/sprites/perso_run_droite.png"),
             PIXI.Assets.load("/assets/sprites/perso_run_gauche.png"),
-            PIXI.Assets.load("/assets/sprites/plateforme_spike_2.png"),
+            PIXI.Assets.load("/assets/sprites/plateforme_spike.png"),
             PIXI.Assets.load("/assets/fonts/super_squad/Super_Squad.ttf"),
             PIXI.Assets.load("/assets/fonts/acme/Acme-Regular.ttf"),
-        ]).then(([b1, b2, b3, b4, b5, b6, b7, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
-            setTexturesBiomes([b1, b2, b3, b4, b5, b6, b7, b1, b2, b3, b4, b5, b6, b7]);
+        ]).then(([b1, b2, b3, b4, b5, b6, b7, b8, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
+            setTexturesBiomes([b1, b2, b3, b4, b5, b6, b7, b8, b1, b2, b3, b4, b5, b6, b7, b8]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturesPlatforme(spritePlateforme);
@@ -188,15 +186,20 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             nouveauemplacement > 4 ||
             interdition.includes(nouveauemplacement)
         ) {
-            const direction =
-                DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
+            const direction = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
             nouveauemplacement = emplacementDeReference + direction;
         }
 
         const isSpiked = chanceSpikes > 0 && Math.random() < chanceSpikes;
 
-        if (chanceSpikes > 0 && Math.random() < chanceSpikes) {
-            setSpikes(prev => [...prev, { emplacements: nouveauemplacement, x: colonnesX[nouveauemplacement], y: newY + PLAT_HEIGHT, width: PLAT_WIDTH, height: SPIKE_HEIGHT }]);
+        if (isSpiked) {
+            setSpikes(prev => [...prev, { 
+                emplacements: nouveauemplacement, 
+                x: colonnesX[nouveauemplacement], 
+                y: newY + PLAT_HEIGHT, 
+                width: PLAT_WIDTH, 
+                height: SPIKE_HEIGHT 
+            }]);
         }
 
         return {
@@ -216,7 +219,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         const altitudePlateformePrecedente = Math.floor((BAS_Y - yMax) / 10);
         const altitudeNouvellePlateforme = Math.floor((BAS_Y - newY) / 10);
 
-        const isPalier1900m = altitudePlateformePrecedente < 1850 && altitudeNouvellePlateforme >= 1850;
+        const isPalier1500m = altitudePlateformePrecedente < 1500 && altitudeNouvellePlateforme >= 1500;
 
         let nbPlateformes = 1 + Math.floor(Math.random() * 2);
         const DIRECTIONS = [-2, -1, -1, 0, 0, 1, 1, 2];
@@ -237,12 +240,12 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         let plateformesDuPalier = [];
 
         let forcerPic = false;
-        if (isPalier1900m) {
+        if (isPalier1500m) {
             forcerPic = true;
             nbPlateformes = 2; 
         }
 
-        const chanceSpikes = forcerPic ? 1 : ((nbPlateformes === 1 || altitudeActuelle < 1800) ? 0 : (chanceSpawnMob / 2));
+        const chanceSpikes = forcerPic ? 1 : ((nbPlateformes === 1 || altitudeActuelle < 1500) ? 0 : (chanceSpawnMob / 2));
 
         if (altitudeActuelle > 1000) {
             const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], chanceSpikes);
@@ -289,7 +292,6 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         return plateformesDuPalier;
     };
 
-    console.log("ScaleX:", scaleX, "ScaleY:", scaleY, "Scale:", scale);
     const mondeRef = useRef(null);
     const cameraY = useRef(0);
     const cibleCameraY = useRef(0);
@@ -321,8 +323,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 setTimeout(() => setMessageAlerte(null), 5000);
             }
 
-            if (nouvelleAltitude >= 1800 && !alerte1800m.current) {
-                alerte1800m.current = true;
+            if (nouvelleAltitude >= 1400 && !alerte1400m.current) {
+                alerte1400m.current = true;
                 setMessageAlerte({
                     titre: "ALERTE !",
                     corps: "Apparition\nde pics !"
@@ -427,10 +429,6 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     setIsGameOver(true);
                 }
             }
-        }
-
-        if (isGameOver) {
-            musicRef.current.pause(); 
         }
     };
 
