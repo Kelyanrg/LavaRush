@@ -9,6 +9,7 @@ import * as PIXI from "pixi.js";
 import { Lave } from "../../Objects/Lave.jsx";
 import { checkCollision } from "../../../helpers/common.js";
 import { Mob } from "../../Objects/Mob.jsx";
+import { Sound } from '@pixi/sound';
 
 extend({ Container, Sprite, Graphics, Text });
 
@@ -123,8 +124,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/plateforme_spike_2.png"),
             PIXI.Assets.load("/assets/fonts/super_squad/Super_Squad.ttf"),
             PIXI.Assets.load("/assets/fonts/acme/Acme-Regular.ttf"),
-
-        ]).then(([b1, b2, b3, b4, b5, b6, b7, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
+            PIXI.Assets.load("/assets/audio/sound_in_game.mp3")
+        ]).then(([b1, b2, b3, b4, b5, b6, b7, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes, soundInGame]) => {
             setTexturesBiomes([b1, b2, b3, b4, b5, b6, b7, b1, b2, b3, b4, b5, b6, b7]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);

@@ -1,14 +1,7 @@
-import { useRef } from 'react';
-import { useTick, extend } from '@pixi/react';
-import { Container, Sprite } from 'pixi.js';
-
-extend({ Container, Sprite });
-
 export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerTexturesRight, canvasSize, cameraY }) => {
     const biomeSpritesRef = useRef([]);
     const towerLeftSpritesRef = useRef([]);
     const towerRightSpritesRef = useRef([]);
-    
     const prevCameraY = useRef(0);
 
     const IMG_W = 1920;
@@ -16,7 +9,6 @@ export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerText
     const bgScaledHeight = 1080 * bgScale;
 
     const RATIO_LARGEUR_JEU = 0.428; 
-    
     const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * RATIO_LARGEUR_JEU);
     const offsetX = Math.floor((canvasSize.width - PLAY_AREA_WIDTH) / 2);
 
@@ -24,7 +16,6 @@ export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerText
     const RIGHT_TOWER_WIDTH = canvasSize.width - (offsetX + PLAY_AREA_WIDTH);
     
     const refTowerTexture = towerTexturesLeft[0];
-    
     const towerScale = LEFT_TOWER_WIDTH / refTowerTexture.width;
     const towerScaledHeight = Math.floor(refTowerTexture.height * towerScale);
 
@@ -36,7 +27,7 @@ export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerText
             if (!sprite) return;
             sprite.y += movement;
 
-            if (sprite.y >= canvasSize.height) {
+            if (sprite.y >= canvasSize.height + (totalHeight - canvasSize.height)) {
                 sprite.y -= totalHeight;
             } 
             else if (sprite.y < canvasSize.height - totalHeight) {
@@ -47,7 +38,6 @@ export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerText
 
     useTick(() => {
         if (!cameraY) return;
-
         const deltaCamY = cameraY.current - prevCameraY.current;
         prevCameraY.current = cameraY.current;
 
@@ -65,6 +55,7 @@ export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerText
 
     return (
         <pixiContainer>
+            {/* BIOMES */}
             <pixiContainer>
                 {biomeTextures.map((texture, index) => (
                     <pixiSprite
@@ -74,11 +65,12 @@ export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerText
                         width={canvasSize.width}
                         height={bgScaledHeight}
                         x={0}
-                        y={-index * bgScaledHeight}
+                        y={canvasSize.height - (index + 1) * bgScaledHeight}
                     />
                 ))}
             </pixiContainer>
 
+            {/* TOURS */}
             <pixiContainer>
                 {towerTexturesLeft.map((texture, index) => (
                     <pixiSprite
@@ -88,7 +80,7 @@ export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerText
                         width={LEFT_TOWER_WIDTH} 
                         height={towerScaledHeight}
                         x={0} 
-                        y={-index * towerScaledHeight}
+                        y={canvasSize.height - (index + 1) * towerScaledHeight}
                     />
                 ))}
 
@@ -100,7 +92,7 @@ export const ParallaxBackground = ({ biomeTextures, towerTexturesLeft, towerText
                         width={RIGHT_TOWER_WIDTH} 
                         height={towerScaledHeight}
                         x={offsetX + PLAY_AREA_WIDTH}
-                        y={-index * towerScaledHeight}
+                        y={canvasSize.height - (index + 1) * towerScaledHeight}
                     />
                 ))}
             </pixiContainer>
