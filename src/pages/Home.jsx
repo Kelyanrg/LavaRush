@@ -1,12 +1,50 @@
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { useState, useEffect } from "react";
 import "./home.css";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 
+// 🗓️ Date de lancement — lundi 30 mars 2026 à 09h00
+const LAUNCH_DATE = new Date("2026-03-30T09:00:00");
+
+function useCountdown(target) {
+  const calc = () => {
+    const diff = target - Date.now();
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, done: true };
+    return {
+      days:    Math.floor(diff / 86400000),
+      hours:   Math.floor((diff % 86400000) / 3600000),
+      minutes: Math.floor((diff % 3600000)  / 60000),
+      seconds: Math.floor((diff % 60000)    / 1000),
+      done: false,
+    };
+  };
+
+  const [time, setTime] = useState(calc);
+
+  useEffect(() => {
+    if (time.done) return;
+    const id = setInterval(() => setTime(calc()), 1000);
+    return () => clearInterval(id);
+  }, [time.done]);
+
+  return time;
+}
+
+function CountdownBlock({ value, label }) {
+  return (
+    <div className="cd-block">
+      <div className="cd-value">{String(value).padStart(2, "0")}</div>
+      <div className="cd-label">{label}</div>
+    </div>
+  );
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const { session, user } = useAuth();
+  const countdown = useCountdown(LAUNCH_DATE);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -72,12 +110,45 @@ export default function Home() {
           <p className="game-subtitle">
             Survivez à la lave. Montez le plus haut possible.
           </p>
-          <div className="play-btn-wrapper">
-            <button className="play-btn" onClick={() => navigate("/game")}>
-              <span className="play-btn-text">Jouer maintenant</span>
-              <span className="play-btn-shine" />
-            </button>
-          </div>
+
+          {countdown.done ? (
+            /* ── Jeu disponible ── */
+            <div className="play-btn-wrapper">
+              <button className="play-btn" onClick={() => navigate("/game")}>
+                <span className="play-btn-text">Jouer maintenant</span>
+                <span className="play-btn-shine" />
+              </button>
+            </div>
+          ) : (
+            /* ── Countdown ── */
+            <div className="countdown-wrapper">
+              <p className="countdown-eyebrow">
+                <span className="cd-fire">🔥</span> Le volcan s'éveille…
+              </p>
+
+              <div className="countdown-blocks">
+                <CountdownBlock value={countdown.days}    label="Jours"    />
+                <span className="cd-sep">:</span>
+                <CountdownBlock value={countdown.hours}   label="Heures"   />
+                <span className="cd-sep">:</span>
+                <CountdownBlock value={countdown.minutes} label="Minutes"  />
+                <span className="cd-sep">:</span>
+                <CountdownBlock value={countdown.seconds} label="Secondes" />
+              </div>
+
+              <p className="countdown-sublabel">
+                Disponible <strong>lundi 30 mars</strong> à 9h00
+              </p>
+
+              <button
+                className="play-btn play-btn--locked"
+                disabled
+                title="Bientôt disponible"
+              >
+                <span className="play-btn-text">🔒 Bientôt disponible</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

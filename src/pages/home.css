@@ -476,3 +476,146 @@ body {
   backdrop-filter: blur(10px);
   margin-top: auto;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   COUNTDOWN
+   ═══════════════════════════════════════════════════════════════ */
+
+.countdown-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+/* "Le volcan s'éveille…" */
+.countdown-eyebrow {
+  font-family: "acme", sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255, 180, 80, 0.75);
+}
+
+.cd-fire {
+  font-size: 1rem;
+}
+
+/* ── Rangée de blocs ── */
+.countdown-blocks {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Séparateur ":" */
+.cd-sep {
+  font-family: "supersquad", sans-serif;
+  font-size: 2.2rem;
+  color: rgba(255, 100, 0, 0.6);
+  line-height: 1;
+  margin-bottom: 20px; /* aligne visuellement avec les chiffres */
+  animation: sepPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes sepPulse {
+  from { opacity: 0.4; }
+  to   { opacity: 1; }
+}
+
+/* Bloc individuel */
+.cd-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.cd-value {
+  font-family: "supersquad", sans-serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+
+  /* Boîte */
+  min-width: clamp(64px, 9vw, 96px);
+  padding: 14px 10px 12px;
+  background: rgba(255, 60, 0, 0.1);
+  border: 1px solid rgba(255, 80, 0, 0.35);
+  border-radius: 12px;
+  text-align: center;
+
+  /* Glow */
+  box-shadow:
+    0 0 18px rgba(255, 80, 0, 0.25),
+    inset 0 1px 0 rgba(255, 150, 50, 0.15);
+
+  /* Petit flip à chaque changement de seconde */
+  transition: transform 0.15s ease, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Reflet en haut du bloc */
+.cd-value::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.06), transparent);
+  pointer-events: none;
+}
+
+.cd-label {
+  font-family: "acme", sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255, 154, 64, 0.7);
+}
+
+/* Sous-titre date */
+.countdown-sublabel {
+  font-family: "acme", sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 1px;
+}
+
+.countdown-sublabel strong {
+  color: rgba(255, 154, 64, 0.9);
+  font-weight: 700;
+}
+
+/* Bouton désactivé */
+.play-btn--locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.3);
+}
+
+.play-btn--locked:hover {
+  transform: none;
+  box-shadow: 0 4px 20px rgba(255, 80, 0, 0.6);
+}
+
+/* ── Responsive countdown ── */
+@media (max-width: 480px) {
+  .countdown-blocks {
+    gap: 6px;
+  }
+
+  .cd-sep {
+    font-size: 1.5rem;
+    margin-bottom: 18px;
+  }
+
+  .countdown-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+  }
+}
