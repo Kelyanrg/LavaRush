@@ -74,7 +74,12 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             y: (BAS_Y - 240) + PLAT_HEIGHT,
             width: PLAT_WIDTH, 
             height: SPIKE_HEIGHT 
-        }]);
+    }]);
+
+    const [messageAlerte, setMessageAlerte] = useState(null);
+    
+    const alerte800m = useRef(false);
+    const alerte1800m = useRef(false);
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
@@ -92,6 +97,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/backgrounds/biome2.png"),
             PIXI.Assets.load("/assets/backgrounds/biome3.png"),
             PIXI.Assets.load("/assets/backgrounds/biome4.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome5.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome6.png"),
             PIXI.Assets.load("/assets/backgrounds/tower_left_1.png"),
             PIXI.Assets.load("/assets/backgrounds/tower_right_1.png"),
             PIXI.Assets.load("/assets/sprites/plateforme.png"),
@@ -99,14 +106,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/bat_droite_haut.png"),
             PIXI.Assets.load("/assets/sprites/bat_gauche_bas.png"),
             PIXI.Assets.load("/assets/sprites/bat_gauche_haut.png"),
-            PIXI.Assets.load("/assets/sprites/test/lava1.png"),
-            PIXI.Assets.load("/assets/sprites/test/lava2.png"),
-            PIXI.Assets.load("/assets/sprites/test/lava3.png"),
-            PIXI.Assets.load("/assets/sprites/test/lava4.png"),
-            PIXI.Assets.load("/assets/sprites/test/lava5.png"),
-            PIXI.Assets.load("/assets/sprites/test/lava6.png"),
-            PIXI.Assets.load("/assets/sprites/test/lava7.png"),
-            PIXI.Assets.load("/assets/sprites/test/lava8.png"),
+            PIXI.Assets.load("/assets/sprites/lava1.png"),
+            PIXI.Assets.load("/assets/sprites/lava2.png"),
+            PIXI.Assets.load("/assets/sprites/lava3.png"),
+            PIXI.Assets.load("/assets/sprites/lava4.png"),
             PIXI.Assets.load("/assets/sprites/lava_body.png"),
             PIXI.Assets.load("/assets/sprites/perso_neutre_droite.png"),
             PIXI.Assets.load("/assets/sprites/perso_neutre_gauche.png"),
@@ -114,14 +117,14 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/perso_jump_gauche.png"),
             PIXI.Assets.load("/assets/sprites/perso_run_droite.png"),
             PIXI.Assets.load("/assets/sprites/perso_run_gauche.png"),
-            PIXI.Assets.load("/assets/sprites/spike_teste.png"),
-        ]).then(([b1, b2, b3, b4, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, l5, l6, l7, l8, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {            
-            setTexturesBiomes([b1, b2, b3, b4, b1, b2, b3, b4]);
+            PIXI.Assets.load("/assets/sprites/plateforme_spike.png"),
+        ]).then(([b1, b2, b3, b4, b5, b6, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {            
+            setTexturesBiomes([b1, b2, b3, b4, b5, b6, b1, b2, b3, b4, b5, b6]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturePlatforme(spritePlateforme);
             setTexturesMob([batDB, batDH, batGB, batGH]);
-            setTexturesLaveTop([l1, l2, l3, l4, l5, l6, l7, l8]);
+            setTexturesLaveTop([l1, l2, l3, l4]);
             setTexturesLaveBody(lavaBody);
             setTexturesPerso([persoND, persoNG, persoJD, persoJG, persoRD, persoRG]);
             setTextureSpikes(spikes);
@@ -183,7 +186,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
         let plateformesDuPalier = [];
         
-        const chanceSpikes = (nbPlateformes === 1) ? 0 : (chanceSpawnMob / 2);
+        const chanceSpikes = (nbPlateformes === 1 || altitudeActuelle < 1800) ? 0 : (chanceSpawnMob / 2);
 
         if (altitudeActuelle > 1000) {
             const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], chanceSpikes);
@@ -249,6 +252,20 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
             score.current += diff;
             setScoreAffiche(Math.floor(score.current / 10));
+
+            const nouvelleAltitude = Math.floor(score.current / 10);
+            
+            if (nouvelleAltitude >= 800 && !alerte800m.current) {
+                alerte800m.current = true;
+                setMessageAlerte("Attention !\nLes chauves-souris\narrivent !");
+                setTimeout(() => setMessageAlerte(null), 4000);
+            }
+            
+            if (nouvelleAltitude >= 1800 && !alerte1800m.current) {
+                alerte1800m.current = true;
+                setMessageAlerte("Danger !\nApparition\nde pics !");
+                setTimeout(() => setMessageAlerte(null), 4000);
+            }
 
             cibleCameraY.current += diff;
 
@@ -366,19 +383,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                         x={plat.x}
                         y={plat.y}
                         largeur={plat.width}
-                        hauteur={plat.height}
-                        texturePlatforme={texturePlatforme}
-                    />
-                ))}
-
-                {spikes.map((spike) => (
-                    <Spikes
-                        key={`spike-${spike.x}-${spike.y}`}
-                        x={spike.x}
-                        y={spike.y}
-                        width={spike.width}
-                        height={spike.height}
-                        textureSpikes={textureSpikes}
+                        hauteur={plat.hasSpike ? plat.height + SPIKE_HEIGHT : plat.height}
+                        texturePlatforme={plat.hasSpike ? textureSpikes : texturePlatforme}
                     />
                 ))}
 
@@ -449,6 +455,25 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 y={10}
                 style={{ fill: 0xffffff, fontSize: 24, fontWeight: "bold" }}
             />
+            {messageAlerte && (
+                <pixiText
+                    text={messageAlerte}
+                    x={20}
+                    y={canvasSize.height / 3}
+                    style={{ 
+                        fill: 0xffcc00,
+                        fontSize: 22, 
+                        fontWeight: "bold",
+                        align: "center",
+                        dropShadow: true,
+                        dropShadowColor: '#000000',
+                        dropShadowBlur: 4,
+                        dropShadowDistance: 2,
+                        wordWrap: true,
+                        wordWrapWidth: offsetX - 40 
+                    }}
+                />
+            )}
             {children}
         </pixiContainer>
     );
