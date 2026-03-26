@@ -83,6 +83,44 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const mob850mSpawned = useRef(false);
     const spikes1900m = useRef(false);
 
+    const musicRef = useRef(null);
+
+    if (!musicRef.current) {
+        musicRef.current = new Audio("/assets/audio/sound_in_game.mp3");
+        musicRef.current.loop = true;
+        musicRef.current.volume = 0.3;
+    }
+    const hasStartedAudio = useRef(false);
+
+    useEffect(() => {
+        const music = musicRef.current;
+
+        const playAudio = () => {
+            music.play()
+                .then(() => {
+                    console.log("Musique démarrée !");
+                    // Une fois que ça joue, on nettoie TOUS les écouteurs
+                    window.removeEventListener('mousedown', playAudio);
+                    window.removeEventListener('keydown', playAudio);
+                    window.removeEventListener('touchstart', playAudio);
+                })
+                .catch(() => {
+                    // Le navigateur bloque encore, on attend la prochaine interaction
+                });
+        };
+
+        // On écoute le clic souris, le clavier ET le tactile (mobile)
+        window.addEventListener('mousedown', playAudio);
+        window.addEventListener('keydown', playAudio);
+        window.addEventListener('touchstart', playAudio);
+
+        return () => {
+            window.removeEventListener('mousedown', playAudio);
+            window.removeEventListener('keydown', playAudio);
+            window.removeEventListener('touchstart', playAudio);
+        };
+    }, []);
+
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
     const [texturesTowersRight, setTexturesTowersRight] = useState([]);
@@ -123,8 +161,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/plateforme_spike_2.png"),
             PIXI.Assets.load("/assets/fonts/super_squad/Super_Squad.ttf"),
             PIXI.Assets.load("/assets/fonts/acme/Acme-Regular.ttf"),
-            PIXI.Assets.load("/assets/audio/sound_in_game.mp3")
-        ]).then(([b1, b2, b3, b4, b5, b6, b7, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes, soundInGame]) => {
+        ]).then(([b1, b2, b3, b4, b5, b6, b7, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
             setTexturesBiomes([b1, b2, b3, b4, b5, b6, b7, b1, b2, b3, b4, b5, b6, b7]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
@@ -275,7 +312,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
             const nouvelleAltitude = Math.floor(score.current / 10);
 
-            if (nouvelleAltitude >= 850 && !alerte800m.current) {
+            if (nouvelleAltitude >= 800 && !alerte800m.current) {
                 alerte800m.current = true;
                 setMessageAlerte({
                     titre: "ALERTE !",
@@ -390,6 +427,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                     setIsGameOver(true);
                 }
             }
+        }
+
+        if (isGameOver) {
+            musicRef.current.pause(); 
         }
     };
 
