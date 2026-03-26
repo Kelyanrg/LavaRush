@@ -95,16 +95,13 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
         const playAudio = () => {
             music.play().then(() => {
-                console.log("Musique débloquée !");
                 window.removeEventListener('mousedown', playAudio);
                 window.removeEventListener('keydown', playAudio);
-                window.removeEventListener('touchstart', playAudio);
             }).catch(() => {});
         };
 
         window.addEventListener('mousedown', playAudio);
         window.addEventListener('keydown', playAudio);
-        window.addEventListener('touchstart', playAudio);
 
         if (isGameOver) {
             music.pause();
@@ -114,7 +111,6 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         return () => {
             window.removeEventListener('mousedown', playAudio);
             window.removeEventListener('keydown', playAudio);
-            window.removeEventListener('touchstart', playAudio);
         };
     }, [isGameOver]);
 
@@ -160,7 +156,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/fonts/super_squad/Super_Squad.ttf"),
             PIXI.Assets.load("/assets/fonts/acme/Acme-Regular.ttf"),
         ]).then(([b1, b2, b3, b4, b5, b6, b7, b8, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
-            setTexturesBiomes([b1, b2, b3, b4, b5, b6, b7, b8, b1, b2, b3, b4, b5, b6, b7, b8]);
+            setTexturesBiomes([b7, b8]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturesPlatforme(spritePlateforme);
