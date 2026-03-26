@@ -15,7 +15,7 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
 
     const ratioLave = 385 / 586; 
     const SURFACE_HEIGHT = playAreaWidth * ratioLave;
-
+    
     const HITBOX_OFFSET = SURFACE_HEIGHT * 0.1;
     
     useEffect(() => {
@@ -74,9 +74,9 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
             corpsRef.current.height = Math.max(100, hauteurDynamique);
         }
 
-        if (surfaceRef.current && texturesSurface && texturesSurface.length === 8) {
+        if (surfaceRef.current && texturesSurface && texturesSurface.length === 4) {
             time.current += ticker.deltaTime;
-            const animationSpeed = 0.08; 
+            const animationSpeed = 0.06; 
             const frameIndex = Math.floor(time.current * animationSpeed) % 4;
             surfaceRef.current.texture = texturesSurface[frameIndex];
         }
