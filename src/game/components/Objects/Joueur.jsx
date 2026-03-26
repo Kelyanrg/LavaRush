@@ -118,22 +118,20 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
                 const minOverlapY = Math.min(overlapTop, overlapBottom);
 
                 if (minOverlapY < minOverlapX) {
-                    if (overlapTop < overlapBottom) {
-                        if (nocolitionbuffer.current <= 0) {
-                            player.y = plat.y - joueurRect.height;
-                            p.velocityY = 0;
-                            p.onGround = true;
-                        }
+                    if (overlapTop * 3 * Scale < overlapBottom) {
+                        player.y = plat.y - joueurRect.height;
+                        p.velocityY = 0;
+                        p.onGround = true;
                     } else {
                         miniBoostBuffer.current = 5;
                     }
                 } else {
-                    if (overlapLeft < overlapRight) {
-                        player.x = plat.x - joueurRect.width;
-                    } else {
-                        player.x = plat.x + plat.width;
-                    }
-                    p.velocityX = 0;
+                    // if (overlapLeft < overlapRight) {
+                    //     player.x = plat.x - joueurRect.width;
+                    // } else {
+                    //     player.x = plat.x + plat.width;
+                    // }
+                    // p.velocityX = 0;
                 }
             }
         });
