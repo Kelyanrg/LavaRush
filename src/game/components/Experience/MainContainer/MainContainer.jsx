@@ -305,21 +305,107 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const mobsRef = useRef({});
 
     const handlePositionChange = ({ x, y }) => {
-        if (!mondeRef.current) return;
+        if (!mondeRef.current || isGameOver) return;
 
         const joueurEcranY = y + cibleCameraY.current;
-        const milieu = canvasSize.height / 2;
+        const milieu = canvasSize.height * 0.5;
         const limiteBas = canvasSize.height - 150;
 
         if (joueurEcranY < milieu && dernierY.current > y) {
             const diff = milieu - joueurEcranY;
 
             score.current += diff;
-            setScoreAffiche(Math.floor(score.current / 10));
+            cibleCameraY.current += diff;
 
-            const nouvelleAltitude = Math.floor(score.current / 10);
+            const yPlusHaut = plateformes.reduce((min, p) => p.y < min ? p.y : min, plateformes[0].y);
 
-            if (nouvelleAltitude >= 800 && !alerte800m.current) {
+            if (yPlusHaut > y - canvasSize.height * 1.5) {
+                setPlateformes(prev => {
+                    const yMin = Math.min(...prev.map(p => p.y));
+                    
+                    const dernierPalier = prev.filter(p => p.y === yMin).map(p => p.emplacements);
+
+                    const gap = Math.floor(GAP_BETWEEN_PLAT);
+                    const avantDernierPalier = prev.filter(p => p.y === yMin + gap).map(p => p.emplacements);
+
+                    const nouveauPalier = genererPalier(yMin, dernierPalier);
+
+                    nouveauPalier.forEach(nouvellePlat => {
+                        const col = nouvellePlat.emplacements;
+                        if (dernierPalier.includes(col) && avantDernierPalier.includes(col)) {
+                            nouvellePlat.hasMob = false;
+                        }
+                    });
+
+                    const altitudeDuPalier = Math.floor((BAS_Y - nouveauPalier[0].y) / 10);
+                    if (altitudeDuPalier >= 850 && !mob850mSpawned.current) {
+                        const platValide = nouveauPalier.find(p => !p.hasSpike);
+                        if (platValide) {
+                            platValide.hasMob = true;
+                            mob850mSpawned.current = true;
+                        }
+                    }
+
+                    return [...prev, ...nouveauPalier];
+                });
+            }
+        }
+
+        if (joueurEcranY > limiteBas && dernierY.current < y) {
+            const diff = joueurEcranY - limiteBas;
+            cibleCameraY.current -= diff;
+            score.current -= diff;
+        }
+
+
+        const joueurRect = { x, y, width: JOUEUR_WIDTH, height: JOUEUR_HEIGHT };
+        
+        for (let s of spikes) {
+            const spikeHitbox = {
+                x: s.x + (s.width * 0.25),
+                y: s.y + (s.height * 0.4),
+                width: s.width * 0.5,
+                height: s.height * 0.6
+            };
+            if (checkCollision(joueurRect, spikeHitbox)) {
+                setIsGameOver(true);
+                break;
+            }
+        }
+
+        if (y + JOUEUR_HEIGHT >= laveY.current) {
+            setIsGameOver(true);
+        }
+
+        if (mobsRef.current) {
+            for (const mobId in mobsRef.current) {
+                if (checkCollision(joueurRect, mobsRef.current[mobId])) {
+                    setIsGameOver(true);
+                    break;
+                }
+            }
+        }
+
+        dernierY.current = y;
+    };
+
+    useTick((ticker) => {
+        if (isGameOver) return;
+
+        const nouvellePositionCamera = cameraY.current + (cibleCameraY.current - cameraY.current) * 0.15 * ticker.deltaTime;
+        cameraY.current = nouvellePositionCamera;
+
+        if (mondeRef.current) {
+            mondeRef.current.y = Math.floor(cameraY.current);
+        }
+
+        const altitudeActuelle = Math.floor(score.current / 10);
+        
+        if (altitudeActuelle !== scoreAffiche) {
+            setScoreAffiche(altitudeActuelle);
+
+
+            if (altitudeActuelle >= 800 && !alerte800m.current) {
                 alerte800m.current = true;
                 setMessageAlerte({
                     titre: "ALERTE !",
@@ -328,7 +414,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 setTimeout(() => setMessageAlerte(null), 5000);
             }
 
-            if (nouvelleAltitude >= 1400 && !alerte1400m.current) {
+            if (altitudeActuelle >= 1400 && !alerte1400m.current) {
                 alerte1400m.current = true;
                 setMessageAlerte({
                     titre: "ALERTE !",
@@ -336,121 +422,19 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                 });
                 setTimeout(() => setMessageAlerte(null), 5000);
             }
+        }
 
-            cibleCameraY.current += diff;
 
-            setPlateformes(prev => {
-                let nouvelles = prev.map(p => ({ ...p }));
-
-                while (Math.min(...nouvelles.map(p => p.y)) > y - canvasSize.height) {
-                    const yMin = Math.min(...nouvelles.map(p => p.y));
-
-                    const emplacementsDernierPalier = nouvelles
-                        .filter(p => p.y === yMin)
-                        .map(p => p.emplacements);
-
-                    const emplacementsAvantDernier = nouvelles
-                        .filter(p => p.y === yMin + 120)
-                        .map(p => p.emplacements);
-
-                    const palier = genererPalier(Math.min(...nouvelles.map(p => p.y)), emplacementsDernierPalier);
-
-                    palier.forEach(nouvellePlat => {
-                        const col = nouvellePlat.emplacements;
-
-                        if (emplacementsDernierPalier.includes(col) && emplacementsAvantDernier.includes(col)) {
-                            nouvellePlat.hasMob = false;
-                            nouvelles = nouvelles.map(p => {
-                                if (p.emplacements === col && (p.y === yMin || p.y === yMin + 120)) {
-                                    return { ...p, hasMob: false };
-                                }
-                                return p;
-                            });
-
-                            setSpikes(prevSpikes => prevSpikes.filter(spike => {
-                                const surNouvelle = (spike.emplacements === col && spike.y === nouvellePlat.y + PLAT_HEIGHT);
-                                const surNiveauMoins1 = (spike.emplacements === col && spike.y === yMin + PLAT_HEIGHT);
-                                const surNiveauMoins2 = (spike.emplacements === col && spike.y === yMin + 120 + PLAT_HEIGHT);
-                                return !(surNouvelle || surNiveauMoins1 || surNiveauMoins2);
-                            }));
-                        }
-                    });
-
-                    if (palier.length > 0) {
-                        const altitudeDuPalier = Math.floor((BAS_Y - palier[0].y) / 10);
-
-                        if (altitudeDuPalier >= 850 && !mob850mSpawned.current) {
-                            const plateformesValides = palier.filter(p => {
-                                const col = p.emplacements;
-                                const estNettoye = emplacementsDernierPalier.includes(col) && emplacementsAvantDernier.includes(col);
-                                return !p.hasSpike && !estNettoye;
-                            });
-
-                            if (plateformesValides.length > 0) {
-                                if (!plateformesValides.some(p => p.hasMob)) {
-                                    plateformesValides[0].hasMob = true;
-                                }
-                                mob850mSpawned.current = true;
-                            }
-                        }
-                    }
-
-                    nouvelles.push(...palier);
+        if (Math.floor(ticker.lastTime / 16) % 30 === 0) {
+            setPlateformes((prev) => {
+                const limiteNettoyage = laveY.current + 200;
+                const aNettoyer = prev.some((p) => p.y >= limiteNettoyage);
+                if (aNettoyer) {
+                    return prev.filter((p) => p.y < limiteNettoyage);
                 }
-
-                return nouvelles;
+                return prev;
             });
         }
-
-        if (joueurEcranY > limiteBas && dernierY.current < y) {
-            const diff = joueurEcranY - limiteBas;
-            cibleCameraY.current -= diff;
-            score.current -= diff;
-            setScoreAffiche(Math.floor(score.current / 10));
-        }
-
-        dernierY.current = y;
-        spikes.forEach((spike) => {
-            const joueurRect = { x: x, y: y, width: JOUEUR_WIDTH, height: JOUEUR_HEIGHT };
-
-            if (checkCollision(joueurRect, spike)) {
-                setIsGameOver(true);
-            }
-        });
-
-        if (y + JOUEUR_HEIGHT >= laveY.current) {
-            setIsGameOver(true);
-        }
-
-        if (joueurEcranY > canvasSize.height + 50) {
-            setIsGameOver(true);
-        }
-
-        if (mobsRef.current) {
-            const joueurRect = { x, y, width: JOUEUR_WIDTH, height: JOUEUR_HEIGHT };
-
-            for (const mobId in mobsRef.current) {
-                if (checkCollision(joueurRect, mobsRef.current[mobId])) {
-                    setIsGameOver(true);
-                }
-            }
-        }
-    };
-
-    useTick((ticker) => {
-        cameraY.current += (cibleCameraY.current - cameraY.current) * 0.15 * ticker.deltaTime;
-
-        if (mondeRef.current) {
-            mondeRef.current.y = Math.floor(cameraY.current);
-        }
-
-        setPlateformes((prev) => {
-            const doitNettoyer = prev.some((p) => p.y >= laveY.current);
-            if (doitNettoyer) {
-                return prev.filter((p) => p.y < laveY.current);
-            }
-            return prev;
-        });
     });
 
     if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0 || texturesMob.length === 0 || texturesLaveTop.length === 0 || !texturesLaveBody || texturesPerso.length === 0 || !textureSpikes) return null;
