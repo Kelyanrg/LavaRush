@@ -61,7 +61,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             window.removeEventListener('keyup', handleKeyUp);
         };
     }, [isGameOver]);
-    console.log("acceleration:", acceleration);
+    
     useTick((ticker) => {
         if (!playerRef.current || isGameOver) return;
 
