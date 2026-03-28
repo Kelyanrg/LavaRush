@@ -103,14 +103,25 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             }).catch(() => {});
         };
 
+        const handleVisibility = () => {
+            if (document.hidden) {
+                music.pause();
+            } else if (!isMuted) {
+                music.play().catch(() => {});
+            }
+        };
+
         window.addEventListener('mousedown', playAudio);
         window.addEventListener('keydown', playAudio);
         window.addEventListener('touchstart', playAudio);
+        document.addEventListener('visibilitychange', handleVisibility);
+        window.addEventListener('pagehide', () => music.pause());
 
         return () => {
             window.removeEventListener('mousedown', playAudio);
             window.removeEventListener('keydown', playAudio);
             window.removeEventListener('touchstart', playAudio);
+            document.removeEventListener('visibilitychange', handleVisibility);
             music.pause();
             music.currentTime = 0;
         };

@@ -157,7 +157,7 @@ export default function Game() {
   };
 
   return (
-    <div className="game-page">
+    <div className={`game-page${gameState === "PLAYING" ? " game-page--playing" : ""}`}>
       <Helmet>
         <title>LavaRush</title>
         <link rel="icon" href="./assets/ui/lavarush_petio_icon.svg" />
@@ -261,26 +261,29 @@ export default function Game() {
           </button>
 
           {/* Contrôles tactiles mobile */}
-          <div className="mobile-controls">
+          <div
+            className="mobile-controls"
+            onContextMenu={(e) => e.preventDefault()}
+          >
             <button
               className="ctrl-btn ctrl-left"
-              onPointerDown={() => fireKey("keydown", "q", "KeyQ")}
-              onPointerUp={() => fireKey("keyup", "q", "KeyQ")}
-              onPointerLeave={() => fireKey("keyup", "q", "KeyQ")}
+              onPointerDown={(e) => { e.preventDefault(); fireKey("keydown", "q", "KeyQ"); }}
+              onPointerUp={(e) => { e.preventDefault(); fireKey("keyup", "q", "KeyQ"); }}
+              onPointerLeave={(e) => { e.preventDefault(); fireKey("keyup", "q", "KeyQ"); }}
               onContextMenu={(e) => e.preventDefault()}
             >◀</button>
             <button
               className="ctrl-btn ctrl-right"
-              onPointerDown={() => fireKey("keydown", "d", "KeyD")}
-              onPointerUp={() => fireKey("keyup", "d", "KeyD")}
-              onPointerLeave={() => fireKey("keyup", "d", "KeyD")}
+              onPointerDown={(e) => { e.preventDefault(); fireKey("keydown", "d", "KeyD"); }}
+              onPointerUp={(e) => { e.preventDefault(); fireKey("keyup", "d", "KeyD"); }}
+              onPointerLeave={(e) => { e.preventDefault(); fireKey("keyup", "d", "KeyD"); }}
               onContextMenu={(e) => e.preventDefault()}
             >▶</button>
             <button
               className="ctrl-btn ctrl-jump"
-              onPointerDown={() => fireKey("keydown", " ", "Space")}
-              onPointerUp={() => fireKey("keyup", " ", "Space")}
-              onPointerLeave={() => fireKey("keyup", " ", "Space")}
+              onPointerDown={(e) => { e.preventDefault(); fireKey("keydown", " ", "Space"); }}
+              onPointerUp={(e) => { e.preventDefault(); fireKey("keyup", " ", "Space"); }}
+              onPointerLeave={(e) => { e.preventDefault(); fireKey("keyup", " ", "Space"); }}
               onContextMenu={(e) => e.preventDefault()}
             >▲</button>
           </div>
