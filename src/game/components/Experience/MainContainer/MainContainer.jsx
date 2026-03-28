@@ -22,7 +22,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     if (!canvasSize || !canvasSize.width || !canvasSize.height) return null;
 
-    const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * 0.428);
+    const isMobileView = canvasSize.width < 768;
+    const PLAY_AREA_WIDTH = Math.floor(canvasSize.width * (isMobileView ? 0.96 : 0.428));    
     const offsetX = (canvasSize.width - PLAY_AREA_WIDTH) / 2;
 
     const PLAT_WIDTH = PLAY_AREA_WIDTH / 5 - ((PLAY_AREA_WIDTH / 50) * 2);
