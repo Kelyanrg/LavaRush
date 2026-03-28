@@ -11,12 +11,12 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     const regardeAGauche = useRef(false);
 
     const miniBoostBuffer = useRef(0);
-    const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 5) * Scale);
+    const DESKTOP_PLAY_AREA = 1440 * 0.428;
+    const playAreaScale = playAreaWidth / DESKTOP_PLAY_AREA;
+    const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 5) * playAreaScale);
     const friction = 0.5;
     const gravity = 0.98 * ScaleY;
-    const maxSpeed = 8 * Scale;
-
-
+    const maxSpeed = 8 * playAreaScale;
 
     const physics = useRef({
         velocityY: 0,
@@ -61,7 +61,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             window.removeEventListener('keyup', handleKeyUp);
         };
     }, [isGameOver]);
-    console.log("acceleration:", acceleration);
+    
     useTick((ticker) => {
         if (!playerRef.current || isGameOver) return;
 

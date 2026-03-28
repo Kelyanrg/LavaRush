@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
@@ -12,21 +12,27 @@ const GAME_ASSETS = [
   "/assets/backgrounds/biome2.png",
   "/assets/backgrounds/biome3.png",
   "/assets/backgrounds/biome4.png",
+  "/assets/backgrounds/biome5.png",
+  "/assets/backgrounds/biome6.png",
+  "/assets/backgrounds/biome7.png",
+  "/assets/backgrounds/biome8.png",
+  "/assets/backgrounds/biome9.png",
+  "/assets/backgrounds/biome10.png",
+  "/assets/backgrounds/biome11.png",
+  "/assets/backgrounds/biome12.png",
+  "/assets/backgrounds/biome13.png",
   "/assets/backgrounds/tower_left_1.png",
   "/assets/backgrounds/tower_right_1.png",
   "/assets/sprites/plateforme.png",
+  "/assets/sprites/plateforme_spike.png",
   "/assets/sprites/bat_droite_bas.png",
   "/assets/sprites/bat_droite_haut.png",
   "/assets/sprites/bat_gauche_bas.png",
   "/assets/sprites/bat_gauche_haut.png",
-  "/assets/sprites/test/lava1.png",
-  "/assets/sprites/test/lava2.png",
-  "/assets/sprites/test/lava3.png",
-  "/assets/sprites/test/lava4.png",
-  "/assets/sprites/test/lava5.png",
-  "/assets/sprites/test/lava6.png",
-  "/assets/sprites/test/lava7.png",
-  "/assets/sprites/test/lava8.png",
+  "/assets/sprites/lava1.png",
+  "/assets/sprites/lava2.png",
+  "/assets/sprites/lava3.png",
+  "/assets/sprites/lava4.png",
   "/assets/sprites/lava_body.png",
   "/assets/sprites/perso_neutre_droite.png",
   "/assets/sprites/perso_neutre_gauche.png",
@@ -34,7 +40,6 @@ const GAME_ASSETS = [
   "/assets/sprites/perso_jump_gauche.png",
   "/assets/sprites/perso_run_droite.png",
   "/assets/sprites/perso_run_gauche.png",
-  "/assets/sprites/spike_teste.png",
 ];
 
 export default function Game() {
@@ -43,8 +48,31 @@ export default function Game() {
   const [bestScore, setBestScore] = useState(0);
   const [isNewRecord, setIsNewRecord] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Ref direct sur le DOM pour le score — zéro re-render React
+  const hudAltRef = useRef(null);
+  const alertTimeoutRef = useRef(null);
+
+  // Dispatche un KeyboardEvent pour les contrôles tactiles
+  const fireKey = (type, key, code) => {
+    window.dispatchEvent(new KeyboardEvent(type, { key, code, bubbles: true }));
+  };
+
+  const handleScoreUpdate = (score) => {
+    if (hudAltRef.current) {
+      hudAltRef.current.textContent = `${score} m`;
+    }
+  };
+
+  const handleAlert = (msg) => {
+    if (alertTimeoutRef.current) clearTimeout(alertTimeoutRef.current);
+    setAlertMessage(msg);
+    alertTimeoutRef.current = setTimeout(() => setAlertMessage(null), 4500);
+  };
 
   const isGuest = user?.is_anonymous === true;
 
@@ -195,8 +223,68 @@ export default function Game() {
       )}
 
       {/* JEU PIXI — monté uniquement quand les assets sont prêts */}
-      {gameState === "PLAYING" && (
-        <Experience userId={user.id} onGameOver={handleGameOver} />
+      {gameState === "PLAYING" && user && (
+        <>
+          <Experience
+            userId={user.id}
+            onGameOver={handleGameOver}
+            isMuted={isMuted}
+            onScoreUpdate={handleScoreUpdate}
+            onAlert={handleAlert}
+          />
+
+          {/* HUD Altitude — mise à jour DOM directe, 0 re-render */}
+          <div className="hud-altitude">
+            <span className="hud-alt-value" ref={hudAltRef}>
+              0 m
+            </span>
+            <span className="hud-alt-label">Altitude</span>
+          </div>
+
+          {/* Alerte in-game */}
+          {alertMessage && (
+            <div className="hud-alert" key={alertMessage.corps}>
+              <div className="hud-alert-header">
+                <span className="hud-alert-icon">⚠️</span>
+                {alertMessage.titre}
+              </div>
+              <div className="hud-alert-body">{alertMessage.corps}</div>
+            </div>
+          )}
+
+          <button
+            className="btn-mute"
+            onClick={() => setIsMuted((m) => !m)}
+            title={isMuted ? "Activer le son" : "Couper le son"}
+          >
+            {isMuted ? "🔇" : "🔊"}
+          </button>
+
+          {/* Contrôles tactiles mobile */}
+          <div className="mobile-controls">
+            <button
+              className="ctrl-btn ctrl-left"
+              onPointerDown={() => fireKey("keydown", "q", "KeyQ")}
+              onPointerUp={() => fireKey("keyup", "q", "KeyQ")}
+              onPointerLeave={() => fireKey("keyup", "q", "KeyQ")}
+              onContextMenu={(e) => e.preventDefault()}
+            >◀</button>
+            <button
+              className="ctrl-btn ctrl-right"
+              onPointerDown={() => fireKey("keydown", "d", "KeyD")}
+              onPointerUp={() => fireKey("keyup", "d", "KeyD")}
+              onPointerLeave={() => fireKey("keyup", "d", "KeyD")}
+              onContextMenu={(e) => e.preventDefault()}
+            >▶</button>
+            <button
+              className="ctrl-btn ctrl-jump"
+              onPointerDown={() => fireKey("keydown", " ", "Space")}
+              onPointerUp={() => fireKey("keyup", " ", "Space")}
+              onPointerLeave={() => fireKey("keyup", " ", "Space")}
+              onContextMenu={(e) => e.preventDefault()}
+            >▲</button>
+          </div>
+        </>
       )}
 
       {/* OVERLAY CHARGEMENT */}
@@ -229,7 +317,7 @@ export default function Game() {
       {/* OVERLAY GAME OVER */}
       {gameState === "GAMEOVER" && (
         <div className="overlay game-over-screen">
-          <h2 className="gameover-title">Perdu Looser</h2>
+          <h2 className="gameover-title">T'as perdu !</h2>
 
           <div className="gameover-card">
             <div className="gameover-score-section">
