@@ -18,8 +18,6 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     const gravity = 0.98 * ScaleY;
     const maxSpeed = 8 * playAreaScale;
 
-
-
     const physics = useRef({
         velocityY: 0,
         velocityX: 0,
