@@ -82,7 +82,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     const alerte1400m = useRef(false);
     const mob850mSpawned = useRef(false);
 
-    const musicRef = useRef(null);
+    /*const musicRef = useRef(null);
 
     if (!musicRef.current) {
         musicRef.current = new Audio("/assets/audio/sound_in_game.mp3");
@@ -116,7 +116,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             window.removeEventListener('keydown', playAudio);
             window.removeEventListener('touchstart', playAudio);
         };
-    }, [isGameOver]);
+    }, [isGameOver]); */
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
@@ -132,12 +132,17 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         Promise.all([
             PIXI.Assets.load("/assets/backgrounds/biome1.png"),
             PIXI.Assets.load("/assets/backgrounds/biome2.png"),
-            PIXI.Assets.load("/assets/backgrounds/biome3.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome3.2.png"),
             PIXI.Assets.load("/assets/backgrounds/biome4.png"),
             PIXI.Assets.load("/assets/backgrounds/biome5.png"),
             PIXI.Assets.load("/assets/backgrounds/biome6.png"),
             PIXI.Assets.load("/assets/backgrounds/biome7.png"),
             PIXI.Assets.load("/assets/backgrounds/biome8.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome9.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome10.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome11.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome12.png"),
+            PIXI.Assets.load("/assets/backgrounds/biome13.png"),
             PIXI.Assets.load("/assets/backgrounds/tower_left_1.png"),
             PIXI.Assets.load("/assets/backgrounds/tower_right_1.png"),
             PIXI.Assets.load("/assets/sprites/plateforme.png"),
@@ -159,8 +164,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
             PIXI.Assets.load("/assets/sprites/plateforme_spike.png"),
             PIXI.Assets.load("/assets/fonts/super_squad/Super_Squad.ttf"),
             PIXI.Assets.load("/assets/fonts/acme/Acme-Regular.ttf"),
-        ]).then(([b1, b2, b3, b4, b5, b6, b7, b8, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
-            setTexturesBiomes([b1, b2, b3, b4, b5, b6, b7, b8, b1, b2, b3, b4, b5, b6, b7, b8]);
+        ]).then(([b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
+            setTexturesBiomes([b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b13, b13, b13, b13, b13, b13, b13, b13]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturesPlatforme(spritePlateforme);
@@ -193,12 +198,12 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         const isSpiked = chanceSpikes > 0 && Math.random() < chanceSpikes;
 
         if (isSpiked) {
-            setSpikes(prev => [...prev, { 
-                emplacements: nouveauemplacement, 
-                x: colonnesX[nouveauemplacement], 
-                y: newY + PLAT_HEIGHT, 
-                width: PLAT_WIDTH, 
-                height: SPIKE_HEIGHT 
+            setSpikes(prev => [...prev, {
+                emplacements: nouveauemplacement,
+                x: colonnesX[nouveauemplacement],
+                y: newY + PLAT_HEIGHT,
+                width: PLAT_WIDTH,
+                height: SPIKE_HEIGHT
             }]);
         }
 
@@ -242,7 +247,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
         let forcerPic = false;
         if (isPalier1500m) {
             forcerPic = true;
-            nbPlateformes = 2; 
+            nbPlateformes = 2;
         }
 
         const chanceSpikes = forcerPic ? 1 : ((nbPlateformes === 1 || altitudeActuelle < 1500) ? 0 : (chanceSpawnMob / 2));
@@ -433,8 +438,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
     };
 
     useTick((ticker) => {
-        cameraY.current +=
-            (cibleCameraY.current - cameraY.current) * 0.15 * ticker.deltaTime;
+        cameraY.current += (cibleCameraY.current - cameraY.current) * 0.15 * ticker.deltaTime;
 
         if (mondeRef.current) {
             mondeRef.current.y = Math.floor(cameraY.current);
@@ -505,7 +509,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
                                 texturesMobs={texturesMob}
                             />
                         );
-                    })}
+                    })
+                }
 
                 <Lave
                     playAreaWidth={PLAY_AREA_WIDTH}
