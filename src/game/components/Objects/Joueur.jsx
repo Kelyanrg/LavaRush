@@ -37,20 +37,20 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
         const handleKeyDown = (e) => {
             if (isGameOver) return;
 
-            if (e.code === 'Space' || e.key.toLowerCase() === 'z') {
+            if (e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp') {
                 e.preventDefault();
                 jumpBuffer.current = 15;
             }
-            if (e.key.toLowerCase() === 'q') keys.current.q = true;
-            if (e.key.toLowerCase() === 'd') keys.current.d = true;
+            if (e.key.toLowerCase() === 'q' || e.code === 'ArrowLeft') keys.current.q = true;
+            if (e.key.toLowerCase() === 'd' || e.code === 'ArrowRight') keys.current.d = true;
         };
         const handleKeyUp = (e) => {
-            if ((e.code === 'Space' || e.key.toLowerCase() === 'z') && physics.current.velocityY < 0) {
+            if ((e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp') && physics.current.velocityY < 0) {
                 physics.current.velocityY *= 0.5;
                 jumpBuffer.current = 0;
             }
-            if (e.key.toLowerCase() === 'q') keys.current.q = false;
-            if (e.key.toLowerCase() === 'd') keys.current.d = false;
+            if (e.key.toLowerCase() === 'q' || e.code === 'ArrowLeft') keys.current.q = false;
+            if (e.key.toLowerCase() === 'd' || e.code === 'ArrowRight') keys.current.d = false;
         };
 
         window.addEventListener('keydown', handleKeyDown);

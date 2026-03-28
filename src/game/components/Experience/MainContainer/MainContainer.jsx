@@ -17,10 +17,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
     const scaleY = canvasSize.height / 700;
     const scale = Math.min(scaleX, scaleY);
 
-    const score = useRef(0); 
+    const score = useRef(0);
     const maxScore = useRef(0);
     const lastReportedScore = useRef(-1);
-    const [scoreAffiche, setScoreAffiche] = useState(0);
+    const scoreAfficheRef = useRef(-1);
 
     const [isGameOver, setIsGameOver] = useState(false);
 
@@ -84,7 +84,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
     const alerte1400m = useRef(false);
     const mob850mSpawned = useRef(false);
 
-    /*const musicRef = useRef(null);
+    const musicRef = useRef(null);
 
     if (!musicRef.current) {
         musicRef.current = new Audio("/assets/audio/sound_in_game.mp3");
@@ -107,11 +107,6 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
         window.addEventListener('keydown', playAudio);
         window.addEventListener('touchstart', playAudio);
 
-        if (isGameOver) {
-            music.pause();
-            music.currentTime = 0; 
-        }
-
         return () => {
             window.removeEventListener('mousedown', playAudio);
             window.removeEventListener('keydown', playAudio);
@@ -119,14 +114,13 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             music.pause();
             music.currentTime = 0;
         };
-    }, [isGameOver]);
+    }, []);
 
     useEffect(() => {
         if (musicRef.current) {
             musicRef.current.volume = isMuted ? 0 : 0.08;
         }
     }, [isMuted]);
-    */
 
     const [texturesBiomes, setTexturesBiomes] = useState([]);
     const [texturesTowersLeft, setTexturesTowersLeft] = useState([]);
@@ -262,8 +256,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
 
         const chanceSpikes = forcerPic ? 1 : ((nbPlateformes === 1 || altitudeActuelle < 1500) ? 0 : (chanceSpawnMob / 2));
 
+        const refCol = emplacements[Math.floor(Math.random() * emplacements.length)];
+
         if (altitudeActuelle > 1000) {
-            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], chanceSpikes);
+            const premierePlatforme = genererplatformes(refCol, DIRECTIONS, newY, [], chanceSpikes);
             if (nbPlateformes === 2) {
                 const chanceSpikes2 = premierePlatforme.hasSpike ? 0 : chanceSpikes;
                 plateformesDuPalier = [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements], chanceSpikes2)];
@@ -271,7 +267,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
                 plateformesDuPalier = [premierePlatforme];
             }
         } else if (altitudeActuelle > 500) {
-            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS_SIMPLE, newY, [], chanceSpikes);
+            const premierePlatforme = genererplatformes(refCol, DIRECTIONS_SIMPLE, newY, [], chanceSpikes);
             if (nbPlateformes === 2) {
                 const chanceSpikes2 = premierePlatforme.hasSpike ? 0 : chanceSpikes;
                 plateformesDuPalier = [premierePlatforme, genererplatformes(premierePlatforme.emplacements, DIRECTIONS_SIMPLE, newY, [premierePlatforme.emplacements], chanceSpikes2)];
@@ -279,7 +275,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
                 plateformesDuPalier = [premierePlatforme];
             }
         } else {
-            const premierePlatforme = genererplatformes(emplacements[0], DIRECTIONS, newY, [], 0);
+            const premierePlatforme = genererplatformes(refCol, DIRECTIONS, newY, [], 0);
             const secondePlatforme = genererplatformes(premierePlatforme.emplacements, DIRECTIONS, newY, [premierePlatforme.emplacements], 0);
 
             if (nbPlateformes === 2) {
@@ -423,8 +419,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
 
         const altitudeActuelle = Math.floor(maxScore.current / 10);
 
-        if (altitudeActuelle !== scoreAffiche) {
-            setScoreAffiche(altitudeActuelle);
+        if (altitudeActuelle !== scoreAfficheRef.current) {
+            scoreAfficheRef.current = altitudeActuelle;
 
             if (altitudeActuelle >= 800 && !alerte800m.current) {
                 alerte800m.current = true;
@@ -440,18 +436,20 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
         if (Math.floor(ticker.lastTime / 16) % 30 === 0) {
             const limiteNettoyage = laveY.current + 200;
 
+            const limiteHaute = -cameraY.current - canvasSize.height * 2;
+
             setPlateformes((prev) => {
-                const aNettoyer = prev.some((p) => p.y >= limiteNettoyage);
+                const aNettoyer = prev.some((p) => p.y >= limiteNettoyage || p.y < limiteHaute);
                 if (aNettoyer) {
-                    return prev.filter((p) => p.y < limiteNettoyage);
+                    return prev.filter((p) => p.y < limiteNettoyage && p.y >= limiteHaute);
                 }
                 return prev;
             });
 
             setSpikes((prev) => {
-                const aNettoyer = prev.some((s) => s.y >= limiteNettoyage);
+                const aNettoyer = prev.some((s) => s.y >= limiteNettoyage || s.y < limiteHaute);
                 if (aNettoyer) {
-                    return prev.filter((s) => s.y < limiteNettoyage);
+                    return prev.filter((s) => s.y < limiteNettoyage && s.y >= limiteHaute);
                 }
                 return prev;
             });
