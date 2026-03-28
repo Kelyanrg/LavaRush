@@ -17,11 +17,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
     const scaleY = canvasSize.height / 700;
     const scale = Math.min(scaleX, scaleY);
 
-    // --- GESTION DU SCORE OPTIMISÉE ---
-    const score = useRef(0); // Gère l'altitude réelle de la caméra (monte et descend)
-    const maxScore = useRef(0); // Garde en mémoire le record d'altitude
-    const lastReportedScore = useRef(-1); // Pour ne pas spammer onScoreUpdate
-    const [scoreAffiche, setScoreAffiche] = useState(0); // Pour l'affichage dans le Canvas
+    const score = useRef(0); 
+    const maxScore = useRef(0);
+    const lastReportedScore = useRef(-1);
+    const [scoreAffiche, setScoreAffiche] = useState(0);
 
     const [isGameOver, setIsGameOver] = useState(false);
 
@@ -81,15 +80,11 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
         height: SPIKE_HEIGHT
     }]);
 
-    const [messageAlerte, setMessageAlerte] = useState(null);
-
     const alerte800m = useRef(false);
     const alerte1400m = useRef(false);
     const mob850mSpawned = useRef(false);
 
-    // ── AUDIO (Laissé en commentaire) ───────────────────────────────
-    /*
-    const musicRef = useRef(null);
+    /*const musicRef = useRef(null);
 
     if (!musicRef.current) {
         musicRef.current = new Audio("/assets/audio/sound_in_game.mp3");
@@ -194,7 +189,6 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
 
     useEffect(() => {
         if (isGameOver && onGameOver) {
-            // Fin de partie : on renvoie le meilleur score atteint
             const finalScore = Math.max(0, Math.floor(maxScore.current / 10));
             onGameOver(finalScore);
         }
@@ -333,12 +327,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             score.current += diff;
             cibleCameraY.current += diff;
 
-            // Enregistrement du nouveau record
             if (score.current > maxScore.current) {
                 maxScore.current = score.current;
             }
 
-            // Remontée du record à l'UI
             const newScore = Math.floor(maxScore.current / 10);
             if (newScore !== lastReportedScore.current) {
                 lastReportedScore.current = newScore;
@@ -382,12 +374,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             const diff = joueurEcranY - limiteBas;
             cibleCameraY.current -= diff;
             score.current -= diff;
-            // Quand on tombe, on ne met plus onScoreUpdate : le record reste figé
         }
 
         const joueurRect = { x, y, width: JOUEUR_WIDTH, height: JOUEUR_HEIGHT };
 
-        // Hitbox indulgente
         for (let s of spikes) {
             const spikeHitbox = {
                 x: s.x + (s.width * 0.25),
@@ -431,7 +421,6 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             mondeRef.current.y = Math.floor(cameraY.current);
         }
 
-        // L'affichage visuel se base désormais sur le record
         const altitudeActuelle = Math.floor(maxScore.current / 10);
 
         if (altitudeActuelle !== scoreAffiche) {
