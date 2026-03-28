@@ -12,12 +12,12 @@ import { Mob } from "../../Objects/Mob.jsx";
 
 extend({ Container, Sprite, Graphics, Text });
 
-export const MainContainer = ({ canvasSize, children, onGameOver }) => {
+export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = false, onScoreUpdate, onAlert }) => {
     const scaleX = canvasSize.width / 1440;
     const scaleY = canvasSize.height / 700;
     const scale = Math.min(scaleX, scaleY);
     const score = useRef(0);
-    const [scoreAffiche, setScoreAffiche] = useState(0);
+    const lastReportedScore = useRef(-1);
     const [isGameOver, setIsGameOver] = useState(false);
 
     if (!canvasSize || !canvasSize.width || !canvasSize.height) return null;
@@ -180,7 +180,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver }) => {
 
     useEffect(() => {
         if (isGameOver && onGameOver) {
-            const finalScore = Math.max(0, scoreAffiche);
+            const finalScore = Math.max(0, Math.floor(score.current / 10));
             onGameOver(finalScore);
         }
     }, [isGameOver]);
