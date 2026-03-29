@@ -10,7 +10,6 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     const isInitialized = useRef(false);
     const regardeAGauche = useRef(false);
 
-    const miniBoostBuffer = useRef(0);
     const DESKTOP_PLAY_AREA = 1440 * 0.428;
     const playAreaScale = playAreaWidth / DESKTOP_PLAY_AREA;
     const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 5) * playAreaScale);
@@ -117,21 +116,12 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
                 const minOverlapX = Math.min(overlapLeft, overlapRight);
                 const minOverlapY = Math.min(overlapTop, overlapBottom);
 
-                if (minOverlapY < minOverlapX) {
-                    if (overlapTop * 3 * Scale < overlapBottom) {
-                        player.y = plat.y - joueurRect.height;
-                        p.velocityY = 0;
-                        p.onGround = true;
-                    } else {
-                        miniBoostBuffer.current = 5;
-                    }
-                } else {
-                    // if (overlapLeft < overlapRight) {
-                    //     player.x = plat.x - joueurRect.width;
-                    // } else {
-                    //     player.x = plat.x + plat.width;
-                    // }
-                    // p.velocityX = 0;
+                // Plateformes one-way : on ne pose le joueur dessus que s'il tombe (velocityY >= 0)
+                // Si le joueur monte (velocityY < 0), il traverse la plateforme
+                if (minOverlapY < minOverlapX && p.velocityY >= 0 && overlapTop <= overlapBottom) {
+                    player.y = plat.y - joueurRect.height;
+                    p.velocityY = 0;
+                    p.onGround = true;
                 }
             }
         });
@@ -143,14 +133,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             jumpBuffer.current = 0;
         }
 
-        if (miniBoostBuffer.current > 0 && p.onGround) {
-            p.velocityY = p.jumpForce * 0.8;
-            p.onGround = false;
-            miniBoostBuffer.current = 0;
-        }
-
         if (jumpBuffer.current > 0) jumpBuffer.current -= 1;
-        if (miniBoostBuffer.current > 0) miniBoostBuffer.current -= 1;
 
         if (texturesPerso && texturesPerso.length === 6) {
             let textureFinale = texturesPerso[0];
