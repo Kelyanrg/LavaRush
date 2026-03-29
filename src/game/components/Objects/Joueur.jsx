@@ -31,6 +31,8 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     const jumpBuffer = useRef(0);
     const nocolitionbuffer = useRef(0);
     const keys = useRef({ q: false, d: false, z: false });
+    const deathStarted = useRef(false);
+    const deathFrames = useRef(0);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
