@@ -41,6 +41,8 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             if (e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp') {
                 e.preventDefault();
                 jumpBuffer.current = 15;
+                keys.current.z = true;
+
             }
             if (e.key.toLowerCase() === 'q' || e.code === 'ArrowLeft') keys.current.q = true;
             if (e.key.toLowerCase() === 'd' || e.code === 'ArrowRight') keys.current.d = true;
@@ -49,6 +51,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             if ((e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp') && physics.current.velocityY < 0) {
                 physics.current.velocityY *= 0.5;
                 jumpBuffer.current = 0;
+                keys.current.z = false;
             }
             if (e.key.toLowerCase() === 'q' || e.code === 'ArrowLeft') keys.current.q = false;
             if (e.key.toLowerCase() === 'd' || e.code === 'ArrowRight') keys.current.d = false;
@@ -126,6 +129,10 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
                 }
             }
         });
+
+        if (keys.current.z) {
+            jumpBuffer.current = 15;
+        }
 
 
         if (jumpBuffer.current > 0 && p.onGround) {
