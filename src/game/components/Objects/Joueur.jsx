@@ -60,7 +60,6 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             window.removeEventListener('keyup', handleKeyUp);
         };
     }, [isGameOver]);
-    
     useTick((ticker) => {
         if (!playerRef.current || isGameOver) return;
 
@@ -118,7 +117,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
 
                 // Plateformes one-way : on ne pose le joueur dessus que s'il tombe (velocityY >= 0)
                 // Si le joueur monte (velocityY < 0), il traverse la plateforme
-                if (minOverlapY < minOverlapX && p.velocityY >= 0 && overlapTop <= overlapBottom) {
+                if (overlapTop * 4 * Scale <= overlapBottom) {
                     player.y = plat.y - joueurRect.height;
                     p.velocityY = 0;
                     p.onGround = true;
