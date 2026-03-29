@@ -15,12 +15,12 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
 
     const ratioLave = 385 / 586; 
     const SURFACE_HEIGHT = playAreaWidth * ratioLave;
-
+    
     const HITBOX_OFFSET = SURFACE_HEIGHT * 0.1;
     
     useEffect(() => {
         const monterLave = (e) => {
-            if ((e.code === 'Space' || e.key.toLowerCase() === 'z') && !estActive.current) {
+            if ((e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp') && !estActive.current) {
                 estActive.current = true
                 window.removeEventListener('keydown', monterLave)
             }
@@ -35,6 +35,8 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
 
     useTick((ticker) => {
         if (isGameOver || !laveContainerRef.current) return
+
+        const delta = ticker.deltaTime > 2 ? 1 : ticker.deltaTime;
 
         if (estActive.current) {
             let vitesseLave = 1.0
@@ -60,7 +62,7 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
                 }
             }
 
-            autoScrollerY.current -= vitesseLave * ticker.deltaTime
+            autoScrollerY.current -= vitesseLave * delta
         }
 
         laveContainerRef.current.y = autoScrollerY.current
@@ -74,9 +76,9 @@ export const Lave = ({ playAreaWidth, canvasHeight, cameraY, laveY, isGameOver, 
             corpsRef.current.height = Math.max(100, hauteurDynamique);
         }
 
-        if (surfaceRef.current && texturesSurface && texturesSurface.length === 8) {
+        if (surfaceRef.current && texturesSurface && texturesSurface.length === 4) {
             time.current += ticker.deltaTime;
-            const animationSpeed = 0.08; 
+            const animationSpeed = 0.06; 
             const frameIndex = Math.floor(time.current * animationSpeed) % 4;
             surfaceRef.current.texture = texturesSurface[frameIndex];
         }

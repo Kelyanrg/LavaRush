@@ -198,6 +198,63 @@ export default function Home() {
         </div>
       </div>
 
+      <div className="team-section">
+        <p className="team-eyebrow">L'équipe</p>
+        <h2 className="team-title">
+          La composition <span className="team-formation-tag">2·1·2</span>
+        </h2>
+
+        <div className="team-grid">
+          {[
+            {
+              name: "Sybille",
+              file: "Sybille",
+              role: "Dev",
+              desc: "A passé 3h sur un bug. Le bug a perdu.",
+            },
+            {
+              name: "Florian",
+              file: "Florian",
+              role: "Dev",
+              desc: "Git push en prod un vendredi. Légende vivante.",
+            },
+            {
+              name: "Kelyan",
+              file: "Kelyan",
+              role: "Coordinateur & Dev",
+              desc: "Rôle principal: pushing ball des devs",
+            },
+            {
+              name: "Maïlys",
+              file: "Mailis",
+              role: "Design",
+              desc: "2h sur la nuance d'orange exacte. Aucun regret.",
+            },
+            {
+              name: "Angie",
+              file: "Angie",
+              role: "Design",
+              desc: "La bête, ses designs sont réalisés grâce à la caféine.",
+            },
+          ].map(({ name, file, role, desc }) => (
+            <div className="team-card" key={name}>
+              <div className="team-photo-wrap">
+                <img
+                  src={`./assets/profils/${file}.png`}
+                  alt={name}
+                  className="team-photo"
+                />
+                <div className="team-photo-overlay">
+                  <span className="team-role-tag">{role}</span>
+                  <span className="team-name">{name}</span>
+                  <span className="team-desc">{desc}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="footer">
         <p>© 2025 Lava Rush - Tous droits réservés</p>
       </div>

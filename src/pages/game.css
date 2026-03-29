@@ -12,6 +12,130 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Pendant le jeu, le canvas PixiJS couvre tout — on cache le fond */
+.game-page--playing {
+  background-image: none;
+}
+
+/* ─── DEATH TRANSITION ──────────────────────────────────────── */
+.death-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 150;
+  pointer-events: none;
+  animation: deathShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+}
+
+@keyframes deathShake {
+  0%   { transform: translate(0, 0); }
+  10%  { transform: translate(-10px, -5px); }
+  20%  { transform: translate(10px, 5px); }
+  30%  { transform: translate(-8px, -3px); }
+  40%  { transform: translate(8px, 3px); }
+  55%  { transform: translate(-5px, -2px); }
+  70%  { transform: translate(4px, 2px); }
+  85%  { transform: translate(-2px, 0); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Flash orange au moment de l'impact */
+.death-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+    rgba(255, 220, 80, 0.95) 0%,
+    rgba(255, 80, 0, 0.85) 50%,
+    rgba(180, 10, 0, 0.7) 100%
+  );
+  animation: deathFlashAnim 0.5s ease-out forwards;
+}
+
+@keyframes deathFlashAnim {
+  0%   { opacity: 0; }
+  8%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Vignette qui ferme les bords */
+.death-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center,
+    transparent 20%,
+    rgba(0, 0, 0, 0.6) 70%,
+    rgba(0, 0, 0, 0.95) 100%
+  );
+  animation: deathVignetteAnim 1.3s ease-out forwards;
+}
+
+@keyframes deathVignetteAnim {
+  0%   { opacity: 0; }
+  15%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* Container de la lave qui monte */
+.death-lava-surge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(100% + 220px);
+  transform: translateY(100%);
+  animation: deathLavaSurge 1s cubic-bezier(0.4, 0, 0.15, 1) 0.2s forwards;
+}
+
+@keyframes deathLavaSurge {
+  0%   { transform: translateY(100%); }
+  100% { transform: translateY(0%); }
+}
+
+.death-wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 220px;
+}
+
+.death-wave--back path {
+  fill: rgba(160, 20, 0, 0.9);
+  animation: deathWaveWobble 0.6s ease-in-out infinite alternate;
+}
+
+.death-wave--mid path {
+  fill: rgba(220, 45, 0, 0.92);
+  animation: deathWaveWobble 0.5s ease-in-out infinite alternate-reverse;
+}
+
+.death-wave--front path {
+  fill: rgba(255, 80, 10, 0.97);
+  animation: deathWaveWobble 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes deathWaveWobble {
+  from { transform: scaleX(1) translateX(0); }
+  to   { transform: scaleX(1.03) translateX(-12px); }
+}
+
+/* Corps de lave solide sous les vagues */
+.death-lava-body {
+  position: absolute;
+  top: 180px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom,
+    rgba(255, 60, 0, 0.97) 0%,
+    #c01000 25%,
+    #7a0000 60%,
+    #3d0000 100%
+  );
 }
 
 /* ─── OVERLAY BASE ──────────────────────────────────────────── */
@@ -27,9 +151,25 @@
   backdrop-filter: blur(3px);
   background: rgba(0, 0, 0, 0.5);
   z-index: 50;
-  animation: fadeIn 0.4s ease-out;
   gap: 28px;
   padding: 40px 20px;
+}
+
+.game-over-screen {
+  animation: gameOverReveal 0.5s ease-out forwards;
+}
+
+@keyframes gameOverReveal {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.overlay-start-screen {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.overlay-loading {
+  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
@@ -55,6 +195,7 @@
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
+  touch-action: manipulation;
   transition:
     background 0.2s,
     color 0.2s,
@@ -305,6 +446,7 @@
   overflow: hidden;
   border: none;
   cursor: pointer;
+  touch-action: manipulation;
   padding: 20px 70px;
   font-family: "supersquad", sans-serif;
   font-size: 1.3rem;
@@ -372,6 +514,7 @@
   padding: 14px 28px;
   border-radius: 10px;
   cursor: pointer;
+  touch-action: manipulation;
   transition:
     background 0.2s,
     border-color 0.2s,
@@ -418,6 +561,7 @@
   padding: 14px 28px;
   border-radius: 10px;
   cursor: pointer;
+  touch-action: manipulation;
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -491,6 +635,39 @@
   margin: 0;
 }
 
+/* ─── MUTE BUTTON (in-game overlay) ─────────────────────────── */
+.btn-mute {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 60;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s, border-color 0.2s;
+  line-height: 1;
+}
+
+.btn-mute:hover {
+  background: rgba(255, 106, 0, 0.4);
+  border-color: rgba(255, 106, 0, 0.5);
+  transform: scale(1.1);
+}
+
+.btn-mute:active {
+  transform: scale(0.95);
+}
+
 /* ─── HINT TEXT ──────────────────────────────────────────────── */
 .hint-text {
   font-family: "acme", sans-serif;
@@ -509,22 +686,174 @@
   to   { opacity: 0; }
 }
 
-/* ─── HUD SCORE (in-game) ────────────────────────────────────── */
-.hud-score {
-  position: absolute;
+/* ─── HUD ALTITUDE (in-game) ─────────────────────────────────── */
+.hud-altitude {
+  position: fixed;
+  left: 20px;
   top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 20;
+  pointer-events: none;
+
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(255, 106, 0, 0.6);
+  border-radius: 14px;
+  padding: 14px 26px 12px;
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(255, 80, 0, 0.2),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  min-width: 140px;
+  text-align: center;
+  animation: altPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes altPulse {
+  0%, 100% {
+    border-color: rgba(255, 106, 0, 0.55);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.6), 0 0 16px rgba(255,80,0,0.15);
+  }
+  50% {
+    border-color: rgba(255, 160, 0, 0.9);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.6), 0 0 35px rgba(255,120,0,0.45);
+  }
+}
+
+.hud-alt-value {
   font-family: "supersquad", sans-serif;
-  font-size: 1.8rem;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  color: #FFA040;
+  text-shadow:
+    0 0 25px rgba(255, 120, 0, 1),
+    0 0 50px rgba(255, 80, 0, 0.5),
+    0 2px 0 #1a0400;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.hud-alt-label {
+  font-family: "acme", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: rgba(255, 154, 64, 0.75);
+  margin-top: 4px;
+}
+
+/* ─── HUD ALERTE (in-game) ───────────────────────────────────── */
+.hud-alert {
+  position: fixed;
+  left: 20px;
+  top: 130px;
+  z-index: 25;
+  pointer-events: none;
+  width: 210px;
+
+  background: rgba(8, 1, 0, 0.97);
+  border: 2px solid rgba(255, 106, 0, 0.8);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 8px 36px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(255, 80, 0, 0.3),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+
+  animation: alertSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes alertSlideIn {
+  from { opacity: 0; transform: translateX(-20px) scale(0.9); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+.hud-alert-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #FF6A00, #EE0909);
+  font-family: "supersquad", sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
   color: #fff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+.hud-alert-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.hud-alert-body {
+  padding: 12px 14px;
+  font-family: "acme", sans-serif;
+  font-size: 1rem;
+  color: #FFA040;
+  line-height: 1.45;
+  text-align: center;
+}
+
+/* ─── MOBILE CONTROLS (touch) ───────────────────────────────── */
+.mobile-controls {
+  display: none; /* caché sur desktop */
+  position: fixed;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  padding: 0 24px;
+  justify-content: flex-start; 
+  gap: 16px;
+  align-items: center;
   z-index: 30;
   pointer-events: none;
 }
 
-.hud-score span {
-  color: #ff9a40;
+.ctrl-btn {
+  pointer-events: all;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 106, 0, 0.55);
+  color: #FFA040;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  transition: background 0.1s, border-color 0.1s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ctrl-btn:active {
+  background: rgba(255, 106, 0, 0.35);
+  border-color: rgba(255, 160, 0, 0.9);
+  transform: scale(0.92);
+}
+
+.ctrl-jump {
+  width: 82px;
+  height: 82px;
+  font-size: 1.8rem;
+  margin-left: auto;
+}
+
+/* Afficher les contrôles sur écran tactile ou petit écran */
+@media (pointer: coarse), (max-width: 768px) {
+  .mobile-controls {
+    display: flex;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -532,6 +861,45 @@
    ═══════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
+  /* HUD repositionné pour ne pas gêner le jeu sur mobile */
+  .hud-altitude {
+    top: 12px;
+    left: 12px;
+    padding: 10px 18px 8px;
+    min-width: 110px;
+  }
+
+  .hud-alt-value {
+    font-size: 1.6rem;
+  }
+
+  .hud-alt-label {
+    font-size: 0.62rem;
+  }
+
+  .hud-alert {
+    top: 100px;
+    left: 12px;
+    width: 180px;
+  }
+
+  .hud-alert-header {
+    font-size: 0.75rem;
+    padding: 8px 12px;
+  }
+
+  .hud-alert-body {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+
+  .btn-mute {
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+  }
+
   .overlay,
   .overlay-start-screen,
   .game-over-screen {
@@ -578,6 +946,7 @@
   .game-over-screen {
     gap: 16px;
     padding: 20px 12px;
+    padding-bottom: 110px; /* espace pour les touch controls */
   }
 
   .title-img {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
@@ -12,21 +12,27 @@ const GAME_ASSETS = [
   "/assets/backgrounds/biome2.png",
   "/assets/backgrounds/biome3.png",
   "/assets/backgrounds/biome4.png",
+  "/assets/backgrounds/biome5.png",
+  "/assets/backgrounds/biome6.png",
+  "/assets/backgrounds/biome7.png",
+  "/assets/backgrounds/biome8.png",
+  "/assets/backgrounds/biome9.png",
+  "/assets/backgrounds/biome10.png",
+  "/assets/backgrounds/biome11.png",
+  "/assets/backgrounds/biome12.png",
+  "/assets/backgrounds/biome13.png",
   "/assets/backgrounds/tower_left_1.png",
   "/assets/backgrounds/tower_right_1.png",
   "/assets/sprites/plateforme.png",
+  "/assets/sprites/plateforme_spike.png",
   "/assets/sprites/bat_droite_bas.png",
   "/assets/sprites/bat_droite_haut.png",
   "/assets/sprites/bat_gauche_bas.png",
   "/assets/sprites/bat_gauche_haut.png",
-  "/assets/sprites/test/lava1.png",
-  "/assets/sprites/test/lava2.png",
-  "/assets/sprites/test/lava3.png",
-  "/assets/sprites/test/lava4.png",
-  "/assets/sprites/test/lava5.png",
-  "/assets/sprites/test/lava6.png",
-  "/assets/sprites/test/lava7.png",
-  "/assets/sprites/test/lava8.png",
+  "/assets/sprites/lava1.png",
+  "/assets/sprites/lava2.png",
+  "/assets/sprites/lava3.png",
+  "/assets/sprites/lava4.png",
   "/assets/sprites/lava_body.png",
   "/assets/sprites/perso_neutre_droite.png",
   "/assets/sprites/perso_neutre_gauche.png",
@@ -34,7 +40,6 @@ const GAME_ASSETS = [
   "/assets/sprites/perso_jump_gauche.png",
   "/assets/sprites/perso_run_droite.png",
   "/assets/sprites/perso_run_gauche.png",
-  "/assets/sprites/spike_teste.png",
 ];
 
 export default function Game() {
@@ -43,8 +48,31 @@ export default function Game() {
   const [bestScore, setBestScore] = useState(0);
   const [isNewRecord, setIsNewRecord] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+  const [alertMessage, setAlertMessage] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Ref direct sur le DOM pour le score — zéro re-render React
+  const hudAltRef = useRef(null);
+  const alertTimeoutRef = useRef(null);
+
+  // Dispatche un KeyboardEvent pour les contrôles tactiles
+  const fireKey = (type, key, code) => {
+    window.dispatchEvent(new KeyboardEvent(type, { key, code, bubbles: true }));
+  };
+
+  const handleScoreUpdate = (score) => {
+    if (hudAltRef.current) {
+      hudAltRef.current.textContent = `${score} m`;
+    }
+  };
+
+  const handleAlert = (msg) => {
+    if (alertTimeoutRef.current) clearTimeout(alertTimeoutRef.current);
+    setAlertMessage(msg);
+    alertTimeoutRef.current = setTimeout(() => setAlertMessage(null), 4500);
+  };
 
   const isGuest = user?.is_anonymous === true;
 
@@ -108,28 +136,36 @@ export default function Game() {
 
   const handleGameOver = async (finalScore) => {
     setCurrentScore(finalScore);
-    setGameState("GAMEOVER");
+    setGameState("DYING");
 
-    if (finalScore > bestScore) {
-      setIsNewRecord(true);
-      setBestScore(finalScore);
-
-      if (!isGuest && user) {
-        const { error } = await supabase
-          .from("scores")
-          .upsert(
-            { user_id: user.id, altitude: finalScore },
-            { onConflict: "user_id" },
-          );
-        if (error) console.error("Erreur détaillée:", error.message);
+    const saveScore = async () => {
+      if (finalScore > bestScore) {
+        setIsNewRecord(true);
+        setBestScore(finalScore);
+        if (!isGuest && user) {
+          const { error } = await supabase
+            .from("scores")
+            .upsert(
+              { user_id: user.id, altitude: finalScore },
+              { onConflict: "user_id" },
+            );
+          if (error) console.error("Erreur détaillée:", error.message);
+        }
+      } else {
+        setIsNewRecord(false);
       }
-    } else {
-      setIsNewRecord(false);
-    }
+    };
+
+    await Promise.all([
+      saveScore(),
+      new Promise((resolve) => setTimeout(resolve, 1300)),
+    ]);
+
+    setGameState("GAMEOVER");
   };
 
   return (
-    <div className="game-page">
+    <div className={`game-page${gameState === "PLAYING" ? " game-page--playing" : ""}`}>
       <Helmet>
         <title>LavaRush</title>
         <link rel="icon" href="./assets/ui/lavarush_petio_icon.svg" />
@@ -194,9 +230,92 @@ export default function Game() {
         </div>
       )}
 
-      {/* JEU PIXI — monté uniquement quand les assets sont prêts */}
-      {gameState === "PLAYING" && (
-        <Experience userId={user.id} onGameOver={handleGameOver} />
+      {/* JEU PIXI — visible pendant PLAYING et DYING */}
+      {(gameState === "PLAYING" || gameState === "DYING") && user && (
+        <>
+          <Experience
+            userId={user.id}
+            onGameOver={handleGameOver}
+            isMuted={isMuted}
+            onScoreUpdate={handleScoreUpdate}
+            onAlert={handleAlert}
+          />
+
+          {/* HUD Altitude — mise à jour DOM directe, 0 re-render */}
+          <div className="hud-altitude">
+            <span className="hud-alt-value" ref={hudAltRef}>
+              0 m
+            </span>
+            <span className="hud-alt-label">Altitude</span>
+          </div>
+
+          {/* Alerte in-game */}
+          {alertMessage && (
+            <div className="hud-alert" key={alertMessage.corps}>
+              <div className="hud-alert-header">
+                <span className="hud-alert-icon">⚠️</span>
+                {alertMessage.titre}
+              </div>
+              <div className="hud-alert-body">{alertMessage.corps}</div>
+            </div>
+          )}
+
+          <button
+            className="btn-mute"
+            onClick={() => setIsMuted((m) => !m)}
+            title={isMuted ? "Activer le son" : "Couper le son"}
+          >
+            {isMuted ? "🔇" : "🔊"}
+          </button>
+
+          {/* Contrôles tactiles mobile */}
+          <div
+            className="mobile-controls"
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            <button
+              className="ctrl-btn ctrl-left"
+              onPointerDown={(e) => { e.preventDefault(); fireKey("keydown", "q", "KeyQ"); }}
+              onPointerUp={(e) => { e.preventDefault(); fireKey("keyup", "q", "KeyQ"); }}
+              onPointerLeave={(e) => { e.preventDefault(); fireKey("keyup", "q", "KeyQ"); }}
+              onContextMenu={(e) => e.preventDefault()}
+            >◀</button>
+            <button
+              className="ctrl-btn ctrl-right"
+              onPointerDown={(e) => { e.preventDefault(); fireKey("keydown", "d", "KeyD"); }}
+              onPointerUp={(e) => { e.preventDefault(); fireKey("keyup", "d", "KeyD"); }}
+              onPointerLeave={(e) => { e.preventDefault(); fireKey("keyup", "d", "KeyD"); }}
+              onContextMenu={(e) => e.preventDefault()}
+            >▶</button>
+            <button
+              className="ctrl-btn ctrl-jump"
+              onPointerDown={(e) => { e.preventDefault(); fireKey("keydown", " ", "Space"); }}
+              onPointerUp={(e) => { e.preventDefault(); fireKey("keyup", " ", "Space"); }}
+              onPointerLeave={(e) => { e.preventDefault(); fireKey("keyup", " ", "Space"); }}
+              onContextMenu={(e) => e.preventDefault()}
+            >▲</button>
+          </div>
+        </>
+      )}
+
+      {/* DEATH TRANSITION */}
+      {gameState === "DYING" && (
+        <div className="death-overlay" aria-hidden="true">
+          <div className="death-flash" />
+          <div className="death-vignette" />
+          <div className="death-lava-surge">
+            <svg className="death-wave death-wave--back" viewBox="0 0 1440 200" preserveAspectRatio="none">
+              <path d="M0,80 C240,160 480,20 720,80 C960,140 1200,20 1440,80 L1440,200 L0,200 Z" />
+            </svg>
+            <svg className="death-wave death-wave--mid" viewBox="0 0 1440 200" preserveAspectRatio="none">
+              <path d="M0,100 C360,30 720,140 1080,70 C1260,40 1380,100 1440,80 L1440,200 L0,200 Z" />
+            </svg>
+            <svg className="death-wave death-wave--front" viewBox="0 0 1440 200" preserveAspectRatio="none">
+              <path d="M0,120 C200,60 500,150 720,100 C940,60 1200,130 1440,110 L1440,200 L0,200 Z" />
+            </svg>
+            <div className="death-lava-body" />
+          </div>
+        </div>
       )}
 
       {/* OVERLAY CHARGEMENT */}
@@ -229,7 +348,7 @@ export default function Game() {
       {/* OVERLAY GAME OVER */}
       {gameState === "GAMEOVER" && (
         <div className="overlay game-over-screen">
-          <h2 className="gameover-title">Perdu Looser</h2>
+          <h2 className="gameover-title">T'as perdu !</h2>
 
           <div className="gameover-card">
             <div className="gameover-score-section">

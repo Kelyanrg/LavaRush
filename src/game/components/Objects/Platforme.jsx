@@ -4,12 +4,7 @@ import { Graphics, Sprite } from "pixi.js";
 
 extend({ Graphics, Sprite });
 
-export const Plateforme = ({ x, y, largeur = 120, hauteur = 20, couleur = 0xff00, texturePlatforme }) => {
-    // console.log("texture reçue:", texturePlatforme);
-    // const draw = useCallback((graphics) => {
-    //     graphics.clear().rect(0, 0, largeur, hauteur).fill(couleur);
-    // }, [largeur, hauteur, couleur]);
-    if (!texturePlatforme) return null
-
-    return <pixiSprite x={x} y={y} width={largeur} height={hauteur} texture={texturePlatforme} />;
+export const Plateforme = ({ x, y, largeur = 120, hauteur = 20, couleur = 0xff00, texturesPlatforme }) => {
+    if (!texturesPlatforme) return null
+    return <pixiSprite x={x} y={y} width={largeur} height={hauteur} texture={texturesPlatforme} />;
 };

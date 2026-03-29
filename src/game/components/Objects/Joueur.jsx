@@ -10,13 +10,12 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     const isInitialized = useRef(false);
     const regardeAGauche = useRef(false);
 
-    const miniBoostBuffer = useRef(0);
-    const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 5) * Scale);
-    const friction = 0.7;
+    const DESKTOP_PLAY_AREA = 1440 * 0.428;
+    const playAreaScale = playAreaWidth / DESKTOP_PLAY_AREA;
+    const acceleration = (((playAreaWidth / 5 - (playAreaWidth / 50) * 2) / 5) * playAreaScale);
+    const friction = 0.5;
     const gravity = 0.98 * ScaleY;
-    const maxSpeed = 8 * Scale;
-
-
+    const maxSpeed = 8 * playAreaScale;
 
     const physics = useRef({
         velocityY: 0,
@@ -32,25 +31,27 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
     const jumpBuffer = useRef(0);
     const nocolitionbuffer = useRef(0);
     const keys = useRef({ q: false, d: false, z: false });
+    const deathStarted = useRef(false);
+    const deathFrames = useRef(0);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (isGameOver) return;
 
-            if (e.code === 'Space' || e.key.toLowerCase() === 'z') {
+            if (e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp') {
                 e.preventDefault();
                 jumpBuffer.current = 15;
             }
-            if (e.key.toLowerCase() === 'q') keys.current.q = true;
-            if (e.key.toLowerCase() === 'd') keys.current.d = true;
+            if (e.key.toLowerCase() === 'q' || e.code === 'ArrowLeft') keys.current.q = true;
+            if (e.key.toLowerCase() === 'd' || e.code === 'ArrowRight') keys.current.d = true;
         };
         const handleKeyUp = (e) => {
-            if ((e.code === 'Space' || e.key.toLowerCase() === 'z') && physics.current.velocityY < 0) {
+            if ((e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp') && physics.current.velocityY < 0) {
                 physics.current.velocityY *= 0.5;
                 jumpBuffer.current = 0;
             }
-            if (e.key.toLowerCase() === 'q') keys.current.q = false;
-            if (e.key.toLowerCase() === 'd') keys.current.d = false;
+            if (e.key.toLowerCase() === 'q' || e.code === 'ArrowLeft') keys.current.q = false;
+            if (e.key.toLowerCase() === 'd' || e.code === 'ArrowRight') keys.current.d = false;
         };
 
         window.addEventListener('keydown', handleKeyDown);
@@ -61,7 +62,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             window.removeEventListener('keyup', handleKeyUp);
         };
     }, [isGameOver]);
-    console.log("acceleration:", acceleration);
+    
     useTick((ticker) => {
         if (!playerRef.current || isGameOver) return;
 
@@ -117,21 +118,12 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
                 const minOverlapX = Math.min(overlapLeft, overlapRight);
                 const minOverlapY = Math.min(overlapTop, overlapBottom);
 
-                if (minOverlapY < minOverlapX) {
-                    if (overlapTop * 3 * Scale < overlapBottom) {
-                        player.y = plat.y - joueurRect.height;
-                        p.velocityY = 0;
-                        p.onGround = true;
-                    } else {
-                        miniBoostBuffer.current = 5;
-                    }
-                } else {
-                    // if (overlapLeft < overlapRight) {
-                    //     player.x = plat.x - joueurRect.width;
-                    // } else {
-                    //     player.x = plat.x + plat.width;
-                    // }
-                    // p.velocityX = 0;
+                // Plateformes one-way : on ne pose le joueur dessus que s'il tombe (velocityY >= 0)
+                // Si le joueur monte (velocityY < 0), il traverse la plateforme
+                if (minOverlapY < minOverlapX && p.velocityY >= 0 && overlapTop <= overlapBottom) {
+                    player.y = plat.y - joueurRect.height;
+                    p.velocityY = 0;
+                    p.onGround = true;
                 }
             }
         });
@@ -143,14 +135,7 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             jumpBuffer.current = 0;
         }
 
-        if (miniBoostBuffer.current > 0 && p.onGround) {
-            p.velocityY = p.jumpForce * 0.8;
-            p.onGround = false;
-            miniBoostBuffer.current = 0;
-        }
-
         if (jumpBuffer.current > 0) jumpBuffer.current -= 1;
-        if (miniBoostBuffer.current > 0) miniBoostBuffer.current -= 1;
 
         if (texturesPerso && texturesPerso.length === 6) {
             let textureFinale = texturesPerso[0];
