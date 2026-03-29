@@ -136,24 +136,32 @@ export default function Game() {
 
   const handleGameOver = async (finalScore) => {
     setCurrentScore(finalScore);
-    setGameState("GAMEOVER");
+    setGameState("DYING");
 
-    if (finalScore > bestScore) {
-      setIsNewRecord(true);
-      setBestScore(finalScore);
-
-      if (!isGuest && user) {
-        const { error } = await supabase
-          .from("scores")
-          .upsert(
-            { user_id: user.id, altitude: finalScore },
-            { onConflict: "user_id" },
-          );
-        if (error) console.error("Erreur détaillée:", error.message);
+    const saveScore = async () => {
+      if (finalScore > bestScore) {
+        setIsNewRecord(true);
+        setBestScore(finalScore);
+        if (!isGuest && user) {
+          const { error } = await supabase
+            .from("scores")
+            .upsert(
+              { user_id: user.id, altitude: finalScore },
+              { onConflict: "user_id" },
+            );
+          if (error) console.error("Erreur détaillée:", error.message);
+        }
+      } else {
+        setIsNewRecord(false);
       }
-    } else {
-      setIsNewRecord(false);
-    }
+    };
+
+    await Promise.all([
+      saveScore(),
+      new Promise((resolve) => setTimeout(resolve, 1300)),
+    ]);
+
+    setGameState("GAMEOVER");
   };
 
   return (
@@ -222,8 +230,8 @@ export default function Game() {
         </div>
       )}
 
-      {/* JEU PIXI — monté uniquement quand les assets sont prêts */}
-      {gameState === "PLAYING" && user && (
+      {/* JEU PIXI — visible pendant PLAYING et DYING */}
+      {(gameState === "PLAYING" || gameState === "DYING") && user && (
         <>
           <Experience
             userId={user.id}
@@ -288,6 +296,26 @@ export default function Game() {
             >▲</button>
           </div>
         </>
+      )}
+
+      {/* DEATH TRANSITION */}
+      {gameState === "DYING" && (
+        <div className="death-overlay" aria-hidden="true">
+          <div className="death-flash" />
+          <div className="death-vignette" />
+          <div className="death-lava-surge">
+            <svg className="death-wave death-wave--back" viewBox="0 0 1440 200" preserveAspectRatio="none">
+              <path d="M0,80 C240,160 480,20 720,80 C960,140 1200,20 1440,80 L1440,200 L0,200 Z" />
+            </svg>
+            <svg className="death-wave death-wave--mid" viewBox="0 0 1440 200" preserveAspectRatio="none">
+              <path d="M0,100 C360,30 720,140 1080,70 C1260,40 1380,100 1440,80 L1440,200 L0,200 Z" />
+            </svg>
+            <svg className="death-wave death-wave--front" viewBox="0 0 1440 200" preserveAspectRatio="none">
+              <path d="M0,120 C200,60 500,150 720,100 C940,60 1200,130 1440,110 L1440,200 L0,200 Z" />
+            </svg>
+            <div className="death-lava-body" />
+          </div>
+        </div>
       )}
 
       {/* OVERLAY CHARGEMENT */}
