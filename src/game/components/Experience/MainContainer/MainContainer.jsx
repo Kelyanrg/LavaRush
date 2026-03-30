@@ -165,10 +165,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             PIXI.Assets.load("/assets/sprites/bat_droite_haut.png"),
             PIXI.Assets.load("/assets/sprites/bat_gauche_bas.png"),
             PIXI.Assets.load("/assets/sprites/bat_gauche_haut.png"),
-            PIXI.Assets.load("/assets/sprites/lava1.png"),
-            PIXI.Assets.load("/assets/sprites/lava2.png"),
-            PIXI.Assets.load("/assets/sprites/lava3.png"),
-            PIXI.Assets.load("/assets/sprites/lava4.png"),
+            PIXI.Assets.load("/assets/sprites/lava1_v3.png"),
+            PIXI.Assets.load("/assets/sprites/lava2_v3.png"),
+            PIXI.Assets.load("/assets/sprites/lava3_v3.png"),
+            PIXI.Assets.load("/assets/sprites/lava4_v3.png"),
             PIXI.Assets.load("/assets/sprites/lava_body.png"),
             PIXI.Assets.load("/assets/sprites/perso_neutre_droite.png"),
             PIXI.Assets.load("/assets/sprites/perso_neutre_gauche.png"),
@@ -185,7 +185,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturesPlatforme(spritePlateforme);
             setTexturesMob([batDB, batDH, batGB, batGH]);
-            setTexturesLaveTop([l1, l2, l3, l4]);
+            setTexturesLaveTop([l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4,]);
             setTexturesLaveBody(lavaBody);
             setTexturesPerso([persoND, persoNG, persoJD, persoJG, persoRD, persoRG]);
             setTextureSpikes(spikes);
@@ -408,7 +408,16 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
 
         if (mobsRef.current) {
             for (const mobId in mobsRef.current) {
-                if (checkCollision(joueurRect, mobsRef.current[mobId])) {
+                const m = mobsRef.current[mobId];
+                
+                const mobHitbox = {
+                    x: m.x + (m.width * 0.2),
+                    y: m.y + (m.height * 0.2),
+                    width: m.width * 0.6,
+                    height: m.height * 0.6
+                };
+
+                if (checkCollision(joueurRect, mobHitbox)) {
                     setIsGameOver(true);
                     break;
                 }
