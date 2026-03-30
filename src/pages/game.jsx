@@ -10,7 +10,6 @@ import "../pages/game.css";
 const GAME_ASSETS = [
   "/assets/backgrounds/biome1.png",
   "/assets/backgrounds/biome2.png",
-  "/assets/backgrounds/biome2.1.png",
   "/assets/backgrounds/biome3.png",
   "/assets/backgrounds/biome4.png",
   "/assets/backgrounds/biome5.png",
