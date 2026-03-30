@@ -12,6 +12,7 @@ import { Mob } from "../../Objects/Mob.jsx";
 
 extend({ Container, Sprite, Graphics, Text });
 
+
 export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = false, onScoreUpdate, onAlert }) => {
     const scaleX = canvasSize.width / 1440;
     const scaleY = canvasSize.height / 700;
@@ -165,10 +166,10 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             PIXI.Assets.load("/assets/sprites/bat_droite_haut.png"),
             PIXI.Assets.load("/assets/sprites/bat_gauche_bas.png"),
             PIXI.Assets.load("/assets/sprites/bat_gauche_haut.png"),
-            PIXI.Assets.load("/assets/sprites/lava1.png"),
-            PIXI.Assets.load("/assets/sprites/lava2.png"),
-            PIXI.Assets.load("/assets/sprites/lava3.png"),
-            PIXI.Assets.load("/assets/sprites/lava4.png"),
+            PIXI.Assets.load("/assets/sprites/lava1_v3.png"),
+            PIXI.Assets.load("/assets/sprites/lava2_v3.png"),
+            PIXI.Assets.load("/assets/sprites/lava3_v3.png"),
+            PIXI.Assets.load("/assets/sprites/lava4_v3.png"),
             PIXI.Assets.load("/assets/sprites/lava_body.png"),
             PIXI.Assets.load("/assets/sprites/perso_neutre_droite.png"),
             PIXI.Assets.load("/assets/sprites/perso_neutre_gauche.png"),
