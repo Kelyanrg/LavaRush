@@ -46,9 +46,9 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             }
             if (e.key.toLowerCase() === 'q' || e.code === 'ArrowLeft') keys.current.q = true;
             if (e.key.toLowerCase() === 'd' || e.code === 'ArrowRight') keys.current.d = true;
-        };
+        };//&& physics.current.velocityY < 0
         const handleKeyUp = (e) => {
-            if ((e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp') && physics.current.velocityY < 0) {
+            if ((e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp')) {
                 physics.current.velocityY *= 0.5;
                 jumpBuffer.current = 0;
                 keys.current.z = false;
