@@ -41,14 +41,17 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             if (e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp') {
                 e.preventDefault();
                 jumpBuffer.current = 15;
+                keys.current.z = true;
+
             }
             if (e.key.toLowerCase() === 'q' || e.code === 'ArrowLeft') keys.current.q = true;
             if (e.key.toLowerCase() === 'd' || e.code === 'ArrowRight') keys.current.d = true;
-        };
+        };//&& physics.current.velocityY < 0
         const handleKeyUp = (e) => {
-            if ((e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp') && physics.current.velocityY < 0) {
+            if ((e.code === 'Space' || e.key.toLowerCase() === 'z' || e.code === 'ArrowUp')) {
                 physics.current.velocityY *= 0.5;
                 jumpBuffer.current = 0;
+                keys.current.z = false;
             }
             if (e.key.toLowerCase() === 'q' || e.code === 'ArrowLeft') keys.current.q = false;
             if (e.key.toLowerCase() === 'd' || e.code === 'ArrowRight') keys.current.d = false;
@@ -62,7 +65,6 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
             window.removeEventListener('keyup', handleKeyUp);
         };
     }, [isGameOver]);
-    
     useTick((ticker) => {
         if (!playerRef.current || isGameOver) return;
 
@@ -120,13 +122,17 @@ export const Joueur = ({ plateformes = [], spikes = [], onPositionChange, playAr
 
                 // Plateformes one-way : on ne pose le joueur dessus que s'il tombe (velocityY >= 0)
                 // Si le joueur monte (velocityY < 0), il traverse la plateforme
-                if (minOverlapY < minOverlapX && p.velocityY >= 0 && overlapTop <= overlapBottom) {
+                if (overlapTop * 4 * Scale <= overlapBottom) {
                     player.y = plat.y - joueurRect.height;
                     p.velocityY = 0;
                     p.onGround = true;
                 }
             }
         });
+
+        if (keys.current.z) {
+            jumpBuffer.current = 15;
+        }
 
 
         if (jumpBuffer.current > 0 && p.onGround) {
