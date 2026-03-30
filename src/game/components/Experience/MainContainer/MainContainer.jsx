@@ -186,7 +186,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturesPlatforme(spritePlateforme);
             setTexturesMob([batDB, batDH, batGB, batGH]);
-            setTexturesLaveTop([l1, l2, l3, l4]);
+            setTexturesLaveTop([l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4]);
             setTexturesLaveBody(lavaBody);
             setTexturesPerso([persoND, persoNG, persoJD, persoJG, persoRD, persoRG]);
             setTextureSpikes(spikes);
