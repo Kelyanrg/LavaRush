@@ -12,6 +12,7 @@ import { Mob } from "../../Objects/Mob.jsx";
 
 extend({ Container, Sprite, Graphics, Text });
 
+
 export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = false, onScoreUpdate, onAlert }) => {
     const scaleX = canvasSize.width / 1440;
     const scaleY = canvasSize.height / 700;
@@ -185,7 +186,7 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturesPlatforme(spritePlateforme);
             setTexturesMob([batDB, batDH, batGB, batGH]);
-            setTexturesLaveTop([l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4,]);
+            setTexturesLaveTop([l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4, l1, l2, l3, l4]);
             setTexturesLaveBody(lavaBody);
             setTexturesPerso([persoND, persoNG, persoJD, persoJG, persoRD, persoRG]);
             setTextureSpikes(spikes);
@@ -475,6 +476,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             });
         }
     });
+
+    console.log("update ok")
 
     if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0 || texturesMob.length === 0 || texturesLaveTop.length === 0 || !texturesLaveBody || texturesPerso.length === 0 || !textureSpikes) return null;
 
