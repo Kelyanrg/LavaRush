@@ -101,14 +101,14 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
                 window.removeEventListener('mousedown', playAudio);
                 window.removeEventListener('keydown', playAudio);
                 window.removeEventListener('touchstart', playAudio);
-            }).catch(() => {});
+            }).catch(() => { });
         };
 
         const handleVisibility = () => {
             if (document.hidden) {
                 music.pause();
             } else if (!isMuted) {
-                music.play().catch(() => {});
+                music.play().catch(() => { });
             }
         };
 
@@ -467,6 +467,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             });
         }
     });
+
+    console.log("update ok")
 
     if (texturesBiomes.length === 0 || texturesTowersLeft.length === 0 || texturesTowersRight.length === 0 || texturesMob.length === 0 || texturesLaveTop.length === 0 || !texturesLaveBody || texturesPerso.length === 0 || !textureSpikes) return null;
 
