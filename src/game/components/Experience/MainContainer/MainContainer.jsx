@@ -148,7 +148,6 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
         Promise.all([
             PIXI.Assets.load("/assets/backgrounds/biome1.png"),
             PIXI.Assets.load("/assets/backgrounds/biome2.png"),
-            PIXI.Assets.load("/assets/backgrounds/biome2.1.png"),
             PIXI.Assets.load("/assets/backgrounds/biome3.png"),
             PIXI.Assets.load("/assets/backgrounds/biome4.png"),
             PIXI.Assets.load("/assets/backgrounds/biome5.png"),
@@ -181,8 +180,8 @@ export const MainContainer = ({ canvasSize, children, onGameOver, isMuted = fals
             PIXI.Assets.load("/assets/sprites/plateforme_spike.png"),
             PIXI.Assets.load("/assets/fonts/super_squad/Super_Squad.ttf"),
             PIXI.Assets.load("/assets/fonts/acme/Acme-Regular.ttf"),
-        ]).then(([b1, b2, b2b, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
-            setTexturesBiomes([b1, b2, b2b,  b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b13, b13, b13, b13, b13, b13, b13, b13]);
+        ]).then(([b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, tl, tr, spritePlateforme, batDB, batDH, batGB, batGH, l1, l2, l3, l4, lavaBody, persoND, persoNG, persoJD, persoJG, persoRD, persoRG, spikes]) => {
+            setTexturesBiomes([b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b13, b13, b13, b13, b13, b13, b13, b13]);
             setTexturesTowersLeft([tl, tl, tl, tl, tl, tl]);
             setTexturesTowersRight([tr, tr, tr, tr, tr, tr]);
             setTexturesPlatforme(spritePlateforme);
